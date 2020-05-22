@@ -1,5 +1,6 @@
 {
   "name": "@acnh-cddb/functions",
+  "version": "0.1.0",
   "scripts": {
     "build": "tsc",
     "serve": "yarn run build && firebase emulators:start --only functions",
