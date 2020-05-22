@@ -1,0 +1,11 @@
+{
+  "name": "acnh-cddb",
+  "version": "0.1.0",
+  "repository": "git@github.com:Freeesia/acnh-cddb.git",
+  "author": "Freesia <freesia@studiofreesia.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "functions"
+  ]
+}
