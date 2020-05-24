@@ -166,8 +166,7 @@ export const helloWorld = https.onRequest(async (request, response) => {
   }
   const infos: info[] = [];
   for (const url of urls) {
-    const info = await analyzeImageUrl(url);
-    infos.push(info);
+    infos.push(await analyzeImageUrl(url));
   }
   response.send(infos);
 });
