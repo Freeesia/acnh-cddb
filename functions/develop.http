@@ -1,0 +1,8 @@
+@baseUrl=http://localhost:5001/acnh-cddb/us-central1
+
+POST {{baseUrl}}/helloWorld HTTP/1.1
+Content-Type: application/json
+
+[
+  "https://pbs.twimg.com/media/EXuQTz5UwAE-LiI?format=jpg"
+]

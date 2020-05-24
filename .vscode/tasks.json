@@ -1,42 +1,66 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/Test/AnalysisImage/AnalysisImage.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/Test/AnalysisImage/AnalysisImage.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "watch",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "run",
-                "${workspaceFolder}/Test/AnalysisImage/AnalysisImage.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/Test/AnalysisImage/AnalysisImage.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "publish",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "publish",
+        "${workspaceFolder}/Test/AnalysisImage/AnalysisImage.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "${workspaceFolder}/Test/AnalysisImage/AnalysisImage.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "type": "npm",
+      "script": "serve",
+      "path": "functions/",
+      "problemMatcher": [],
+      "label": "npm: serve - functions",
+      "options": {
+        "env": {
+          "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/Test/AnalysisImage/gcp-service-key.json"
         }
-    ]
+      },
+      "detail": "yarn run build && firebase emulators:start --only functions",
+      "isBackground": true,
+    },
+    {
+      "type": "npm",
+      "script": "watch",
+      "path": "functions/",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: watch - functions",
+      "detail": "tsc -w",
+      "isBackground": true,
+    }
+  ]
 }
