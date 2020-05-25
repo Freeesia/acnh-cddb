@@ -50,7 +50,7 @@
         }
       },
       "detail": "yarn run build && firebase emulators:start --only functions",
-      "isBackground": true,
+      "isBackground": true
     },
     {
       "type": "npm",
@@ -60,7 +60,15 @@
       "problemMatcher": [],
       "label": "npm: watch - functions",
       "detail": "tsc -w",
-      "isBackground": true,
+      "isBackground": true
+    },
+    {
+      "type": "npm",
+      "script": "serve",
+      "path": "hosting/",
+      "problemMatcher": [],
+      "label": "npm: serve - hosting",
+      "detail": "vue-cli-service serve"
     }
   ]
 }
