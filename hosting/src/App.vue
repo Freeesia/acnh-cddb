@@ -30,24 +30,15 @@
     </v-app-bar>
 
     <v-content>
-      <HelloWorld />
+      <router-view></router-view>
     </v-content>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
+import Component from "vue-class-component";
 
-export default Vue.extend({
-  name: "App",
-
-  components: {
-    HelloWorld,
-  },
-
-  data: () => ({
-    //
-  }),
-});
+@Component({})
+export default class App extends Vue {}
 </script>
