@@ -43,7 +43,7 @@
       "script": "serve",
       "path": "functions/",
       "problemMatcher": [],
-      "label": "npm: serve - functions",
+      "label": "serve:functions",
       "options": {
         "env": {
           "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/Test/AnalysisImage/gcp-service-key.json"
@@ -58,7 +58,7 @@
       "path": "functions/",
       "group": "build",
       "problemMatcher": [],
-      "label": "npm: watch - functions",
+      "label": "watch:functions",
       "detail": "tsc -w",
       "isBackground": true
     },
@@ -66,9 +66,17 @@
       "type": "npm",
       "script": "serve",
       "path": "hosting/",
-      "problemMatcher": [],
-      "label": "npm: serve - hosting",
-      "detail": "vue-cli-service serve"
+      "isBackground": true,
+      "label": "serve:hosting",
+      "detail": "vue-cli-service serve",
+      "problemMatcher": {
+        "base": "$eslint-stylish",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\s*WAIT\\s+Compiling",
+          "endsPattern": "^\\s*(DONE|WARNING)\\s+Compiled"
+        }
+      }
     }
   ]
 }
