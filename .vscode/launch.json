@@ -37,6 +37,26 @@
       "sourceMapPathOverrides": {
         "webpack:///./src/*": "${webRoot}/src/*"
       },
+    },
+    {
+      "name": "functions",
+      "type": "node",
+      "request": "launch",
+      "args": [
+        "${workspaceRoot}/functions/src/index.debug.ts"
+      ],
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register"
+      ],
+      "smartStep": true,
+      "cwd": "${workspaceRoot}/functions",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "TS_NODE_IGNORE": "false"
+      },
+      "envFile": "${workspaceFolder}/functions/.env"
     }
   ]
 }
