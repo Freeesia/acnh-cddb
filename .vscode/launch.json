@@ -54,7 +54,8 @@
       "protocol": "inspector",
       "internalConsoleOptions": "openOnSessionStart",
       "env": {
-        "TS_NODE_IGNORE": "false"
+        "TS_NODE_IGNORE": "false",
+        "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/Test/AnalysisImage/gcp-service-key.json"
       },
       "envFile": "${workspaceFolder}/functions/.env"
     }

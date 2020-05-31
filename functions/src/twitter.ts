@@ -1,5 +1,6 @@
 import Twitter from "twitter-lite";
 import querystring from "querystring";
+import { analyzeImageUrl } from "./vision";
 
 async function createClient() {
   const user = new Twitter({
@@ -45,10 +46,18 @@ export async function searchTweet() {
     });
     for (const tweet of res.statuses) {
       // console.log(`${tweet.user.name}: https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`);
-      if (tweet.entities.media) {
-        for (const media of tweet.entities.media) {
-          console.log(`${media.media_url_https} : ${media.sizes.large.w} : ${media.type}`);
+      if (!tweet.entities.media) {
+        continue;
+      }
+      for (const media of tweet.entities.media) {
+        if (media.sizes.large.w !== 1280) {
+          continue;
         }
+        const info = await analyzeImageUrl(media.media_url_https + "?name=large");
+        if (!info) {
+          continue;
+        }
+        console.log(info);
       }
     }
     max = getMaxFromQuery(res.search_metadata.next_results);

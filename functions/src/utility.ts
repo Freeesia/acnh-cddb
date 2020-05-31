@@ -5,17 +5,6 @@ import _ from "lodash";
 import IVertex = protos.google.cloud.vision.v1.IVertex;
 import { boxLine } from "intersects";
 
-export interface Info {
-  url: string;
-  title: string;
-  designId: string;
-  dominantColor: string;
-  designType: string;
-  authorName: string;
-  authorId: string;
-  islandName: string;
-}
-
 export interface Rect {
   x: number;
   y: number;
