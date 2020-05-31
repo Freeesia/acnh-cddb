@@ -7,6 +7,7 @@ import { red, pink, orange, yellow, green, blue, purple, brown, white, black } f
 import IImageContext = protos.google.cloud.vision.v1.IImageContext;
 import IColor = protos.google.type.IColor;
 import _ from "lodash";
+import "./lodash.extensions";
 
 const visionClient = new ImageAnnotatorClient();
 
@@ -95,8 +96,13 @@ export async function analyzeImageUrl(url: string): Promise<Info | null> {
       image: { source: { imageUri: url } },
       imageContext: dominantContext,
     } as any);
+    if (res.error) {
+      console.error("[imageProperties]" + res.error.message ?? "unkown error");
+      return null;
+    }
     let colors = _(res.imagePropertiesAnnotation?.dominantColors?.colors ?? [])
       .orderBy(c => c.score, "desc")
+      .filterApproximateColor()
       .map<DominantColor>(c => toDominantColor(c.color));
     if (designType !== "マイデザイン") {
       colors = colors.filter(c => c.type !== "transparent");

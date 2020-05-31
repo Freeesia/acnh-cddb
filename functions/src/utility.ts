@@ -5,6 +5,8 @@ import _ from "lodash";
 import IVertex = protos.google.cloud.vision.v1.IVertex;
 import { boxLine } from "intersects";
 
+export const COLOR_DISTANCE_THRESHOLD = 15;
+
 export interface Rect {
   x: number;
   y: number;
