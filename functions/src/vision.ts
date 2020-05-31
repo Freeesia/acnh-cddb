@@ -1,12 +1,13 @@
 import { assertIsDefined } from "./assert";
-import { intersect, toRect, toRGBColor, Line } from "./utility";
+import { intersect, toRect, toRGBColor, Line, TRANSPARENT_DISTANCE_THRESHOLD } from "./utility";
 import { ImageAnnotatorClient, protos } from "@google-cloud/vision";
-import diff, { RGBColor } from "color-diff";
+// eslint-disable-next-line @typescript-eslint/camelcase
+import diff, { RGBColor, rgb_to_lab } from "color-diff";
 import convert from "color-convert";
-import { red, pink, orange, yellow, green, blue, purple, brown, white, black } from "color-name";
-import IImageContext = protos.google.cloud.vision.v1.IImageContext;
-import IColor = protos.google.type.IColor;
+import IColorInfo = protos.google.cloud.vision.v1.IColorInfo;
 import _ from "lodash";
+import sharp from "sharp";
+import axios from "axios";
 import "./lodash.extensions";
 
 const visionClient = new ImageAnnotatorClient();
@@ -18,57 +19,59 @@ const islandNameLine: Line = { x1: 150, y1: 535, x2: 400, y2: 535 };
 const designTypeLine: Line = { x1: 940, y1: 535, x2: 1200, y2: 535 };
 const authorIdPattern = /^MA-\d{4}-\d{4}-\d{4}$/;
 const designIdPattern = /^MO-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/;
-
-const backColor: RGBColor = { R: 243, G: 241, B: 226 };
-const mainColors: RGBColor[] = [
-  toRGBColor(red),
-  toRGBColor(pink),
-  toRGBColor(orange),
-  toRGBColor(yellow),
-  toRGBColor(green),
-  toRGBColor(blue),
-  toRGBColor(purple),
-  toRGBColor(brown),
-  toRGBColor(white),
-  toRGBColor(black),
-];
-
-function toColorType(color: RGBColor): ColorType {
-  const c = diff.closest(color, mainColors, backColor);
-  if (c === backColor) {
-    return "transparent";
-  }
-  return convert.rgb.keyword([c.R, c.G, c.B]) as ColorType;
-}
-
-function toDominantColor(c?: IColor | null): DominantColor {
-  const color = toRGBColor([c?.red ?? 0, c?.green ?? 0, c?.blue ?? 0]);
-  return { hex: convert.rgb.hex([color.R, color.G, color.B]), type: toColorType(color) };
-}
-
-const dominantContext: IImageContext = {
-  productSearchParams: {
-    boundingPoly: {
-      vertices: [
-        { x: 997, y: 328 },
-        { x: 1150, y: 328 },
-        { x: 997, y: 482 },
-        { x: 1150, y: 482 },
-      ],
-    },
-  },
+const transparent = toRGBColor([244, 246, 232]);
+const colorTypes: { [key in ColorType]: RGBColor } = {
+  red: toRGBColor([194, 0, 0]),
+  pink: toRGBColor([255, 128, 128]),
+  orange: toRGBColor([255, 128, 0]),
+  yellow: toRGBColor([255, 255, 0]),
+  green: toRGBColor([0, 194, 0]),
+  blue: toRGBColor([0, 0, 194]),
+  sky: toRGBColor([0, 255, 255]),
+  purple: toRGBColor([255, 0, 255]),
+  brown: toRGBColor([128, 64, 0]),
+  white: toRGBColor([255, 255, 255]),
+  black: toRGBColor([0, 0, 0]),
+  transparent: toRGBColor([255, 255, 255]), // 便宜上定義しておく
 };
 
+function toColorType(color: RGBColor): ColorType {
+  if (diff.diff(rgb_to_lab(color), rgb_to_lab(transparent)) < TRANSPARENT_DISTANCE_THRESHOLD) {
+    return "transparent";
+  }
+  const c = diff.closest(color, Object.values(colorTypes));
+  if (c === colorTypes.transparent) {
+    return "white";
+  }
+  return Object.keys(colorTypes).find(k => colorTypes[k as ColorType] === c) as ColorType;
+}
+
+function toDominantColor(c: IColorInfo): DominantColor {
+  const color = toRGBColor([c.color?.red ?? 0, c.color?.green ?? 0, c.color?.blue ?? 0]);
+  return {
+    hex: convert.rgb.hex([color.R, color.G, color.B]),
+    type: toColorType(color),
+    score: c.score ?? 0,
+    pixel: c.pixelFraction ?? 0,
+  };
+}
+
 export async function analyzeImageUrl(url: string): Promise<Info | null> {
+  let buf: Buffer;
   let title = "";
   let authorName = "";
   let islandName = "";
-  let designType: DesignType | null = null;
+  let designType = "";
   let authorId = "";
   let designId = "";
   const dominantColors: DominantColor[] = [];
   {
-    const [res] = await visionClient.textDetection(url);
+    // 画像データの取得
+    const res = await axios.get<Buffer>(url, { responseType: "arraybuffer" });
+    buf = res.data;
+  }
+  {
+    const [res] = await visionClient.textDetection(buf);
     const textAnnotations = res.textAnnotations;
     assertIsDefined(textAnnotations);
     for (const t of textAnnotations.slice(1)) {
@@ -80,7 +83,7 @@ export async function analyzeImageUrl(url: string): Promise<Info | null> {
       } else if (intersect(r, islandNameLine)) {
         islandName += t.description;
       } else if (intersect(r, designTypeLine)) {
-        designType = t.description as DesignType;
+        designType += t.description;
       } else if (t.description && authorIdPattern.test(t.description)) {
         authorId = t.description;
       } else if (t.description && designIdPattern.test(t.description)) {
@@ -92,10 +95,11 @@ export async function analyzeImageUrl(url: string): Promise<Info | null> {
     }
   }
   {
-    const [res] = await visionClient.imageProperties({
-      image: { source: { imageUri: url } },
-      imageContext: dominantContext,
-    } as any);
+    // デザイン部分の切り抜き
+    buf = await sharp(buf).extract({ left: 998, top: 328, width: 154, height: 154 }).toBuffer();
+  }
+  {
+    const [res] = await visionClient.imageProperties(buf);
     if (res.error) {
       console.error("[imageProperties]" + res.error.message ?? "unkown error");
       return null;
@@ -103,7 +107,7 @@ export async function analyzeImageUrl(url: string): Promise<Info | null> {
     let colors = _(res.imagePropertiesAnnotation?.dominantColors?.colors ?? [])
       .orderBy(c => c.score, "desc")
       .filterApproximateColor()
-      .map<DominantColor>(c => toDominantColor(c.color));
+      .map<DominantColor>(c => toDominantColor(c));
     if (designType !== "マイデザイン") {
       colors = colors.filter(c => c.type !== "transparent");
     }
@@ -153,6 +157,8 @@ export type DesignType =
 export interface DominantColor {
   hex: string;
   type: ColorType;
+  score: number;
+  pixel: number;
 }
 
 export type ColorType =
@@ -162,6 +168,7 @@ export type ColorType =
   | "yellow"
   | "green"
   | "blue"
+  | "sky"
   | "purple"
   | "brown"
   | "white"

@@ -6,6 +6,7 @@ import IVertex = protos.google.cloud.vision.v1.IVertex;
 import { boxLine } from "intersects";
 
 export const COLOR_DISTANCE_THRESHOLD = 15;
+export const TRANSPARENT_DISTANCE_THRESHOLD = 3;
 
 export interface Rect {
   x: number;
