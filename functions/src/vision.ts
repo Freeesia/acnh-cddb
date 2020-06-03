@@ -56,7 +56,7 @@ function toDominantColor(c: IColorInfo): DominantColor {
   };
 }
 
-export async function analyzeImageUrl(url: string): Promise<Info | null> {
+export async function analyzeImageUrl(imageUrl: string): Promise<DesignInfo | null> {
   let buf: Buffer;
   let title = "";
   let authorName = "";
@@ -67,7 +67,7 @@ export async function analyzeImageUrl(url: string): Promise<Info | null> {
   const dominantColors: DominantColor[] = [];
   {
     // 画像データの取得
-    const res = await axios.get<Buffer>(url, { responseType: "arraybuffer" });
+    const res = await axios.get<Buffer>(imageUrl, { responseType: "arraybuffer" });
     buf = res.data;
   }
   {
@@ -114,23 +114,29 @@ export async function analyzeImageUrl(url: string): Promise<Info | null> {
     dominantColors.push(...colors.take(2).value());
   }
   return {
-    url,
+    imageUrl,
     title,
     designId,
     dominantColors,
     designType: designType as DesignType,
-    authorName,
-    authorId,
-    islandName,
+    author: {
+      authorName,
+      authorId,
+      islandName,
+    },
   };
 }
 
-export interface Info {
-  url: string;
+export interface DesignInfo {
+  imageUrl: string;
   title: string;
   designId: string;
   dominantColors: DominantColor[];
   designType: DesignType;
+  author: AuthorInfo;
+}
+
+export interface AuthorInfo {
   authorName: string;
   authorId: string;
   islandName: string;
