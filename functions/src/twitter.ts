@@ -1,6 +1,16 @@
 import Twitter from "twitter-lite";
 import querystring from "querystring";
-import { analyzeImageUrl } from "./vision";
+import { analyzeImageUrl, DesignInfo } from "./vision";
+import { firestore, initializeApp } from "firebase-admin";
+
+initializeApp();
+
+import Timestamp = firestore.Timestamp;
+import DocRef = firestore.DocumentReference;
+import FieldPath = firestore.FieldPath;
+
+const users = firestore().collection("users");
+const designs = firestore().collection("designs");
 
 async function createClient() {
   const user = new Twitter({
@@ -32,7 +42,13 @@ function getMaxFromQuery(query?: string) {
   }
 }
 
-export async function searchTweet() {
+async function getOrCreateUser(user: TweetUser) {
+  const userRef = users.doc(user.id);
+  await userRef.set(user, { merge: true });
+  return userRef;
+}
+
+export async function searchTweets() {
   const client = await createClient();
   let max = "";
   do {
@@ -49,6 +65,9 @@ export async function searchTweet() {
       if (!tweet.entities.media) {
         continue;
       }
+      const createdAt = Timestamp.fromMillis(Date.parse(tweet.created_at));
+      const fromSwitch =
+        tweet.source === '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
       for (const media of tweet.entities.media) {
         if (media.sizes.large.w !== 1280) {
           continue;
@@ -57,7 +76,18 @@ export async function searchTweet() {
         if (!info) {
           continue;
         }
-        console.log(info);
+        const postInfo = info as PostDesignInfo;
+        postInfo.post = {
+          user: await getOrCreateUser({
+            id: tweet.user.id_str,
+            name: tweet.user.name,
+            screenName: tweet.user.screen_name,
+          }),
+          postId: tweet.id_str,
+          fromSwitch,
+        };
+        postInfo.createdAt = createdAt;
+        await designs.doc(postInfo.designId).set(postInfo);
       }
     }
     max = getMaxFromQuery(res.search_metadata.next_results);
@@ -94,6 +124,12 @@ interface Tweet {
   };
 }
 
+interface TweetUser {
+  id: string;
+  name: string;
+  screenName: string;
+}
+
 interface Media {
   id_str: string;
   media_url_https: string;
@@ -115,4 +151,13 @@ interface MediaSize {
 interface HashTag {
   text: string;
   indices: [number, number];
+}
+
+interface PostDesignInfo extends DesignInfo {
+  post: {
+    postId: string;
+    fromSwitch: boolean;
+    user: DocRef;
+  };
+  createdAt: Timestamp;
 }
