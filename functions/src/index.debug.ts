@@ -1,9 +1,9 @@
-import { searchTweet } from "./twitter";
+import { searchTweets } from "./twitter";
 import { analyzeImageUrl } from "./vision";
 
 (async () => {
   console.log("Start");
-  await searchTweet();
+  await searchTweets();
   // const urls: string[] = [];
   // for (const url of urls) {
   //   const info = await analyzeImageUrl(url);
