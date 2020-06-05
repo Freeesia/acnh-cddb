@@ -3,7 +3,7 @@
     <v-app-bar app color="primary" dark>
       <v-toolbar-items>
         <v-btn text to="/" class="text-none">
-          <v-toolbar-title>ACNH-CDDB</v-toolbar-title>
+          <v-toolbar-title>あつまれ マイデザの森</v-toolbar-title>
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>

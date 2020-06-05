@@ -1,7 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "@/views/Home.vue";
-import About from "@/views/About.vue";
 import Signin from "@/views/Signin.vue";
 import { AuthModule } from "@/store";
 
@@ -12,14 +11,6 @@ const routes: Array<RouteConfig> = [
     path: "/",
     name: "Home",
     component: Home,
-  },
-  {
-    path: "/about",
-    name: "About",
-    component: About,
-    meta: {
-      anonymous: true,
-    },
   },
   {
     path: "/signin",
