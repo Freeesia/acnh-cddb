@@ -4,8 +4,9 @@ import "./registerServiceWorker";
 import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
-import { initializeApp, performance } from "firebase/app";
+import { initializeApp, performance, analytics } from "firebase/app";
 import "firebase/performance";
+import "firebase/analytics";
 
 Vue.config.productionTip = false;
 const firebaseConfig = {
@@ -23,6 +24,8 @@ initializeApp(firebaseConfig);
 const perf = performance();
 perf.dataCollectionEnabled = true;
 perf.instrumentationEnabled = true;
+
+analytics();
 
 new Vue({
   router,
