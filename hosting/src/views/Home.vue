@@ -1,7 +1,10 @@
 <template>
   <v-container fluid>
     <v-row dense>
-      <v-col v-for="design in designs" :key="design.id" cols="12" sm="6" md="4" lg="3" xl="2">
+      <v-text-field v-model="search" dense filled clearable prepend-inner-icon="search" label="検索"></v-text-field>
+    </v-row>
+    <v-row dense>
+      <v-col v-for="design in filteredDesigns" :key="design.id" cols="12" sm="6" md="4" lg="3" xl="2">
         <DesignCard :doc="design" />
       </v-col>
     </v-row>
@@ -12,7 +15,6 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { firestore } from "firebase/app";
-import { sleep } from "../utilities/systemUtility";
 import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import { assertIsDefined } from "../utilities/assert";
@@ -20,6 +22,7 @@ import { SearchModule } from "../store";
 import DocumentSnapshot = firestore.DocumentSnapshot;
 import ColRef = firestore.CollectionReference;
 import QuerySnapshot = firestore.QuerySnapshot;
+import { DesignInfo } from "../models/types";
 
 @Component({ components: { DesignCard } })
 export default class Home extends Vue {
@@ -27,6 +30,28 @@ export default class Home extends Vue {
   private designsRef?: ColRef;
   private unsubscribe?: () => void;
   private designs: DocumentSnapshot[] = [];
+
+  private get search() {
+    return SearchModule.text;
+  }
+
+  private set search(val: string) {
+    SearchModule.setText(val);
+  }
+
+  private get filteredDesigns() {
+    const text = SearchModule.text;
+    if (text) {
+      return this.designs.filter(v => {
+        const data = v.data() as DesignInfo;
+        if (!data) {
+          return false;
+        }
+        return data.title.includes(text);
+      });
+    }
+    return this.designs;
+  }
 
   private created() {
     this.designsRef = this.db.collection("/designs");
@@ -66,7 +91,6 @@ export default class Home extends Vue {
   }
 
   private async onSnapshot(ss: QuerySnapshot) {
-    let count = 0;
     for (const change of ss.docChanges({ includeMetadataChanges: false })) {
       switch (change.type) {
         case "added":
@@ -80,10 +104,6 @@ export default class Home extends Vue {
           break;
         default:
           throw new Error();
-      }
-      if (++count % 10 == 0) {
-        await this.$nextTick();
-        await sleep(100);
       }
     }
   }

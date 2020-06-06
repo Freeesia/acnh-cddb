@@ -34,3 +34,25 @@ export const DesignTypes = [
 ];
 
 export type DesignType = typeof DesignTypes[number];
+
+export interface DesignInfo {
+  imageUrl: string;
+  title: string;
+  designId: string;
+  dominantColors: DominantColor[];
+  designType: DesignType;
+  author: AuthorInfo;
+}
+
+export interface AuthorInfo {
+  authorName: string;
+  authorId: string;
+  islandName: string;
+}
+
+export interface DominantColor {
+  hex: string;
+  type: ColorType;
+  score: number;
+  pixel: number;
+}
