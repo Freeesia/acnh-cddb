@@ -1,5 +1,5 @@
-import convertColor from "./convertColor";
+import convertFirestore from "./convertFirestore";
 
 (async () => {
-  convertColor();
+  convertFirestore();
 })();

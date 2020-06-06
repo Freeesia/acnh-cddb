@@ -2,7 +2,7 @@ import { firestore, initializeApp } from "firebase-admin";
 
 initializeApp();
 
-export default async function convertColor() {
+export default async function convertFirestore() {
   const db = firestore();
   const designRef = db.collection("designs");
   const ss = await designRef.get();
