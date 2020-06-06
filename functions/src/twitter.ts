@@ -58,6 +58,8 @@ export async function searchTweets() {
       max_id: max,
       lang: "ja",
       locale: "ja",
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      result_type: "recent",
       count: 100,
     });
     for (const tweet of res.statuses) {
