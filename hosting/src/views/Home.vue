@@ -75,7 +75,10 @@ export default class Home extends Vue {
       this.unsubscribe();
     }
     let query = this.designsRef.orderBy("createdAt", "desc");
-    // const color = SearchModule.color;
+    const color = SearchModule.color;
+    if (color) {
+      query = query.where("dominantColorTypes", "array-contains", color);
+    }
     const type = SearchModule.type;
     if (type) {
       query = query.where("designType", "==", type);
