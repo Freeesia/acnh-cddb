@@ -27,6 +27,26 @@
       "processId": "${command:pickProcess}"
     },
     {
+      "name": "bat",
+      "type": "node",
+      "request": "launch",
+      "args": [
+        "${workspaceRoot}/bat/src/index.ts"
+      ],
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register"
+      ],
+      "smartStep": true,
+      "cwd": "${workspaceRoot}/bat",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "TS_NODE_IGNORE": "false",
+        "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/Test/AnalysisImage/gcp-service-key.json"
+      },
+    },
+    {
       "name": "hosting",
       "type": "chrome",
       "request": "launch",
