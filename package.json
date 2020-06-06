@@ -5,6 +5,9 @@
   "author": "Freesia <freesia@studiofreesia.com>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "deploy:hosting": "firebase deploy --only hosting"
+  },
   "workspaces": [
     "functions",
     "hosting",

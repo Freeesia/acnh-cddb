@@ -40,6 +40,23 @@
           "endsPattern": "^\\s*(DONE|WARNING)\\s+Compiled"
         }
       }
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "hosting/",
+      "label": "build:hosting",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "script": "deploy:hosting",
+      "label": "deploy:hosting",
+      "dependsOn": [
+        "build:hosting"
+      ],
+      "problemMatcher": [],
     }
   ]
 }
