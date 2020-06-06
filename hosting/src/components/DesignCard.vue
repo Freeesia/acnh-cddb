@@ -1,6 +1,14 @@
 <template>
-  <v-card>
-    <v-img contain :src="model.imageUrl"></v-img>
+  <v-card min-height="200">
+    <v-lazy min-height="200">
+      <v-img contain :src="model.imageUrl">
+        <template v-slot:placeholder>
+          <v-row class="fill-height ma-0" align="center" justify="center">
+            <v-icon size="80" color="grey">image</v-icon>
+          </v-row>
+        </template>
+      </v-img>
+    </v-lazy>
   </v-card>
 </template>
 
