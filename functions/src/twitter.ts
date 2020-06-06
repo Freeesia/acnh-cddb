@@ -77,6 +77,7 @@ export async function searchTweets() {
           continue;
         }
         const postInfo = info as PostDesignInfo;
+        postInfo.imageUrl = media.media_url_https;
         postInfo.post = {
           user: await getOrCreateUser({
             id: tweet.user.id_str,

@@ -117,7 +117,8 @@ export async function analyzeImageUrl(imageUrl: string): Promise<DesignInfo | nu
     imageUrl,
     title,
     designId,
-    dominantColors,
+    dominantColors: dominantColors.map(c => c.hex),
+    dominantColorTypes: dominantColors.map(c => c.type),
     designType: designType as DesignType,
     author: {
       authorName,
@@ -131,7 +132,8 @@ export interface DesignInfo {
   imageUrl: string;
   title: string;
   designId: string;
-  dominantColors: DominantColor[];
+  dominantColors: string[];
+  dominantColorTypes: string[];
   designType: DesignType;
   author: AuthorInfo;
 }
