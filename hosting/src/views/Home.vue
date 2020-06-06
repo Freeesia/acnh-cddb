@@ -26,7 +26,7 @@ export default class Home extends Vue {
   private readonly db = firestore();
   private designsRef?: ColRef;
   private unsubscribe?: () => void;
-  private readonly designs: DocumentSnapshot[] = [];
+  private designs: DocumentSnapshot[] = [];
 
   private created() {
     this.designsRef = this.db.collection("/designs");
@@ -40,7 +40,7 @@ export default class Home extends Vue {
       () => {
         this.refreshDesigns();
       },
-      { immediate: true, deep: true },
+      { immediate: true, deep: true }
     );
   }
 
@@ -52,11 +52,10 @@ export default class Home extends Vue {
     let query = this.designsRef.orderBy("createdAt", "desc");
     // const color = SearchModule.color;
     const type = SearchModule.type;
-    console.log(`type: ${type}`);
     if (type) {
       query = query.where("designType", "==", type);
     }
-    this.designs.length = 0;
+    this.designs = [];
     this.unsubscribe = query.onSnapshot(this.onSnapshot);
   }
 

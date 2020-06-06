@@ -27,6 +27,7 @@
     <v-content>
       <router-view></router-view>
     </v-content>
+    <Fab></Fab>
   </v-app>
 </template>
 
@@ -35,8 +36,9 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { ColorTypes, ColorType, DesignTypes, DesignType } from "./models/types";
 import { SearchModule } from "./store";
+import Fab from "./components/Fab.vue";
 
-@Component({})
+@Component({ components: { Fab } })
 export default class App extends Vue {
   private drawer = false;
   private colors = ColorTypes;

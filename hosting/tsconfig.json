@@ -5,6 +5,10 @@
     "jsx": "preserve",
     "moduleResolution": "node",
     "baseUrl": ".",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/vuetify/types"
+    ],
     "types": [
       "webpack-env",
       "vuetify"
