@@ -1,16 +1,16 @@
 import Twitter from "twitter-lite";
 import querystring from "querystring";
-import { analyzeImageUrl, DesignInfo } from "./vision";
+import { analyzeImageUrl } from "./vision";
 import { firestore, initializeApp } from "firebase-admin";
 
 initializeApp();
 
 import Timestamp = firestore.Timestamp;
-import DocRef = firestore.DocumentReference;
-import FieldPath = firestore.FieldPath;
+import { TweetUser, SearchResponse, PostDesignInfo } from "./types";
 
-const users = firestore().collection("users");
-const designs = firestore().collection("designs");
+const db = firestore();
+const users = db.collection("users");
+const designs = db.collection("designs");
 
 async function createClient() {
   const user = new Twitter({
@@ -50,20 +50,40 @@ async function getOrCreateUser(user: TweetUser) {
 
 export async function searchTweets() {
   const client = await createClient();
-  let max = "";
+  const mgtRef = db.collection("management").doc("twitter");
+  const mgt = await mgtRef.get();
+  const lastLatestId = mgt.get("latestId") as string;
+  let nextMax = "";
+  let latestId = "";
   do {
+    // ツイートの検索
     const res = await client.get<SearchResponse>("search/tweets", {
       q: "#ACNH #マイデザイン filter:images -filter:retweets",
       // eslint-disable-next-line @typescript-eslint/camelcase
-      max_id: max,
+      max_id: nextMax,
       lang: "ja",
       locale: "ja",
       // eslint-disable-next-line @typescript-eslint/camelcase
       result_type: "recent",
       count: 100,
     });
+
+    // 今回の処理の最新ID取得
+    if (!latestId) {
+      latestId = res.statuses[0].id_str;
+    }
+
+    // 次のページ取得処理用の最大Id取得
+    nextMax = getMaxFromQuery(res.search_metadata.next_results);
     for (const tweet of res.statuses) {
-      // console.log(`${tweet.user.name}: https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`);
+      // 前回の処理の最新IDまで到達したら次ページを取得せずに終了
+      if (tweet.id_str <= lastLatestId) {
+        nextMax = "";
+        break;
+      }
+
+      // メディアがないツイートはスキップ
+      // TODO : テキストが長いツイートは標準検索APIでは画像部分が取れなかったりする…
       if (!tweet.entities.media) {
         continue;
       }
@@ -71,10 +91,13 @@ export async function searchTweets() {
       const fromSwitch =
         tweet.source === '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
       for (const media of tweet.entities.media) {
+        // 画像が1280以外は解析位置が異なるのでスキップ
         if (media.sizes.large.w !== 1280) {
           continue;
         }
         const info = await analyzeImageUrl(media.media_url_https + "?name=large");
+
+        // 情報が取得できなければ対象の画像ではないのでスキップ
         if (!info) {
           continue;
         }
@@ -93,74 +116,7 @@ export async function searchTweets() {
         await designs.doc(postInfo.designId).set(postInfo);
       }
     }
-    max = getMaxFromQuery(res.search_metadata.next_results);
     console.log(res.search_metadata.max_id_str);
-  } while (max !== "");
-}
-
-interface SearchResponse {
-  statuses: Tweet[];
-  search_metadata: {
-    max_id_str: string;
-    next_results?: string;
-    count: number;
-    since_id_str: string;
-  };
-}
-interface Tweet {
-  created_at: string;
-  id_str: string;
-  text: string;
-  truncated: boolean;
-  extended_tweet: {
-    full_text: string;
-  };
-  entities: {
-    hashtags: HashTag[];
-    media?: Media[];
-  };
-  source: string;
-  user: {
-    id_str: string;
-    name: string;
-    screen_name: string;
-  };
-}
-
-interface TweetUser {
-  id: string;
-  name: string;
-  screenName: string;
-}
-
-interface Media {
-  id_str: string;
-  media_url_https: string;
-  type: string;
-  sizes: {
-    thumb: MediaSize;
-    large: MediaSize;
-    medium: MediaSize;
-    small: MediaSize;
-  };
-}
-
-interface MediaSize {
-  w: number;
-  h: number;
-  resize: "crop" | "fit";
-}
-
-interface HashTag {
-  text: string;
-  indices: [number, number];
-}
-
-interface PostDesignInfo extends DesignInfo {
-  post: {
-    postId: string;
-    fromSwitch: boolean;
-    user: DocRef;
-  };
-  createdAt: Timestamp;
+  } while (nextMax !== "");
+  await mgtRef.update({ latestId });
 }

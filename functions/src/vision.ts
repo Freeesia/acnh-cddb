@@ -9,6 +9,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import axios from "axios";
 import "./lodash.extensions";
+import { DesignType, DominantColor, ColorType, DesignInfo } from "./types";
 
 const visionClient = new ImageAnnotatorClient();
 
@@ -127,58 +128,3 @@ export async function analyzeImageUrl(imageUrl: string): Promise<DesignInfo | nu
     },
   };
 }
-
-export interface DesignInfo {
-  imageUrl: string;
-  title: string;
-  designId: string;
-  dominantColors: string[];
-  dominantColorTypes: string[];
-  designType: DesignType;
-  author: AuthorInfo;
-}
-
-export interface AuthorInfo {
-  authorName: string;
-  authorId: string;
-  islandName: string;
-}
-
-export type DesignType =
-  | "マイデザイン"
-  | "タンクトップ"
-  | "はんそでTシャツ"
-  | "ながそでYシャツ"
-  | "セーター"
-  | "パーカー"
-  | "コート"
-  | "そでなしワンピース"
-  | "はんそでワンピース"
-  | "ながそでドレス"
-  | "まるがたワンピース"
-  | "バルーンワンピース"
-  | "ローブ"
-  | "つばつきキャップ"
-  | "ニットキャップ"
-  | "つばつきハット";
-
-export interface DominantColor {
-  hex: string;
-  type: ColorType;
-  score: number;
-  pixel: number;
-}
-
-export type ColorType =
-  | "red"
-  | "pink"
-  | "orange"
-  | "yellow"
-  | "green"
-  | "blue"
-  | "sky"
-  | "purple"
-  | "brown"
-  | "white"
-  | "black"
-  | "transparent";
