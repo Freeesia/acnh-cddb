@@ -8,12 +8,8 @@ export default async function convertFirestore() {
   const ss = await designRef.get();
   for (const doc of ss.docs) {
     const data = doc.data();
-    const colors = data.dominantColors as any[];
-
-    await doc.ref.update({
-      dominantColorTypes: colors.map(c => c.type),
-      dominantColors: colors.map(c => c.hex),
-    });
-    console.log(doc.id);
+    const imageUrl = (data.imageUrl as string).replace("?name=large", "");
+    console.log(imageUrl);
+    await doc.ref.update({ imageUrl });
   }
 }
