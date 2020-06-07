@@ -5,9 +5,20 @@
     </v-row>
     <v-row dense>
       <v-col v-for="design in filteredDesigns" :key="design.id" cols="12" sm="6" md="4" lg="3" xl="2">
-        <DesignCard :doc="design" />
+        <DesignCard :doc="design" @click="select" />
       </v-col>
     </v-row>
+    <v-dialog v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
+      <v-card>
+        <v-toolbar flat dense>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="close">
+            <v-icon>close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <DesignDetail :doc="selected"></DesignDetail>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -23,13 +34,16 @@ import DocumentSnapshot = firestore.DocumentSnapshot;
 import ColRef = firestore.CollectionReference;
 import QuerySnapshot = firestore.QuerySnapshot;
 import { DesignInfo } from "../models/types";
+import DesignDetail from "../components/DesignDetail.vue";
 
-@Component({ components: { DesignCard } })
+@Component({ components: { DesignCard, DesignDetail } })
 export default class Home extends Vue {
   private readonly db = firestore();
   private designsRef?: ColRef;
   private unsubscribe?: () => void;
   private designs: DocumentSnapshot[] = [];
+  private selected: DocumentSnapshot | null = null;
+  private dialog = false;
 
   private get search() {
     return SearchModule.text;
@@ -109,6 +123,16 @@ export default class Home extends Vue {
           throw new Error();
       }
     }
+  }
+
+  private select(doc: DocumentSnapshot) {
+    this.selected = doc;
+    this.dialog = true;
+  }
+
+  private close() {
+    this.dialog = false;
+    this.selected = null;
   }
 }
 </script>

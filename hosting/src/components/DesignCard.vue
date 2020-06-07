@@ -1,5 +1,5 @@
 <template>
-  <v-card min-height="200">
+  <v-card min-height="200" @click="click">
     <v-lazy min-height="200">
       <v-img contain :src="model.imageUrl">
         <template v-slot:placeholder>
@@ -16,9 +16,9 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { firestore } from "firebase/app";
+import { Prop, Emit } from "vue-property-decorator";
 import "firebase/firestore";
 import DocumentSnapshot = firestore.DocumentSnapshot;
-import { Prop } from "vue-property-decorator";
 
 @Component({})
 export default class DesignCard extends Vue {
@@ -27,6 +27,11 @@ export default class DesignCard extends Vue {
 
   private get model() {
     return this.doc.data();
+  }
+
+  @Emit()
+  private click() {
+    return this.doc;
   }
 }
 </script>
