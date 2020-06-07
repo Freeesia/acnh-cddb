@@ -22,6 +22,11 @@
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
+      <v-btn v-if="user" icon to="/account">
+        <v-avatar size="32px">
+          <img :src="user.photoURL" alt="avatar" />
+        </v-avatar>
+      </v-btn>
     </v-app-bar>
 
     <v-content>
@@ -35,7 +40,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { ColorTypes, ColorType, DesignTypes, DesignType } from "./models/types";
-import { SearchModule } from "./store";
+import { SearchModule, AuthModule } from "./store";
 import Fab from "./components/Fab.vue";
 
 @Component({ components: { Fab } })
@@ -58,6 +63,10 @@ export default class App extends Vue {
 
   private set selectedType(val: DesignType) {
     SearchModule.setType(val);
+  }
+
+  private get user() {
+    return AuthModule.user;
   }
 }
 </script>
