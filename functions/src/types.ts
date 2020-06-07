@@ -24,6 +24,9 @@ export interface Tweet {
     hashtags: HashTag[];
     media?: Media[];
   };
+  extended_entities: {
+    media?: Media[];
+  };
   source: string;
   user: {
     id_str: string;

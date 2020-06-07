@@ -65,6 +65,8 @@ export async function searchTweets() {
       locale: "ja",
       // eslint-disable-next-line @typescript-eslint/camelcase
       result_type: "recent",
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      tweet_mode: "extended",
       count: 100,
     });
 
@@ -83,14 +85,13 @@ export async function searchTweets() {
       }
 
       // メディアがないツイートはスキップ
-      // TODO : テキストが長いツイートは標準検索APIでは画像部分が取れなかったりする…
-      if (!tweet.entities.media) {
+      if (!tweet.extended_entities.media) {
         continue;
       }
       const createdAt = Timestamp.fromMillis(Date.parse(tweet.created_at));
       const fromSwitch =
         tweet.source === '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
-      for (const media of tweet.entities.media) {
+      for (const media of tweet.extended_entities.media) {
         // 画像が1280以外は解析位置が異なるのでスキップ
         if (media.sizes.large.w !== 1280) {
           continue;
