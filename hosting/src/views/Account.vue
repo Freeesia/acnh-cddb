@@ -14,14 +14,15 @@
             <span v-else class="white--text display-4">{{ user.email[0] }}</span>
           </v-avatar>
           <p class="headline font-weight-bold ma-2">{{ user.displayName }}</p>
-          <address class="caption">{{ user.email }}</address>
         </section>
       </v-col>
       <v-col md="8" cols="12">
         <v-tabs v-model="activeTab">
+          <v-tab>お気に入り</v-tab>
           <v-tab>アカウント</v-tab>
         </v-tabs>
         <v-tabs-items v-model="activeTab" class="fill-height">
+          <v-tab-item class="pa-2"> </v-tab-item>
           <v-tab-item class="pa-2">
             <section class="ma-2">
               <header class="headline">サインアウト</header>
