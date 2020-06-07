@@ -27,6 +27,15 @@
           <img :src="user.photoURL" alt="avatar" />
         </v-avatar>
       </v-btn>
+      <v-progress-linear
+        striped
+        :active="loading"
+        background-color="accent"
+        color="secondary"
+        indeterminate
+        absolute
+        top
+      />
     </v-app-bar>
 
     <v-content>
@@ -40,7 +49,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { ColorTypes, ColorType, DesignTypes, DesignType } from "./models/types";
-import { SearchModule, AuthModule } from "./store";
+import { SearchModule, AuthModule, GeneralModule } from "./store";
 import Fab from "./components/Fab.vue";
 
 @Component({ components: { Fab } })
@@ -48,6 +57,10 @@ export default class App extends Vue {
   private drawer = false;
   private colors = ColorTypes;
   private types = DesignTypes;
+
+  private get loading() {
+    return GeneralModule.loading;
+  }
 
   private get selectedColor(): ColorType {
     return SearchModule.color as ColorType;

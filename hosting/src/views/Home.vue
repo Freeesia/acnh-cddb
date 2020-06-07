@@ -29,7 +29,7 @@ import { firestore } from "firebase/app";
 import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import { assertIsDefined } from "../utilities/assert";
-import { SearchModule } from "../store";
+import { SearchModule, GeneralModule } from "../store";
 import DocumentSnapshot = firestore.DocumentSnapshot;
 import ColRef = firestore.CollectionReference;
 import QuerySnapshot = firestore.QuerySnapshot;
@@ -98,6 +98,7 @@ export default class Home extends Vue {
       query = query.where("designType", "==", type);
     }
     this.designs = [];
+    GeneralModule.setLoading(true);
     this.unsubscribe = query.onSnapshot(this.onSnapshot);
   }
 
@@ -108,6 +109,7 @@ export default class Home extends Vue {
   }
 
   private async onSnapshot(ss: QuerySnapshot) {
+    GeneralModule.setLoading(false);
     for (const change of ss.docChanges({ includeMetadataChanges: false })) {
       switch (change.type) {
         case "added":
