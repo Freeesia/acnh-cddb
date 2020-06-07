@@ -59,8 +59,6 @@ export default class Account extends Vue {
     const user = AuthModule.user;
     assertIsDefined(user);
     this.user = user;
-    console.log(this.user.metadata);
-    console.log(this.user.providerData);
   }
 
   private async signOut() {
