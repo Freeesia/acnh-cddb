@@ -18,7 +18,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-items>
         <v-btn text to="/" class="text-none">
-          <v-toolbar-title>あつまれ マイデザの森</v-toolbar-title>
+          <v-toolbar-title>あつまれ マイデザの🌳</v-toolbar-title>
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
