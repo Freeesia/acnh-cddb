@@ -4,7 +4,7 @@
       <v-text-field v-model="search" dense filled clearable prepend-inner-icon="search" label="検索"></v-text-field>
     </v-row>
     <v-row dense>
-      <v-col v-for="design in filteredDesigns" :key="design.id" cols="12" sm="6" md="4" lg="3" xl="2">
+      <v-col v-for="design in filteredDesigns" :key="design.id" cols="6" sm="3" md="2" lg="1">
         <DesignCard :doc="design" @click="select" />
       </v-col>
     </v-row>
