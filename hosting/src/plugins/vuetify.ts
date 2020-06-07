@@ -9,6 +9,18 @@ export default new Vuetify({
     locales: { ja },
     current: "ja",
   },
+  theme: {
+    themes: {
+      light: {
+        primary: "#7cb894",
+        secondary: "#9ad4e4",
+      },
+      dark: {
+        primary: "#7cb894",
+        secondary: "#9ad4e4",
+      },
+    },
+  },
   icons: {
     iconfont: "md",
   },

@@ -9,7 +9,7 @@
       <v-col cols="12">
         <Tweet :id="model.post.postId" :options="options">
           <v-row align="center" justify="center">
-            <v-progress-circular indeterminate size="100" color="primary"></v-progress-circular>
+            <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
           </v-row>
         </Tweet>
       </v-col>
