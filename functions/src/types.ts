@@ -68,7 +68,7 @@ export interface PostDesignInfo extends DesignInfo {
   post: {
     postId: string;
     fromSwitch: boolean;
-    user: DocRef;
+    contributor: DocRef;
   };
   createdAt: Timestamp;
 }

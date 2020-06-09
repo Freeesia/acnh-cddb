@@ -9,7 +9,7 @@ import Timestamp = firestore.Timestamp;
 import { TweetUser, SearchResponse, PostDesignInfo } from "./types";
 
 const db = firestore();
-const users = db.collection("users");
+const contributors = db.collection("contributors");
 const designs = db.collection("designs");
 
 async function createClient() {
@@ -42,10 +42,10 @@ function getMaxFromQuery(query?: string) {
   }
 }
 
-async function getOrCreateUser(user: TweetUser) {
-  const userRef = users.doc(user.id);
-  await userRef.set(user, { merge: true });
-  return userRef;
+async function getOrCreateContributors(user: TweetUser) {
+  const contributorRef = contributors.doc(user.id);
+  await contributorRef.set(user, { merge: true });
+  return contributorRef;
 }
 
 export async function searchTweets() {
@@ -105,7 +105,7 @@ export async function searchTweets() {
         const postInfo = info as PostDesignInfo;
         postInfo.imageUrl = media.media_url_https;
         postInfo.post = {
-          user: await getOrCreateUser({
+          contributor: await getOrCreateContributors({
             id: tweet.user.id_str,
             name: tweet.user.name,
             screenName: tweet.user.screen_name,
