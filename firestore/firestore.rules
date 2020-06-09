@@ -4,8 +4,11 @@ service cloud.firestore {
     match /designs/{document=**} {
       allow read: if true;
     }
-    match /users/{document=**} {
+    match /contributors/{document=**} {
       allow read: if true;
+    }
+    match /users/{userId}/{document=**} {
+      allow read, update: if request.auth.uid == userId;
     }
   }
 }
