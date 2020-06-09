@@ -5,7 +5,7 @@
     </v-row>
     <v-row dense>
       <v-col v-for="design in filteredDesigns" :key="design.id" cols="6" sm="3" md="2" lg="1">
-        <DesignCard :doc="design" @click="select" />
+        <DesignCard :doc="design" :favs="favs" @click="select" />
       </v-col>
     </v-row>
     <v-dialog v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
@@ -29,10 +29,11 @@ import { firestore } from "firebase/app";
 import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import { assertIsDefined } from "../utilities/assert";
-import { SearchModule, GeneralModule } from "../store";
+import { SearchModule, GeneralModule, AuthModule } from "../store";
 import DocumentSnapshot = firestore.DocumentSnapshot;
 import ColRef = firestore.CollectionReference;
 import QuerySnapshot = firestore.QuerySnapshot;
+import DocRef = firestore.DocumentReference;
 import { DesignInfo } from "../models/types";
 import DesignDetail from "../components/DesignDetail.vue";
 
@@ -44,6 +45,7 @@ export default class Home extends Vue {
   private designs: DocumentSnapshot[] = [];
   private selected: DocumentSnapshot | null = null;
   private dialog = false;
+  private favs: string[] = [];
 
   private get search() {
     return SearchModule.text;
@@ -69,7 +71,7 @@ export default class Home extends Vue {
 
   private created() {
     this.designsRef = this.db.collection("/designs");
-
+    this.getUserInfo();
     this.refreshDesigns();
   }
 
@@ -81,6 +83,15 @@ export default class Home extends Vue {
       },
       { immediate: true, deep: true }
     );
+  }
+
+  private async getUserInfo() {
+    const user = AuthModule.user;
+    assertIsDefined(user);
+    const userInfoRef = this.db.doc(`/users/${user.uid}`);
+    const userInfoSs = await userInfoRef.get();
+    const favs = userInfoSs.get("favs") as DocRef[];
+    this.favs = favs.map(f => f.path);
   }
 
   private refreshDesigns() {

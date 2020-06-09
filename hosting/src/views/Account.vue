@@ -22,7 +22,13 @@
           <v-tab>アカウント</v-tab>
         </v-tabs>
         <v-tabs-items v-model="activeTab" class="fill-height">
-          <v-tab-item class="pa-2"> </v-tab-item>
+          <v-tab-item class="pa-2">
+            <v-row>
+              <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2" lg="1">
+                <DesignCard :doc="design" :favs="favs" @click="select" />
+              </v-col>
+            </v-row>
+          </v-tab-item>
           <v-tab-item class="pa-2">
             <section class="ma-2">
               <header class="headline">サインアウト</header>
@@ -39,26 +45,58 @@
         </v-tabs-items>
       </v-col>
     </v-row>
+    <v-dialog v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
+      <v-card>
+        <v-toolbar flat dense>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="close">
+            <v-icon>close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <DesignDetail :doc="selected"></DesignDetail>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import DesignCard from "../components/DesignCard.vue";
+import DesignDetail from "../components/DesignDetail.vue";
 import { AuthModule, GeneralModule } from "../store";
 import { assertIsDefined } from "../utilities/assert";
-import { User } from "firebase";
+import { User, firestore } from "firebase/app";
 import "firebase/auth";
+import "firebase/firestore";
+import DocumentSnapshot = firestore.DocumentSnapshot;
+import DocRef = firestore.DocumentReference;
 
-@Component({})
+@Component({ components: { DesignCard, DesignDetail } })
 export default class Account extends Vue {
+  private readonly db = firestore();
   private user!: User;
   private activeTab: any = null;
+  private designs: DocumentSnapshot[] = [];
+  private favs: string[] = [];
+  private dialog = false;
+  private selected: DocumentSnapshot | null = null;
 
   private created() {
     const user = AuthModule.user;
     assertIsDefined(user);
     this.user = user;
+    this.getDesigns();
+  }
+
+  private async getDesigns() {
+    const userInfoRef = this.db.doc(`/users/${this.user.uid}`);
+    const userInfoSs = await userInfoRef.get();
+    const favs = userInfoSs.get("favs") as DocRef[];
+    this.favs = favs.map(f => f.path);
+    for (const ref of favs) {
+      this.designs.push(await ref.get());
+    }
   }
 
   private async signOut() {
@@ -82,6 +120,16 @@ export default class Account extends Vue {
     }
     GeneralModule.setLoading(false);
     this.$router.push("/");
+  }
+
+  private select(doc: DocumentSnapshot) {
+    this.selected = doc;
+    this.dialog = true;
+  }
+
+  private close() {
+    this.dialog = false;
+    this.selected = null;
   }
 }
 </script>
