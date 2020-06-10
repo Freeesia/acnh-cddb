@@ -5,5 +5,8 @@ module.exports = {
       title: "あつまれ マイデザの🌳",
     },
   },
+  configureWebpack: {
+    devtool: "source-map",
+  },
   transpileDependencies: ["vuetify", "vuex-module-decorators"],
 };

@@ -31,9 +31,15 @@
       "preLaunchTask": "serve:hosting",
       "url": "http://localhost:8080",
       "webRoot": "${workspaceFolder}/hosting",
+      "userDataDir": "${workspaceFolder}/hosting/.debug",
       "smartStep": true,
+      "skipFiles": [
+        "node_modules",
+        "webpack/bootstrap",
+      ],
       "sourceMapPathOverrides": {
-        "webpack:///./src/*": "${webRoot}/src/*"
+        "webpack:///./src/*": "${webRoot}/src/*",
+        "webpack:///../node_modules/*": "${webRoot}/../node_modules/*"
       },
     },
     {
