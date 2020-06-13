@@ -4,7 +4,7 @@
       <v-col md="4" cols="12">
         <section class="d-flex align-center flex-column">
           <v-avatar :size="200" color="primary">
-            <v-img v-if="user.photoURL" :src="user.photoURL" alt="avatar">
+            <v-img v-if="user.photoURL" :lazy-src="user.photoURL" :src="profileUrl" alt="avatar">
               <template v-slot:placeholder>
                 <v-row class="fill-height" align="center" justify="center">
                   <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -82,6 +82,10 @@ export default class Account extends Vue {
 
   private get designs(): DesignInfo[] {
     return this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string") ?? [];
+  }
+
+  private get profileUrl() {
+    return this.user.photoURL?.replace("_normal.png", ".png");
   }
 
   private created() {
