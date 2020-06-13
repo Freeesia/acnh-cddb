@@ -115,6 +115,7 @@ export async function searchTweets() {
         };
         postInfo.createdAt = createdAt;
         await designs.doc(postInfo.designId).set(postInfo);
+        console.log(postInfo.title);
       }
     }
     console.log(res.search_metadata.max_id_str);
