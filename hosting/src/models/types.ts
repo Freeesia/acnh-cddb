@@ -56,3 +56,7 @@ export interface DominantColor {
   score: number;
   pixel: number;
 }
+
+export interface UserInfo {
+  favs: (DesignInfo | string)[];
+}

@@ -1,26 +1,29 @@
 <template>
-  <v-card min-height="200" @click="click">
-    <v-lazy min-height="200">
-      <v-img contain :src="imageUrl">
+  <v-lazy min-height="240">
+    <v-card @click="click">
+      <v-img height="180" :src="src" :lazy-src="lazySrc" class="align-end">
         <template v-slot:placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-icon size="80" color="grey">image</v-icon>
           </v-row>
         </template>
-      </v-img>
-    </v-lazy>
-    <v-row>
-      <v-col>
-        <p>{{ model.designId }}</p>
-      </v-col>
-      <v-col cols="3">
-        <v-btn :loading="faving" icon color="pink" @click.stop="fav">
+        <v-btn class="ma-1 fav float-right" :loading="faving" icon color="pink" @click.stop="fav">
           <v-icon>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
         </v-btn>
-      </v-col>
-    </v-row>
-  </v-card>
+      </v-img>
+      <v-card-subtitle class="pa-2">
+        <p class="ma-0 text-no-wrap text-truncate">{{ info.designId }}</p>
+        <p class="ma-0 text-no-wrap text-truncate">{{ info.title }}</p>
+      </v-card-subtitle>
+    </v-card>
+  </v-lazy>
 </template>
+
+<style lang="scss" scoped>
+.fav {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -31,7 +34,6 @@ import "firebase/firestore";
 import { DesignInfo } from "../models/types";
 import { AuthModule } from "../store";
 import { assertIsDefined } from "../utilities/assert";
-import DocumentSnapshot = firestore.DocumentSnapshot;
 import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 
@@ -40,20 +42,24 @@ export default class DesignCard extends Vue {
   private readonly db = firestore();
 
   @Prop({ required: true })
-  private doc!: DocumentSnapshot;
+  private info!: DesignInfo;
 
-  @Prop({ required: true })
-  private favs!: string[];
+  @Prop()
+  private favs?: string[];
   private userRef!: DocRef;
   private faving = false;
   private faved = false;
 
-  private get model() {
-    return this.doc.data() as DesignInfo;
+  private get src() {
+    return this.info.imageUrl + "?name=small";
   }
 
-  private get imageUrl() {
-    return this.model.imageUrl + "?name=thumb";
+  private get lazySrc() {
+    return this.info.imageUrl + "?name=thumb";
+  }
+
+  private get path() {
+    return `/designs/${this.info.designId}`;
   }
 
   private created() {
@@ -65,12 +71,15 @@ export default class DesignCard extends Vue {
 
   @Emit()
   private click() {
-    return this.doc;
+    return this.info;
   }
 
   private async checkFav() {
+    if (!this.favs) {
+      return;
+    }
     this.faving = true;
-    this.faved = this.favs.includes(this.doc.ref.path);
+    this.faved = this.favs.includes(this.path);
     this.faving = false;
   }
 
@@ -78,11 +87,11 @@ export default class DesignCard extends Vue {
     this.faving = true;
     if (this.faved) {
       await this.userRef.update({
-        favs: FieldValue.arrayRemove(this.doc.ref),
+        favs: FieldValue.arrayRemove(this.db.doc(this.path)),
       });
     } else {
       await this.userRef.update({
-        favs: FieldValue.arrayUnion(this.doc.ref),
+        favs: FieldValue.arrayUnion(this.db.doc(this.path)),
       });
     }
     this.faved = !this.faved;

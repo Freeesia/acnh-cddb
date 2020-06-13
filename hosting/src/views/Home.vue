@@ -5,10 +5,10 @@
     </v-row>
     <v-row dense>
       <v-col v-for="design in filteredDesigns" :key="design.id" cols="6" sm="3" md="2" lg="1">
-        <DesignCard :doc="design" :favs="favs" @click="select" />
+        <DesignCard :info="design" :favs="favs" @click="select" />
       </v-col>
     </v-row>
-    <v-dialog v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
+    <v-dialog v-if="selected" v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
       <v-card>
         <v-toolbar flat dense>
           <v-spacer></v-spacer>
@@ -16,7 +16,7 @@
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <DesignDetail :doc="selected"></DesignDetail>
+        <DesignDetail :info="selected"></DesignDetail>
       </v-card>
     </v-dialog>
   </v-container>
@@ -30,9 +30,7 @@ import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import { assertIsDefined } from "../utilities/assert";
 import { SearchModule, GeneralModule, AuthModule } from "../store";
-import DocumentSnapshot = firestore.DocumentSnapshot;
 import ColRef = firestore.CollectionReference;
-import QuerySnapshot = firestore.QuerySnapshot;
 import DocRef = firestore.DocumentReference;
 import { DesignInfo } from "../models/types";
 import DesignDetail from "../components/DesignDetail.vue";
@@ -41,9 +39,8 @@ import DesignDetail from "../components/DesignDetail.vue";
 export default class Home extends Vue {
   private readonly db = firestore();
   private designsRef?: ColRef;
-  private unsubscribe?: () => void;
-  private designs: DocumentSnapshot[] = [];
-  private selected: DocumentSnapshot | null = null;
+  private designs: DesignInfo[] = [];
+  private selected: DesignInfo | null = null;
   private dialog = false;
   private favs: string[] = [];
 
@@ -59,11 +56,7 @@ export default class Home extends Vue {
     const text = SearchModule.text;
     if (text) {
       return this.designs.filter(v => {
-        const data = v.data() as DesignInfo;
-        if (!data) {
-          return false;
-        }
-        return data.title.includes(text);
+        return v.title.includes(text);
       });
     }
     return this.designs;
@@ -81,7 +74,7 @@ export default class Home extends Vue {
       () => {
         this.refreshDesigns();
       },
-      { immediate: true, deep: true }
+      { deep: true }
     );
   }
 
@@ -94,11 +87,8 @@ export default class Home extends Vue {
     this.favs = favs.map(f => f.path);
   }
 
-  private refreshDesigns() {
+  private async refreshDesigns() {
     assertIsDefined(this.designsRef);
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
     let query = this.designsRef.orderBy("createdAt", "desc");
     const color = SearchModule.color;
     if (color) {
@@ -108,38 +98,16 @@ export default class Home extends Vue {
     if (type) {
       query = query.where("designType", "==", type);
     }
-    this.designs = [];
     GeneralModule.setLoading(true);
-    this.unsubscribe = query.onSnapshot(this.onSnapshot);
-  }
-
-  private destroyed() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
+    if (this.$firebaseRefs && this.$firebaseRefs["designs"]) {
+      this.$unbind("designs");
     }
-  }
-
-  private async onSnapshot(ss: QuerySnapshot) {
+    await this.$bind("designs", query);
     GeneralModule.setLoading(false);
-    for (const change of ss.docChanges({ includeMetadataChanges: false })) {
-      switch (change.type) {
-        case "added":
-          this.designs.splice(change.newIndex, 0, change.doc);
-          break;
-        case "removed":
-          this.designs.splice(change.oldIndex, 1);
-          break;
-        case "modified":
-          this.designs.splice(change.oldIndex, 1, change.doc);
-          break;
-        default:
-          throw new Error();
-      }
-    }
   }
 
-  private select(doc: DocumentSnapshot) {
-    this.selected = doc;
+  private select(info: DesignInfo) {
+    this.selected = info;
     this.dialog = true;
   }
 

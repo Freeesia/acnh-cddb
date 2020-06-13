@@ -7,6 +7,9 @@ import vuetify from "./plugins/vuetify";
 import { initializeApp, performance, analytics } from "firebase/app";
 import "firebase/performance";
 import "firebase/analytics";
+import { firestorePlugin } from "vuefire";
+
+Vue.use(firestorePlugin);
 
 Vue.config.productionTip = false;
 const firebaseConfig = {

@@ -1,7 +1,7 @@
 <template>
-  <v-container fill-height>
+  <v-container fluid>
     <v-row no-gutters class="fill-height mt-4">
-      <v-col md="4" cols="12" class="pa-2">
+      <v-col md="4" cols="12">
         <section class="d-flex align-center flex-column">
           <v-avatar :size="200" color="primary">
             <v-img v-if="user.photoURL" :src="user.photoURL" alt="avatar">
@@ -22,10 +22,10 @@
           <v-tab>アカウント</v-tab>
         </v-tabs>
         <v-tabs-items v-model="activeTab" class="fill-height">
-          <v-tab-item class="pa-2">
-            <v-row>
+          <v-tab-item>
+            <v-row dense>
               <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2" lg="1">
-                <DesignCard :doc="design" :favs="favs" @click="select" />
+                <DesignCard :info="design" @click="select" />
               </v-col>
             </v-row>
           </v-tab-item>
@@ -45,7 +45,7 @@
         </v-tabs-items>
       </v-col>
     </v-row>
-    <v-dialog v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
+    <v-dialog v-if="selected" v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
       <v-card>
         <v-toolbar flat dense>
           <v-spacer></v-spacer>
@@ -53,7 +53,7 @@
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <DesignDetail :doc="selected"></DesignDetail>
+        <DesignDetail :info="selected"></DesignDetail>
       </v-card>
     </v-dialog>
   </v-container>
@@ -69,34 +69,26 @@ import { assertIsDefined } from "../utilities/assert";
 import { User, firestore } from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-import DocumentSnapshot = firestore.DocumentSnapshot;
-import DocRef = firestore.DocumentReference;
+import { UserInfo, DesignInfo } from "../models/types";
 
 @Component({ components: { DesignCard, DesignDetail } })
 export default class Account extends Vue {
   private readonly db = firestore();
   private user!: User;
+  private userInfo: UserInfo | null = null;
   private activeTab: any = null;
-  private designs: DocumentSnapshot[] = [];
-  private favs: string[] = [];
   private dialog = false;
-  private selected: DocumentSnapshot | null = null;
+  private selected: DesignInfo | null = null;
+
+  private get designs(): DesignInfo[] {
+    return this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string") ?? [];
+  }
 
   private created() {
     const user = AuthModule.user;
     assertIsDefined(user);
     this.user = user;
-    this.getDesigns();
-  }
-
-  private async getDesigns() {
-    const userInfoRef = this.db.doc(`/users/${this.user.uid}`);
-    const userInfoSs = await userInfoRef.get();
-    const favs = userInfoSs.get("favs") as DocRef[];
-    this.favs = favs.map(f => f.path);
-    for (const ref of favs) {
-      this.designs.push(await ref.get());
-    }
+    this.$bind("userInfo", this.db.doc(`/users/${this.user.uid}`));
   }
 
   private async signOut() {
@@ -122,8 +114,8 @@ export default class Account extends Vue {
     this.$router.push("/");
   }
 
-  private select(doc: DocumentSnapshot) {
-    this.selected = doc;
+  private select(info: DesignInfo) {
+    this.selected = info;
     this.dialog = true;
   }
 
