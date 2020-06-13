@@ -10,7 +10,11 @@ import user from "./modules/user";
 
 Vue.use(Vuex);
 
-const easyFirestore = VuexEasyFirestore([user], { logging: true, FirebaseDependency: Firebase });
+const easyFirestore = VuexEasyFirestore([user], {
+  logging: true,
+  FirebaseDependency: Firebase,
+  preventInitialDocInsertion: true,
+});
 
 const store = new Vuex.Store({
   plugins: [easyFirestore],
