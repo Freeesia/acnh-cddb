@@ -1,21 +1,27 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import Firebase from "firebase/app";
 import { getModule } from "vuex-module-decorators";
-import Auth from "./modules/auth";
-import Search from "./modules/search";
-import General from "./modules/general";
+import VuexEasyFirestore from "vuex-easy-firestore";
+import auth from "./modules/auth";
+import search from "./modules/search";
+import general from "./modules/general";
+import user from "./modules/user";
 
 Vue.use(Vuex);
 
+const easyFirestore = VuexEasyFirestore([user], { logging: true, FirebaseDependency: Firebase });
+
 const store = new Vuex.Store({
+  plugins: [easyFirestore],
   modules: {
-    auth: Auth,
-    search: Search,
-    general: General,
+    auth,
+    search,
+    general,
   },
 });
 
-export const AuthModule = getModule(Auth, store);
-export const SearchModule = getModule(Search, store);
-export const GeneralModule = getModule(General, store);
+export const AuthModule = getModule(auth, store);
+export const SearchModule = getModule(search, store);
+export const GeneralModule = getModule(general, store);
 export default store;

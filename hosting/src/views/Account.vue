@@ -64,7 +64,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
-import { AuthModule, GeneralModule } from "../store";
+import store, { AuthModule, GeneralModule } from "../store";
 import { assertIsDefined } from "../utilities/assert";
 import { User, firestore } from "firebase/app";
 import "firebase/auth";
@@ -87,6 +87,12 @@ export default class Account extends Vue {
     assertIsDefined(user);
     this.user = user;
     this.getDesigns();
+    this.test();
+  }
+
+  private async test() {
+    const res = await store.dispatch("user/fetchAndAdd");
+    console.log(res);
   }
 
   private async getDesigns() {
