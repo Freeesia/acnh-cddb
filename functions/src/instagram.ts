@@ -1,14 +1,9 @@
+import { db, Timestamp } from "./firestore";
 import { analyzeImageUrl } from "./vision";
-import { firestore, initializeApp } from "firebase-admin";
 import axios from "axios";
 import { GraphqlResponce } from "./types/instagamTypes";
-
-initializeApp();
-
-import Timestamp = firestore.Timestamp;
 import { PostDesignInfo, Contributor } from "./types/types";
 
-const db = firestore();
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");
 

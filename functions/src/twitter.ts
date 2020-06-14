@@ -1,15 +1,10 @@
+import { db, Timestamp } from "./firestore";
 import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
-import { firestore, initializeApp } from "firebase-admin";
 import { TweetUser, SearchResponse } from "./types/twitterTypes";
-
-initializeApp();
-
-import Timestamp = firestore.Timestamp;
 import { PostDesignInfo } from "./types/types";
 
-const db = firestore();
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");
 
