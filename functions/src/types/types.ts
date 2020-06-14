@@ -2,72 +2,12 @@ import { firestore } from "firebase-admin";
 import Timestamp = firestore.Timestamp;
 import DocRef = firestore.DocumentReference;
 
-export interface SearchResponse {
-  statuses: Tweet[];
-  search_metadata: {
-    max_id_str: string;
-    next_results?: string;
-    count: number;
-    since_id_str: string;
-  };
-}
-
-export interface Tweet {
-  created_at: string;
-  id_str: string;
-  text: string;
-  truncated: boolean;
-  extended_tweet: {
-    full_text: string;
-  };
-  entities: {
-    hashtags: HashTag[];
-    media?: Media[];
-  };
-  extended_entities: {
-    media?: Media[];
-  };
-  source: string;
-  user: {
-    id_str: string;
-    name: string;
-    screen_name: string;
-  };
-}
-
-export interface TweetUser {
-  id: string;
-  name: string;
-  screenName: string;
-}
-
-export interface Media {
-  id_str: string;
-  media_url_https: string;
-  type: string;
-  sizes: {
-    thumb: MediaSize;
-    large: MediaSize;
-    medium: MediaSize;
-    small: MediaSize;
-  };
-}
-
-export interface MediaSize {
-  w: number;
-  h: number;
-  resize: "crop" | "fit";
-}
-
-export interface HashTag {
-  text: string;
-  indices: [number, number];
-}
-
 export interface PostDesignInfo extends DesignInfo {
+  thumbUrl: string;
   post: {
     postId: string;
     fromSwitch: boolean;
+    platform: Platform;
     contributor: DocRef;
   };
   createdAt: Timestamp;
@@ -88,6 +28,13 @@ export interface AuthorInfo {
   authorId: string;
   islandName: string;
 }
+
+export interface Contributor {
+  id: string;
+  platform: Platform;
+}
+
+export type Platform = "Instagram" | "Twitter";
 
 export type DesignType =
   | "マイデザイン"

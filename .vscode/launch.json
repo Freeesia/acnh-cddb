@@ -54,6 +54,9 @@
         "ts-node/register"
       ],
       "smartStep": true,
+      "skipFiles": [
+        "node_modules",
+      ],
       "cwd": "${workspaceRoot}/functions",
       "protocol": "inspector",
       "internalConsoleOptions": "openOnSessionStart",

@@ -35,13 +35,22 @@ export const DesignTypes = [
 
 export type DesignType = typeof DesignTypes[number];
 
+export type Platform = "Instagram" | "Twitter";
+
 export interface DesignInfo {
   imageUrl: string;
+  thumbUrl: string;
   title: string;
   designId: string;
   dominantColors: DominantColor[];
   designType: DesignType;
   author: AuthorInfo;
+  post: {
+    postId: string;
+    fromSwitch: boolean;
+    platform: Platform;
+  };
+  createdAt: Date;
 }
 
 export interface AuthorInfo {

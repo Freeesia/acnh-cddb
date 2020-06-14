@@ -1,9 +1,10 @@
 import { searchTweets } from "./twitter";
+import { searchPosts } from "./instagram";
 import { analyzeImageUrl } from "./vision";
 
 (async () => {
   console.log("Start");
-  await searchTweets();
+  await searchPosts();
   // const urls: string[] = [];
   // for (const url of urls) {
   //   const info = await analyzeImageUrl(url);
