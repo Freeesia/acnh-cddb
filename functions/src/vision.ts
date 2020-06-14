@@ -1,5 +1,5 @@
 import { assertIsDefined } from "./assert";
-import { intersect, toRect, toRGBColor, Line, TRANSPARENT_DISTANCE_THRESHOLD } from "./utility";
+import { intersect, toRect, toRGBColor, Line, TRANSPARENT_DISTANCE_THRESHOLD, Rect } from "./utility";
 import { ImageAnnotatorClient, protos } from "@google-cloud/vision";
 // eslint-disable-next-line @typescript-eslint/camelcase
 import diff, { RGBColor, rgb_to_lab } from "color-diff";
@@ -57,7 +57,16 @@ function toDominantColor(c: IColorInfo): DominantColor {
   };
 }
 
-export async function analyzeImageUrl(imageUrl: string): Promise<DesignInfo | null> {
+function scale(rect: Rect, rate: number): Rect {
+  return {
+    x: rect.x * rate,
+    y: rect.y * rate,
+    h: rect.h * rate,
+    w: rect.w * rate,
+  };
+}
+
+export async function analyzeImageUrl(imageUrl: string, width: number): Promise<DesignInfo | null> {
   let buf: Buffer;
   let title = "";
   let authorName = "";
@@ -66,6 +75,7 @@ export async function analyzeImageUrl(imageUrl: string): Promise<DesignInfo | nu
   let authorId = "";
   let designId = "";
   const dominantColors: DominantColor[] = [];
+  const rate = 1280 / width;
   {
     // 画像データの取得
     const res = await axios.get<Buffer>(imageUrl, { responseType: "arraybuffer" });
@@ -76,7 +86,7 @@ export async function analyzeImageUrl(imageUrl: string): Promise<DesignInfo | nu
     const textAnnotations = res.textAnnotations;
     assertIsDefined(textAnnotations);
     for (const t of textAnnotations.slice(1)) {
-      const r = toRect(t.boundingPoly?.vertices);
+      const r = scale(toRect(t.boundingPoly?.vertices), rate);
       if (intersect(r, titleLine)) {
         title += t.description;
       } else if (intersect(r, authorNameLine)) {
@@ -97,7 +107,14 @@ export async function analyzeImageUrl(imageUrl: string): Promise<DesignInfo | nu
   }
   {
     // デザイン部分の切り抜き
-    buf = await sharp(buf).extract({ left: 998, top: 328, width: 154, height: 154 }).toBuffer();
+    buf = await sharp(buf)
+      .extract({
+        left: Math.floor(998 / rate),
+        top: Math.floor(328 / rate),
+        width: Math.floor(154 / rate),
+        height: Math.floor(154 / rate),
+      })
+      .toBuffer();
   }
   {
     const [res] = await visionClient.imageProperties(buf);

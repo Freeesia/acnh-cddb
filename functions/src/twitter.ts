@@ -2,11 +2,12 @@ import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
 import { firestore, initializeApp } from "firebase-admin";
+import { TweetUser, SearchResponse } from "./types/twitterTypes";
 
 initializeApp();
 
 import Timestamp = firestore.Timestamp;
-import { TweetUser, SearchResponse, PostDesignInfo } from "./types/types";
+import { PostDesignInfo } from "./types/types";
 
 const db = firestore();
 const contributors = db.collection("contributors");
@@ -96,7 +97,7 @@ export async function searchTweets() {
         if (media.sizes.large.w !== 1280) {
           continue;
         }
-        const info = await analyzeImageUrl(media.media_url_https + "?name=large");
+        const info = await analyzeImageUrl(media.media_url_https + "?name=large", media.sizes.large.w);
 
         // 情報が取得できなければ対象の画像ではないのでスキップ
         if (!info) {
@@ -111,6 +112,7 @@ export async function searchTweets() {
             screenName: tweet.user.screen_name,
           }),
           postId: tweet.id_str,
+          platform: "Twitter",
           fromSwitch,
         };
         postInfo.createdAt = createdAt;

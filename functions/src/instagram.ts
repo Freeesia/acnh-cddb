@@ -1,21 +1,19 @@
 import { analyzeImageUrl } from "./vision";
 import { firestore, initializeApp } from "firebase-admin";
-import axios, { AxiosError } from "axios";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const client = require("instagram-scraping");
+import axios from "axios";
+import { GraphqlResponce } from "./types/instagamTypes";
 
 initializeApp();
 
 import Timestamp = firestore.Timestamp;
-import { TweetUser, SearchResponse, PostDesignInfo } from "./types/types";
-import { GraphqlResponce } from "./types/instagamTypes";
+import { PostDesignInfo, Contributor } from "./types/types";
 
 const db = firestore();
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");
 
-async function getOrCreateContributors(user: TweetUser) {
-  const contributorRef = contributors.doc(user.id);
+async function getOrCreateContributors(user: Contributor) {
+  const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
   await contributorRef.set(user, { merge: true });
   return contributorRef;
 }
@@ -38,9 +36,27 @@ export async function searchPosts() {
     total += medias.edges.length;
     console.log(`count: ${medias.count}`);
     console.log(`total count: ${total}`);
-    for (const media of medias.edges) {
-      const date = new Date(media.node.taken_at_timestamp * 1000).toLocaleString("ja-JP");
-      console.log(`https://www.instagram.com/p/${media.node.shortcode}/ , date: ${date}`);
+    for (const media of medias.edges.filter(e => !e.node.is_video)) {
+      const info = await analyzeImageUrl(media.node.display_url, media.node.dimensions.width);
+      // 情報が取得できなければ対象の画像ではないのでスキップ
+      if (!info) {
+        continue;
+      }
+      const postInfo = info as PostDesignInfo;
+      postInfo.imageUrl = media.node.display_url;
+      postInfo.thumbUrl = media.node.thumbnail_src;
+      postInfo.post = {
+        contributor: await getOrCreateContributors({
+          id: media.node.owner.id,
+          platform: "Instagram",
+        }),
+        postId: media.node.shortcode,
+        platform: "Instagram",
+        fromSwitch: false,
+      };
+      postInfo.createdAt = Timestamp.fromDate(new Date(media.node.taken_at_timestamp * 1000));
+      await designs.doc(postInfo.designId).set(postInfo);
+      console.log(postInfo.title);
     }
   } while (hasNext);
 }
