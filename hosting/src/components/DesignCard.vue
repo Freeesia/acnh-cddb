@@ -51,11 +51,21 @@ export default class DesignCard extends Vue {
   private faved = false;
 
   private get src() {
-    return this.info.imageUrl + "?name=small";
+    switch (this.info.post.platform) {
+      case "Instagram":
+        return this.info.thumbUrl;
+      default:
+        return this.info.imageUrl + "?name=small";
+    }
   }
 
   private get lazySrc() {
-    return this.info.imageUrl + "?name=thumb";
+    switch (this.info.post.platform) {
+      case "Instagram":
+        return "";
+      default:
+        return this.info.imageUrl + "?name=thumb";
+    }
   }
 
   private get path() {
