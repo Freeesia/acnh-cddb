@@ -19,13 +19,16 @@ async function getOrCreateContributors(user: Contributor) {
 }
 
 export async function searchPosts() {
+  const mgtRef = db.collection("management").doc("instagram");
+  const mgt = await mgtRef.get();
+  const lastLatestId = mgt.get("latestId") as string;
+  let latestId = "";
   const t = {
     // eslint-disable-next-line @typescript-eslint/camelcase
     tag_name: "マイデザイン配布",
     first: 12, // 謎
   } as any;
   let hasNext = true;
-  let total = 0;
   do {
     const json = JSON.stringify(t);
     const params = `?query_hash=${process.env.INSTAGRAM_QUERY_HASH}&variables=${encodeURIComponent(json)}`;
@@ -33,10 +36,23 @@ export async function searchPosts() {
     const medias = res.data.data.hashtag.edge_hashtag_to_media;
     hasNext = medias.page_info.has_next_page;
     t.after = medias.page_info.end_cursor;
-    total += medias.edges.length;
-    console.log(`count: ${medias.count}`);
-    console.log(`total count: ${total}`);
+
+    // 今回の処理の最新ID取得
+    if (!latestId) {
+      latestId = medias.edges[0].node.id;
+    }
+
     for (const media of medias.edges.filter(e => !e.node.is_video)) {
+      // 前回の処理の最新IDまで到達したら次ページを取得せずに終了
+      if (media.node.id <= lastLatestId) {
+        hasNext = false;
+        break;
+      }
+
+      // ビデオはスキップ
+      if (media.node.is_video) {
+        continue;
+      }
       const info = await analyzeImageUrl(media.node.display_url, media.node.dimensions.width);
       // 情報が取得できなければ対象の画像ではないのでスキップ
       if (!info) {
@@ -59,4 +75,5 @@ export async function searchPosts() {
       console.log(postInfo.title);
     }
   } while (hasNext);
+  await mgtRef.update({ latestId });
 }
