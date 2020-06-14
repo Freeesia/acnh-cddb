@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from "vue-router";
 import Home from "@/views/Home.vue";
 import Signin from "@/views/Signin.vue";
 import Account from "@/views/Account.vue";
+import Detail from "@/views/Detail.vue";
 import { AuthModule } from "@/store";
 
 Vue.use(VueRouter);
@@ -25,6 +26,12 @@ const routes: Array<RouteConfig> = [
     path: "/account",
     name: "account",
     component: Account,
+  },
+  {
+    path: "/detail/:id",
+    name: "detail",
+    component: Detail,
+    props: true,
   },
 ];
 

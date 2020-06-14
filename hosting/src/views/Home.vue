@@ -24,7 +24,7 @@
         <DesignCard :info="design" :favs="favs" @click="select" />
       </v-col>
     </v-row>
-    <v-dialog v-if="selected" v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
+    <v-dialog v-if="selected" v-model="dialog" width="500px">
       <v-card>
         <v-toolbar flat dense>
           <v-spacer></v-spacer>
@@ -44,12 +44,12 @@ import Component from "vue-class-component";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
+import DesignDetail from "../components/DesignDetail.vue";
 import { assertIsDefined } from "../utilities/assert";
 import { SearchModule, GeneralModule, AuthModule } from "../store";
+import { DesignInfo, ColorType, DesignType, ColorTypes, DesignTypes } from "../models/types";
 import ColRef = firestore.CollectionReference;
 import DocRef = firestore.DocumentReference;
-import { DesignInfo, ColorType, DesignType, ColorTypes, DesignTypes } from "../models/types";
-import DesignDetail from "../components/DesignDetail.vue";
 
 @Component({ components: { DesignCard, DesignDetail } })
 export default class Home extends Vue {
@@ -136,13 +136,23 @@ export default class Home extends Vue {
     if (this.$firebaseRefs && this.$firebaseRefs["designs"]) {
       this.$unbind("designs");
     }
+    query = query.limit(100);
     await this.$bind("designs", query);
     GeneralModule.setLoading(false);
   }
 
   private select(info: DesignInfo) {
-    this.selected = info;
-    this.dialog = true;
+    if (this.$vuetify.breakpoint.smAndUp) {
+      this.selected = info;
+      this.dialog = true;
+    } else {
+      this.$router.push({
+        name: "detail",
+        params: {
+          id: info.designId,
+        },
+      });
+    }
   }
 
   private close() {
