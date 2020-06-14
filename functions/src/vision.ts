@@ -9,7 +9,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import axios from "axios";
 import "./lodash.extensions";
-import { DesignType, DominantColor, ColorType, DesignInfo } from "./types";
+import { DesignType, DominantColor, ColorType, DesignInfo } from "./types/types";
 
 const visionClient = new ImageAnnotatorClient();
 

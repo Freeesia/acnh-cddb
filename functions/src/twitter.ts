@@ -6,7 +6,7 @@ import { firestore, initializeApp } from "firebase-admin";
 initializeApp();
 
 import Timestamp = firestore.Timestamp;
-import { TweetUser, SearchResponse, PostDesignInfo } from "./types";
+import { TweetUser, SearchResponse, PostDesignInfo } from "./types/types";
 
 const db = firestore();
 const contributors = db.collection("contributors");
