@@ -1,7 +1,23 @@
 <template>
   <v-container fluid>
     <v-row dense>
-      <v-text-field v-model="search" dense filled clearable prepend-inner-icon="search" label="検索"></v-text-field>
+      <v-col cols="12">
+        <v-text-field
+          v-model="search"
+          hide-details
+          dense
+          filled
+          clearable
+          prepend-inner-icon="search"
+          label="検索"
+        ></v-text-field>
+      </v-col>
+      <v-col cols="6">
+        <v-combobox v-model="selectedColor" :items="colors" label="カラー" clearable></v-combobox>
+      </v-col>
+      <v-col cols="6">
+        <v-combobox v-model="selectedType" :items="types" label="カテゴリー" clearable></v-combobox>
+      </v-col>
     </v-row>
     <v-row dense>
       <v-col v-for="design in filteredDesigns" :key="design.id" cols="6" sm="3" md="2" lg="1">
@@ -32,7 +48,7 @@ import { assertIsDefined } from "../utilities/assert";
 import { SearchModule, GeneralModule, AuthModule } from "../store";
 import ColRef = firestore.CollectionReference;
 import DocRef = firestore.DocumentReference;
-import { DesignInfo } from "../models/types";
+import { DesignInfo, ColorType, DesignType, ColorTypes, DesignTypes } from "../models/types";
 import DesignDetail from "../components/DesignDetail.vue";
 
 @Component({ components: { DesignCard, DesignDetail } })
@@ -43,6 +59,8 @@ export default class Home extends Vue {
   private selected: DesignInfo | null = null;
   private dialog = false;
   private favs: string[] = [];
+  private colors = ColorTypes;
+  private types = DesignTypes;
 
   private get search() {
     return SearchModule.text;
@@ -50,6 +68,22 @@ export default class Home extends Vue {
 
   private set search(val: string) {
     SearchModule.setText(val);
+  }
+
+  private get selectedColor(): ColorType {
+    return SearchModule.color as ColorType;
+  }
+
+  private set selectedColor(val: ColorType) {
+    SearchModule.setColor(val);
+  }
+
+  private get selectedType() {
+    return SearchModule.type as DesignType;
+  }
+
+  private set selectedType(val: DesignType) {
+    SearchModule.setType(val);
   }
 
   private get filteredDesigns() {
