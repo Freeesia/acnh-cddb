@@ -19,9 +19,19 @@ module.exports = {
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     "require-atomic-updates": "off",
-    "comma-dangle": ["warn", "always-multiline"],
+    "comma-dangle": [
+      "warn",
+      {
+        arrays: "always-multiline",
+        objects: "always-multiline",
+        imports: "always-multiline",
+        exports: "always-multiline",
+        functions: "only-multiline",
+      },
+    ],
     "@typescript-eslint/indent": ["error", 2],
     "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off", // 出来れば対応したい
     "@typescript-eslint/explicit-member-accessibility": ["error", { accessibility: "no-public" }],
   },

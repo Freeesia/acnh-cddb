@@ -19,7 +19,6 @@ export async function searchPosts() {
   const lastLatestId = mgt.get("latestId") as string;
   let latestId = "";
   const t = {
-    // eslint-disable-next-line @typescript-eslint/camelcase
     tag_name: "マイデザイン配布",
     first: 12, // 謎
   } as any;

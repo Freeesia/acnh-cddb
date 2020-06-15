@@ -4,7 +4,7 @@ import { HttpsError } from "firebase-functions/lib/providers/https";
 import { searchTweets } from "./twitter";
 initializeApp();
 
-export const helloWorld = https.onRequest(async (request, response) => {
+export const helloWorld = https.onRequest(async request => {
   await searchTweets();
   const urls = request.body as string[];
   if (!urls) {

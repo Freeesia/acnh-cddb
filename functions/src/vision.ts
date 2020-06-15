@@ -1,7 +1,6 @@
 import { assertIsDefined } from "./assert";
 import { intersect, toRect, toRGBColor, Line, TRANSPARENT_DISTANCE_THRESHOLD, Rect } from "./utility";
 import { ImageAnnotatorClient, protos } from "@google-cloud/vision";
-// eslint-disable-next-line @typescript-eslint/camelcase
 import diff, { RGBColor, rgb_to_lab } from "color-diff";
 import convert from "color-convert";
 import IColorInfo = protos.google.cloud.vision.v1.IColorInfo;

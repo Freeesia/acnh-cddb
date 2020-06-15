@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/camelcase
 import { rgb_to_lab, diff } from "color-diff";
 import { toRGBColor, COLOR_DISTANCE_THRESHOLD } from "./utility";
 import { protos } from "@google-cloud/vision";

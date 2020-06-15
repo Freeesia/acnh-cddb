@@ -10,15 +10,12 @@ const designs = db.collection("designs");
 
 async function createClient() {
   const user = new Twitter({
-    // eslint-disable-next-line @typescript-eslint/camelcase
     consumer_key: process.env.TWITTER_CONSUMER_KEY ?? "",
-    // eslint-disable-next-line @typescript-eslint/camelcase
     consumer_secret: process.env.TWITTER_CONSUMER_SECRET ?? "",
   });
 
   const response = await user.getBearerToken();
   return new Twitter({
-    // eslint-disable-next-line @typescript-eslint/camelcase
     bearer_token: response.access_token,
   } as any);
 }
@@ -55,13 +52,10 @@ export async function searchTweets() {
     // ツイートの検索
     const res = await client.get<SearchResponse>("search/tweets", {
       q: "#ACNH #マイデザイン filter:images -filter:retweets",
-      // eslint-disable-next-line @typescript-eslint/camelcase
       max_id: nextMax,
       lang: "ja",
       locale: "ja",
-      // eslint-disable-next-line @typescript-eslint/camelcase
       result_type: "recent",
-      // eslint-disable-next-line @typescript-eslint/camelcase
       tweet_mode: "extended",
       count: 100,
     });
