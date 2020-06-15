@@ -23,10 +23,27 @@
       />
     </v-app-bar>
 
-    <v-content>
+    <v-main>
       <router-view></router-view>
-    </v-content>
-    <Fab></Fab>
+    </v-main>
+    <Fab class="mb-6"></Fab>
+    <v-footer fixed>
+      <v-row no-gutters class="text-caption">
+        <v-col class="text-no-wrap" cols="12" md="6">
+          当サイトは任天堂の非公式・非公認のファンサイトです。
+        </v-col>
+        <v-col class="text-center" md="3">
+          <router-link to="/privacy">プライバシーポリシー</router-link>
+        </v-col>
+        <v-col class="text-right">
+          <a href="https://github.com/Freeesia/acnh-cddb">
+            <img width="12" src="./assets/GitHub-Mark-32px.png" />
+            Source
+          </a>
+          &copy; {{ new Date().getFullYear() }} Freesia
+        </v-col>
+      </v-row>
+    </v-footer>
   </v-app>
 </template>
 

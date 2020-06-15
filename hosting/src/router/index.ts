@@ -4,6 +4,7 @@ import Home from "@/views/Home.vue";
 import Signin from "@/views/Signin.vue";
 import Account from "@/views/Account.vue";
 import Detail from "@/views/Detail.vue";
+import Privacy from "@/views/Privacy.vue";
 import { AuthModule } from "@/store";
 
 Vue.use(VueRouter);
@@ -32,6 +33,14 @@ const routes: Array<RouteConfig> = [
     name: "detail",
     component: Detail,
     props: true,
+  },
+  {
+    path: "/privacy",
+    name: "privacy",
+    component: Privacy,
+    meta: {
+      anonymous: true,
+    },
   },
 ];
 
