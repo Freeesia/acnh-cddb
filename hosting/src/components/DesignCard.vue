@@ -29,7 +29,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { firestore } from "firebase/app";
-import { Prop, Emit } from "vue-property-decorator";
+import { Prop, Emit, Watch } from "vue-property-decorator";
 import "firebase/firestore";
 import { DesignInfo } from "../models/types";
 import { AuthModule } from "../store";
@@ -51,21 +51,11 @@ export default class DesignCard extends Vue {
   private faved = false;
 
   private get src() {
-    switch (this.info.post.platform) {
-      case "Instagram":
-        return this.info.thumbUrl;
-      default:
-        return this.info.imageUrl + "?name=small";
-    }
+    return this.info.imageUrls.thumb2;
   }
 
   private get lazySrc() {
-    switch (this.info.post.platform) {
-      case "Instagram":
-        return "";
-      default:
-        return this.info.imageUrl + "?name=thumb";
-    }
+    return this.info.imageUrls.thumb1;
   }
 
   private get path() {
@@ -76,7 +66,6 @@ export default class DesignCard extends Vue {
     const user = AuthModule.user;
     assertIsDefined(user);
     this.userRef = this.db.doc(`/users/${user.uid}`);
-    this.checkFav();
   }
 
   @Emit()
@@ -84,12 +73,13 @@ export default class DesignCard extends Vue {
     return this.info;
   }
 
+  @Watch("info", { immediate: true })
   private async checkFav() {
-    if (!this.favs) {
+    if (!this.favs || this.favs.length === 0) {
       return;
     }
     this.faving = true;
-    this.faved = this.favs.includes(this.path);
+    this.faved = this.favs.includes(this.info.designId);
     this.faving = false;
   }
 
