@@ -27,7 +27,7 @@
       <router-view></router-view>
     </v-main>
     <Fab class="mb-6"></Fab>
-    <v-footer fixed>
+    <v-footer app>
       <v-row no-gutters class="text-caption">
         <v-col class="text-no-wrap" cols="12" md="6">
           当サイトは任天堂の非公式・非公認のファンサイトです。
