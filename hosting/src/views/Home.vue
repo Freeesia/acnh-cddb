@@ -24,6 +24,9 @@
         <DesignCard :info="design" :favs="favs" @click="select" />
       </v-col>
     </v-row>
+    <v-row v-if="next !== null" align="center" justify="center">
+      <v-progress-circular v-intersect="onIntersect" indeterminate color="secondary" size="60"></v-progress-circular>
+    </v-row>
     <v-dialog v-if="$vuetify.breakpoint.smAndUp" v-model="dialog" width="500px">
       <v-card>
         <v-toolbar flat dense>
@@ -64,6 +67,8 @@ export default class Home extends Vue {
   private selected: DesignInfo | null = null;
   private dialog = false;
   private favs: string[] = [];
+  private next: number | null = 0;
+  private loading = false;
   private colors = ColorTypes;
   private types = DesignTypes;
 
@@ -94,14 +99,13 @@ export default class Home extends Vue {
   private created() {
     this.designsRef = this.db.collection("/designs") as ColRef<DesignInfo>;
     this.getUserInfo();
-    this.refreshDesigns();
   }
 
   private mounted() {
     this.$store.watch(
       state => state.search,
       () => {
-        this.refreshDesigns();
+        this.refreshDesigns(true);
       },
       { deep: true }
     );
@@ -116,7 +120,11 @@ export default class Home extends Vue {
     this.favs.push(...favs.map(f => f.id));
   }
 
-  private async refreshDesigns() {
+  private async refreshDesigns(init: boolean) {
+    if (this.loading) {
+      return;
+    }
+    this.loading = true;
     assertIsDefined(this.designsRef);
     const facetFilters: string[] = [];
     if (this.selectedType) {
@@ -126,12 +134,24 @@ export default class Home extends Vue {
       facetFilters.push(`dominantColorTypes:${this.selectedColor}`);
     }
     GeneralModule.setLoading(true);
+    let page = init ? 0 : this.next ?? 0;
     const res = await this.index.search<DesignInfo>(this.search, {
       facetFilters,
+      page,
     });
-    this.designs = [];
+    this.next = ++page > res.nbPages ? null : page;
+    if (init) {
+      this.designs = [];
+    }
     this.designs.push(...res.hits);
     GeneralModule.setLoading(false);
+    this.loading = false;
+  }
+
+  private async onIntersect(e: IntersectionObserverEntry[]) {
+    if (e[0].isIntersecting) {
+      this.refreshDesigns(false);
+    }
   }
 
   private async select(info: DesignInfo) {
