@@ -2,7 +2,13 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-img :src="imageUrl"></v-img>
+        <v-img :src="src" :lazy-src="lazySrc">
+          <template v-slot:placeholder>
+            <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
+            </v-row>
+          </template>
+        </v-img>
       </v-col>
     </v-row>
     <v-row>
@@ -40,13 +46,12 @@ export default class DesignDetail extends Vue {
     lang: "ja",
   };
 
-  private get imageUrl() {
-    switch (this.info.post.platform) {
-      case "Instagram":
-        return this.info.imageUrl;
-      default:
-        return this.info.imageUrl + "?name=large";
-    }
+  private get src() {
+    return this.info.imageUrls.large;
+  }
+
+  private get lazySrc() {
+    return this.info.imageUrls.thumb2;
   }
 
   private get instagramUrl() {
