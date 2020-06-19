@@ -25,7 +25,7 @@
           <v-tab-item>
             <v-row dense>
               <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2" lg="1">
-                <DesignCard :info="design" @click="select" />
+                <DesignCard :favs="favs" :info="design" @click="select" />
               </v-col>
             </v-row>
           </v-tab-item>
@@ -82,6 +82,10 @@ export default class Account extends Vue {
 
   private get designs(): DesignInfo[] {
     return this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string") ?? [];
+  }
+
+  private get favs(): string[] {
+    return this.designs.map(d => d.designId);
   }
 
   private get profileUrl() {
