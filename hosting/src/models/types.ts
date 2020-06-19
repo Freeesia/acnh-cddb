@@ -45,6 +45,11 @@ export interface DesignInfo {
   dominantColors: DominantColor[];
   designType: DesignType;
   author: AuthorInfo;
+  imageUrls: {
+    thumb1: string;
+    thumb2: string;
+    large: string;
+  };
   post: {
     postId: string;
     fromSwitch: boolean;
