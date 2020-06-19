@@ -20,11 +20,11 @@
       </v-col>
     </v-row>
     <v-row dense>
-      <v-col v-for="design in filteredDesigns" :key="design.id" cols="6" sm="3" md="2" lg="1">
+      <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2" lg="1">
         <DesignCard :info="design" :favs="favs" @click="select" />
       </v-col>
     </v-row>
-    <v-dialog v-if="selected" v-model="dialog" width="500px">
+    <v-dialog v-if="$vuetify.breakpoint.smAndUp" v-model="dialog" width="500px">
       <v-card>
         <v-toolbar flat dense>
           <v-spacer></v-spacer>
@@ -32,7 +32,10 @@
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <DesignDetail :info="selected"></DesignDetail>
+        <DesignDetail v-if="selected" :info="selected"></DesignDetail>
+        <v-row v-else align="center" justify="center">
+          <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
+        </v-row>
       </v-card>
     </v-dialog>
   </v-container>
@@ -46,6 +49,7 @@ import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
 import { assertIsDefined } from "../utilities/assert";
+import { designsIndex } from "../utilities/algolia";
 import { SearchModule, GeneralModule, AuthModule } from "../store";
 import { DesignInfo, ColorType, DesignType, ColorTypes, DesignTypes } from "../models/types";
 import ColRef = firestore.CollectionReference;
@@ -54,7 +58,8 @@ import DocRef = firestore.DocumentReference;
 @Component({ components: { DesignCard, DesignDetail } })
 export default class Home extends Vue {
   private readonly db = firestore();
-  private designsRef?: ColRef;
+  private readonly index = designsIndex;
+  private designsRef?: ColRef<DesignInfo>;
   private designs: DesignInfo[] = [];
   private selected: DesignInfo | null = null;
   private dialog = false;
@@ -86,18 +91,8 @@ export default class Home extends Vue {
     SearchModule.setType(val);
   }
 
-  private get filteredDesigns() {
-    const text = SearchModule.text;
-    if (text) {
-      return this.designs.filter(v => {
-        return v.title.includes(text);
-      });
-    }
-    return this.designs;
-  }
-
   private created() {
-    this.designsRef = this.db.collection("/designs");
+    this.designsRef = this.db.collection("/designs") as ColRef<DesignInfo>;
     this.getUserInfo();
     this.refreshDesigns();
   }
@@ -118,33 +113,34 @@ export default class Home extends Vue {
     const userInfoRef = this.db.doc(`/users/${user.uid}`);
     const userInfoSs = await userInfoRef.get();
     const favs = userInfoSs.get("favs") as DocRef[];
-    this.favs = favs.map(f => f.path);
+    this.favs.push(...favs.map(f => f.id));
   }
 
   private async refreshDesigns() {
     assertIsDefined(this.designsRef);
-    let query = this.designsRef.orderBy("createdAt", "desc");
-    const color = SearchModule.color;
-    if (color) {
-      query = query.where("dominantColorTypes", "array-contains", color);
+    const facetFilters: string[] = [];
+    if (this.selectedType) {
+      facetFilters.push(`designType:${this.selectedType}`);
     }
-    const type = SearchModule.type;
-    if (type) {
-      query = query.where("designType", "==", type);
+    if (this.selectedColor) {
+      facetFilters.push(`dominantColorTypes:${this.selectedColor}`);
     }
     GeneralModule.setLoading(true);
-    if (this.$firebaseRefs && this.$firebaseRefs["designs"]) {
-      this.$unbind("designs");
-    }
-    query = query.limit(100);
-    await this.$bind("designs", query);
+    const res = await this.index.search<DesignInfo>(this.search, {
+      facetFilters,
+    });
+    this.designs = [];
+    this.designs.push(...res.hits);
     GeneralModule.setLoading(false);
   }
 
-  private select(info: DesignInfo) {
+  private async select(info: DesignInfo) {
+    assertIsDefined(this.designsRef);
     if (this.$vuetify.breakpoint.smAndUp) {
-      this.selected = info;
       this.dialog = true;
+      const doc = await this.designsRef.doc(info.designId).get();
+      const data = doc.data();
+      this.selected = data ?? null;
     } else {
       this.$router.push({
         name: "detail",
