@@ -15,13 +15,13 @@ export async function batchAll() {
   const data = designs.docs.map(doc => {
     const info = doc.data();
     const id = info.designId;
-    delete info.designId;
-    delete info.createdAt;
+    info.createdAt = info.createdAt.seconds;
     delete info.imageUrl;
     delete info.thumbUrl;
-    delete info.dominantColorTypes;
     delete info.dominantColors;
-    delete info.post;
+    delete info.post.contributor;
+    delete info.post.fromSwitch;
+    delete info.post.postId;
     info.objectID = id;
     return info;
   });
