@@ -1,17 +1,22 @@
 import { firestore, initializeApp } from "firebase-admin";
 
-const path = "post.platform";
-
 initializeApp();
 
 export default async function convertFirestore() {
   const db = firestore();
-  const designsRef = db.collection("designs");
+  const designsRef = db.collection("designs").where("post.platform", "==", "Twitter");
   const designs = await designsRef.get();
   for (const doc of designs.docs) {
-    const platform = doc.get(path);
-    if (!platform) {
-      await doc.ref.update(path, "Twitter");
-    }
+    const imageUrl = doc.get("imageUrl") as string;
+    await doc.ref.set(
+      {
+        imageUrls: {
+          thumb1: imageUrl + "?name=thumb",
+          thumb2: imageUrl + "?name=small",
+          large: imageUrl + "?name=large",
+        },
+      },
+      { merge: true }
+    );
   }
 }
