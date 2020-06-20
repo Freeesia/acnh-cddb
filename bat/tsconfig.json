@@ -10,12 +10,9 @@
     ],
     "paths": {
       "@core/*": [
-        "./../core/src/*"
+        "../core/src/*"
       ]
     }
   },
   "compileOnSave": true,
-  "include": [
-    "src"
-  ]
 }

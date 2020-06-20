@@ -4,7 +4,7 @@ import axios from "axios";
 import { GraphqlResponce } from "./types/instagamTypes";
 import { Contributor, DesignInfo } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
-import { postAlgolia } from "./algoliasearch";
+import { postAlgolia } from "@core/utilities/algolia";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");

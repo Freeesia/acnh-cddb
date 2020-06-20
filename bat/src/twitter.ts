@@ -3,9 +3,9 @@ import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
 import { TweetUser, SearchResponse } from "./types/twitterTypes";
-import { postAlgolia } from "./algoliasearch";
 import { DesignInfo, Contributor } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
+import { postAlgolia } from "@core/utilities/algolia";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");

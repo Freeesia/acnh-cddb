@@ -1,5 +1,5 @@
 import { rgb_to_lab, diff } from "color-diff";
-import { toRGBColor, COLOR_DISTANCE_THRESHOLD } from "./utility";
+import { toRGBColor, COLOR_DISTANCE_THRESHOLD } from "../../../bat/src/utility";
 import { protos } from "@google-cloud/vision";
 import IColorInfo = protos.google.cloud.vision.v1.IColorInfo;
 import _ from "lodash";

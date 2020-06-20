@@ -7,7 +7,7 @@ import IColorInfo = protos.google.cloud.vision.v1.IColorInfo;
 import _ from "lodash";
 import sharp from "sharp";
 import axios from "axios";
-import "./lodash.extensions";
+import "@core/extensions/lodash.extensions";
 import { ColorType, DominantColor, DesignType, AnalyzedDesignInfo } from "@core/models/types";
 
 const visionClient = new ImageAnnotatorClient();
