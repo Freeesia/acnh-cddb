@@ -48,6 +48,10 @@ export default class Privacy extends Vue {
 ## プライバシーポリシーの変更について
 当サイトは、個人情報に関して適用される日本の法令を遵守するとともに、本ポリシーの内容を適宜見直しその改善に努めます。
 修正された最新のプライバシーポリシーは常に本ページにて開示されます。
-`;
+
+## お問い合わせ
+お問い合せはTwitterのDirect Messageにて [@acnh_cddb](https://twitter.com/acnh_cddb) までご連絡下さい。
+
+以上`;
 }
 </script>
