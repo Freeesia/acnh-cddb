@@ -45,7 +45,7 @@
         </v-tabs-items>
       </v-col>
     </v-row>
-    <v-dialog v-if="selected" v-model="dialog" width="500px" :fullscreen="$vuetify.breakpoint.xsOnly">
+    <v-dialog v-if="selected" v-model="dialog" width="500px">
       <v-card>
         <v-toolbar flat dense>
           <v-spacer></v-spacer>
@@ -119,12 +119,21 @@ export default class Account extends Vue {
       this.$router.push("/signin");
     }
     GeneralModule.setLoading(false);
-    this.$router.push("/");
+    this.$router.push("/signin");
   }
 
   private select(info: DesignInfo) {
-    this.selected = info;
-    this.dialog = true;
+    if (this.$vuetify.breakpoint.smAndUp) {
+      this.selected = info;
+      this.dialog = true;
+    } else {
+      this.$router.push({
+        name: "detail",
+        params: {
+          id: info.designId,
+        },
+      });
+    }
   }
 
   private close() {
