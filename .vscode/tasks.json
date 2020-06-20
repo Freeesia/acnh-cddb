@@ -27,6 +27,12 @@
     },
     {
       "type": "npm",
+      "script": "deploy:functions",
+      "label": "deploy:functions",
+      "problemMatcher": [],
+    },
+    {
+      "type": "npm",
       "script": "serve",
       "path": "hosting/",
       "isBackground": true,
