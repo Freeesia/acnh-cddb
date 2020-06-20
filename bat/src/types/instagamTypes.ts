@@ -31,6 +31,11 @@ export interface Media {
       width: number;
     };
     display_url: string;
+    thumbnail_resources: {
+      config_height: number;
+      config_width: number;
+      src: string;
+    }[];
     thumbnail_src: string;
     edge_liked_by: {
       count: number;

@@ -4,6 +4,7 @@ import axios from "axios";
 import { GraphqlResponce } from "./types/instagamTypes";
 import { Contributor, DesignInfo } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
+import { postAlgolia } from "./algoliasearch";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");
@@ -54,8 +55,11 @@ export async function searchPosts() {
         continue;
       }
       const postInfo = info as DesignInfo;
-      // postInfo.imageUrl = media.node.display_url;
-      // postInfo.thumbUrl = media.node.thumbnail_src;
+      postInfo.imageUrls = {
+        thumb1: media.node.thumbnail_resources[0].src,
+        thumb2: media.node.thumbnail_src,
+        large: media.node.display_url,
+      };
       postInfo.post = {
         contributor: await getOrCreateContributors({
           id: media.node.owner.id,
@@ -66,7 +70,7 @@ export async function searchPosts() {
         fromSwitch: false,
       };
       postInfo.createdAt = Timestamp.fromDate(new Date(media.node.taken_at_timestamp * 1000));
-      await designs.doc(postInfo.designId).set(postInfo);
+      await Promise.all([designs.doc(postInfo.designId).set(postInfo), postAlgolia(postInfo)]);
       console.log(postInfo.title);
     }
   } while (hasNext);
