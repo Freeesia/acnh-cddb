@@ -51,10 +51,10 @@ import { firestore } from "firebase/app";
 import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
-import { assertIsDefined } from "../utilities/assert";
-import { designsIndex } from "../utilities/algolia";
 import { SearchModule, GeneralModule, AuthModule } from "../store";
-import { DesignInfo, ColorType, DesignType, ColorTypes, DesignTypes } from "../models/types";
+import { assertIsDefined } from "../../../core/src/utilities/assert";
+import { designsIndex } from "../../../core/src/utilities/algolia";
+import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType } from "../../../core/src/models/types";
 import ColRef = firestore.CollectionReference;
 import DocRef = firestore.DocumentReference;
 

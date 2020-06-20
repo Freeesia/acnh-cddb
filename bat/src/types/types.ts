@@ -1,4 +1,5 @@
 import { firestore } from "firebase-admin";
+import { Platform, DesignType, AuthorInfo } from "@core/models/types";
 import Timestamp = firestore.Timestamp;
 import DocRef = firestore.DocumentReference;
 
@@ -22,55 +23,3 @@ export interface DesignInfo {
   designType: DesignType;
   author: AuthorInfo;
 }
-
-export interface AuthorInfo {
-  authorName: string;
-  authorId: string;
-  islandName: string;
-}
-
-export interface Contributor {
-  id: string;
-  platform: Platform;
-}
-
-export type Platform = "Instagram" | "Twitter";
-
-export type DesignType =
-  | "マイデザイン"
-  | "タンクトップ"
-  | "はんそでTシャツ"
-  | "ながそでYシャツ"
-  | "セーター"
-  | "パーカー"
-  | "コート"
-  | "そでなしワンピース"
-  | "はんそでワンピース"
-  | "ながそでドレス"
-  | "まるがたワンピース"
-  | "バルーンワンピース"
-  | "ローブ"
-  | "つばつきキャップ"
-  | "ニットキャップ"
-  | "つばつきハット";
-
-export interface DominantColor {
-  hex: string;
-  type: ColorType;
-  score: number;
-  pixel: number;
-}
-
-export type ColorType =
-  | "red"
-  | "pink"
-  | "orange"
-  | "yellow"
-  | "green"
-  | "blue"
-  | "sky"
-  | "purple"
-  | "brown"
-  | "white"
-  | "black"
-  | "transparent";

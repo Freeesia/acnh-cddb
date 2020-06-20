@@ -1,6 +1,6 @@
 import { db } from "./firestore";
 import algoliasearch from "algoliasearch";
-import { assertIsDefined } from "./assert";
+import { assertIsDefined } from "@core/utilities/assert";
 
 export async function batchAll() {
   const designsRef = db.collection("designs");

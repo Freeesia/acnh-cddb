@@ -65,11 +65,11 @@ import Component from "vue-class-component";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
 import { AuthModule, GeneralModule } from "../store";
-import { assertIsDefined } from "../utilities/assert";
 import { User, firestore } from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-import { UserInfo, DesignInfo } from "../models/types";
+import { UserInfo, DesignInfo } from "../../../core/src/models/types";
+import { assertIsDefined } from "../../../core/src/utilities/assert";
 
 @Component({ components: { DesignCard, DesignDetail } })
 export default class Account extends Vue {

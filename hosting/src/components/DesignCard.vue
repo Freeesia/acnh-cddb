@@ -31,9 +31,9 @@ import Component from "vue-class-component";
 import { firestore } from "firebase/app";
 import { Prop, Emit, Watch } from "vue-property-decorator";
 import "firebase/firestore";
-import { DesignInfo } from "../models/types";
 import { AuthModule } from "../store";
-import { assertIsDefined } from "../utilities/assert";
+import { DesignInfo } from "../../../core/src/models/types";
+import { assertIsDefined } from "../../../core/src/utilities/assert";
 import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 

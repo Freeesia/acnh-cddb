@@ -10,8 +10,8 @@ import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
-import { DesignInfo } from "../models/types";
 import DesignDetail from "../components/DesignDetail.vue";
+import { DesignInfo } from "../../../core/src/models/types";
 
 @Component({ components: { DesignDetail } })
 export default class Detail extends Vue {

@@ -65,3 +65,6 @@ node_modules/
 .env
 
 gcp-service-key.json
+
+# TypeScriptの成果物
+lib/
