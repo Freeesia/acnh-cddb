@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-card flat class="pa-2">
     <v-row>
       <v-col cols="12">
         <v-img :src="src" :lazy-src="lazySrc">
@@ -23,9 +23,8 @@
         <instagram-embed :url="instagramUrl" />
       </v-col>
     </v-row>
-  </v-container>
+  </v-card>
 </template>
-
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";

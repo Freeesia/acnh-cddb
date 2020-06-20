@@ -9559,6 +9559,11 @@ vuefire@^2.2.2:
   dependencies:
     "@posva/vuefire-core" "^2.3.1"
 
+vuetify-dialog@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/vuetify-dialog/-/vuetify-dialog-2.0.6.tgz#2aa771583cbd7f7a72cdd921bd3d43b492600f73"
+  integrity sha512-gp4ha/STMI9C55wPgTSVV7iTzLuqNV1KKSYSEmvKXiWKSAcM9kIjWQ039bXsyBW2wfX6TJB10HMF459pkfB/8Q==
+
 vuetify-loader@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/vuetify-loader/-/vuetify-loader-1.5.0.tgz#511173c4d1498761210708f7e475dff60fcee8bb"

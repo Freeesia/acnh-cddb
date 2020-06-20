@@ -27,20 +27,6 @@
     <v-row v-if="next !== null" align="center" justify="center">
       <v-progress-circular v-intersect="onIntersect" indeterminate color="secondary" size="60"></v-progress-circular>
     </v-row>
-    <v-dialog v-if="$vuetify.breakpoint.smAndUp" v-model="dialog" width="500px">
-      <v-card>
-        <v-toolbar flat dense>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="close">
-            <v-icon>close</v-icon>
-          </v-btn>
-        </v-toolbar>
-        <DesignDetail v-if="selected" :info="selected"></DesignDetail>
-        <v-row v-else align="center" justify="center">
-          <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
-        </v-row>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -64,8 +50,6 @@ export default class Home extends Vue {
   private readonly index = designsIndex;
   private designsRef?: ColRef<DesignInfo>;
   private designs: DesignInfo[] = [];
-  private selected: DesignInfo | null = null;
-  private dialog = false;
   private favs: string[] = [];
   private next: number | null = 0;
   private loading = false;
@@ -157,10 +141,11 @@ export default class Home extends Vue {
   private async select(info: DesignInfo) {
     assertIsDefined(this.designsRef);
     if (this.$vuetify.breakpoint.smAndUp) {
-      this.dialog = true;
       const doc = await this.designsRef.doc(info.designId).get();
       const data = doc.data();
-      this.selected = data ?? null;
+      this.$dialog.show(DesignDetail, {
+        info: data,
+      });
     } else {
       this.$router.push({
         name: "detail",
@@ -169,11 +154,6 @@ export default class Home extends Vue {
         },
       });
     }
-  }
-
-  private close() {
-    this.dialog = false;
-    this.selected = null;
   }
 }
 </script>

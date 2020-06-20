@@ -19,6 +19,7 @@
       <v-col md="8" cols="12">
         <v-tabs v-model="activeTab">
           <v-tab>お気に入り</v-tab>
+          <v-tab>管理</v-tab>
           <v-tab>アカウント</v-tab>
         </v-tabs>
         <v-tabs-items v-model="activeTab" class="fill-height">
@@ -29,7 +30,16 @@
               </v-col>
             </v-row>
           </v-tab-item>
-          <v-tab-item class="pa-2">
+          <v-tab-item>
+            <v-toolbar dense flat>
+              <v-toolbar-title>投稿したマイデザ</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="add">
+                <v-icon>add</v-icon>
+              </v-btn>
+            </v-toolbar>
+          </v-tab-item>
+          <v-tab-item>
             <section class="ma-2">
               <header class="headline">サインアウト</header>
               <p>サインアウトし、サインイン画面に遷移します</p>
@@ -45,20 +55,8 @@
         </v-tabs-items>
       </v-col>
     </v-row>
-    <v-dialog v-if="selected" v-model="dialog" width="500px">
-      <v-card>
-        <v-toolbar flat dense>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="close">
-            <v-icon>close</v-icon>
-          </v-btn>
-        </v-toolbar>
-        <DesignDetail :info="selected"></DesignDetail>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
-
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -77,8 +75,6 @@ export default class Account extends Vue {
   private user!: User;
   private userInfo: UserInfo | null = null;
   private activeTab: any = null;
-  private dialog = false;
-  private selected: DesignInfo | null = null;
 
   private get designs(): DesignInfo[] {
     return this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string") ?? [];
@@ -124,8 +120,9 @@ export default class Account extends Vue {
 
   private select(info: DesignInfo) {
     if (this.$vuetify.breakpoint.smAndUp) {
-      this.selected = info;
-      this.dialog = true;
+      this.$dialog.show(DesignDetail, {
+        info,
+      });
     } else {
       this.$router.push({
         name: "detail",
@@ -136,9 +133,8 @@ export default class Account extends Vue {
     }
   }
 
-  private close() {
-    this.dialog = false;
-    this.selected = null;
+  private add() {
+    this.$dialog.message.info("test");
   }
 }
 </script>
