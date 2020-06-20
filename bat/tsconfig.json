@@ -4,6 +4,12 @@
     "module": "CommonJS",
     "outDir": "lib",
     "target": "ESNext",
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": [
+        "../core/src/*"
+      ]
+    }
   },
   "compileOnSave": true,
   "include": [

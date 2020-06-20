@@ -2,7 +2,8 @@ import { db, Timestamp } from "./firestore";
 import { analyzeImageUrl } from "./vision";
 import axios from "axios";
 import { GraphqlResponce } from "./types/instagamTypes";
-import { PostDesignInfo, Contributor } from "./types/types";
+import { Contributor } from "@core/models/types";
+import { PostDesignInfo } from "./types/types";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");

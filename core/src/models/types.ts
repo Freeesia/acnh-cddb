@@ -74,3 +74,8 @@ export interface DominantColor {
 export interface UserInfo {
   favs: (DesignInfo | string)[];
 }
+
+export interface Contributor {
+  id: string;
+  platform: Platform;
+}

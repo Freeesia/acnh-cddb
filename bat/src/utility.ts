@@ -1,6 +1,6 @@
 import { protos } from "@google-cloud/vision";
 import { RGBColor } from "color-diff";
-import { assertIsDefined } from "./assert";
+import { assertIsDefined } from "@core/utilities/assert";
 import _ from "lodash";
 import IVertex = protos.google.cloud.vision.v1.IVertex;
 import { boxLine } from "intersects";

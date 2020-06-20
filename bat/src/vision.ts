@@ -1,4 +1,4 @@
-import { assertIsDefined } from "./assert";
+import { assertIsDefined } from "@core/utilities/assert";
 import { intersect, toRect, toRGBColor, Line, TRANSPARENT_DISTANCE_THRESHOLD, Rect } from "./utility";
 import { ImageAnnotatorClient, protos } from "@google-cloud/vision";
 import diff, { RGBColor, rgb_to_lab } from "color-diff";
@@ -8,7 +8,8 @@ import _ from "lodash";
 import sharp from "sharp";
 import axios from "axios";
 import "./lodash.extensions";
-import { DesignType, DominantColor, ColorType, DesignInfo } from "./types/types";
+import { ColorType, DominantColor, DesignType } from "@core/models/types";
+import { DesignInfo } from "./types/types";
 
 const visionClient = new ImageAnnotatorClient();
 
