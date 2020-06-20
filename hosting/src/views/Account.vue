@@ -69,7 +69,7 @@ import "firebase/firestore";
 import { UserInfo, DesignInfo } from "../../../core/src/models/types";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 
-@Component({ components: { DesignCard, DesignDetail } })
+@Component({ components: { DesignCard } })
 export default class Account extends Vue {
   private readonly db = firestore();
   private user!: User;

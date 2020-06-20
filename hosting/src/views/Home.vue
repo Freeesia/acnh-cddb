@@ -44,7 +44,7 @@ import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType } from "../.
 import ColRef = firestore.CollectionReference;
 import DocRef = firestore.DocumentReference;
 
-@Component({ components: { DesignCard, DesignDetail } })
+@Component({ components: { DesignCard } })
 export default class Home extends Vue {
   private readonly db = firestore();
   private readonly index = designsIndex;
