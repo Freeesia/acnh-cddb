@@ -68,6 +68,7 @@ import "firebase/auth";
 import "firebase/firestore";
 import { UserInfo, DesignInfo } from "../../../core/src/models/types";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
+import AddDesign from "../components/AddDesign.vue";
 
 @Component({ components: { DesignCard } })
 export default class Account extends Vue {
@@ -134,7 +135,9 @@ export default class Account extends Vue {
   }
 
   private add() {
-    this.$dialog.message.info("test");
+    this.$dialog.show(AddDesign, {
+      showClose: false,
+    });
   }
 }
 </script>
