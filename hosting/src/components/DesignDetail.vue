@@ -32,7 +32,7 @@ import Component from "vue-class-component";
 import InstagramEmbed from "vue-instagram-embed";
 import { Prop } from "vue-property-decorator";
 import "firebase/firestore";
-import { DesignInfo } from "../models/types";
+import { DesignInfo } from "../../../core/src/models/types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Tweet } = require("vue-tweet-embed");
 
