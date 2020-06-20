@@ -1,13 +1,16 @@
-import { https } from "firebase-functions";
-import { initializeApp } from "firebase-admin";
-import { HttpsError } from "firebase-functions/lib/providers/https";
-import { searchTweets } from "./twitter";
+import { auth } from "firebase-functions";
+import { initializeApp, firestore } from "firebase-admin";
 initializeApp();
 
-export const helloWorld = https.onRequest(async request => {
-  await searchTweets();
-  const urls = request.body as string[];
-  if (!urls) {
-    throw new HttpsError("invalid-argument", "require body is array of string.");
-  }
+const db = firestore();
+const users = db.collection("users");
+
+export const initUser = auth.user().onCreate(async user => {
+  await users.doc(user.uid).create({
+    favs: [],
+  });
+});
+
+export const deleteUser = auth.user().onDelete(async user => {
+  await users.doc(user.uid).delete();
 });
