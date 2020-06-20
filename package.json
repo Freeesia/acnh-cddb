@@ -10,6 +10,7 @@
     "deploy:functions": "firebase deploy --only functions"
   },
   "workspaces": [
+    "core",
     "functions",
     "hosting",
     "bat"
