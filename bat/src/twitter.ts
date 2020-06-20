@@ -5,7 +5,7 @@ import { analyzeImageUrl } from "./vision";
 import { TweetUser, SearchResponse } from "./types/twitterTypes";
 import { DesignInfo, Contributor } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
-import { postAlgolia } from "@core/utilities/algolia";
+import { postAlgolia } from "@core/algolia/post";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");

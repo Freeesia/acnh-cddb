@@ -53,7 +53,7 @@ import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
 import { SearchModule, GeneralModule, AuthModule } from "../store";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
-import { designsIndex } from "../../../core/src/utilities/algolia";
+import { designsIndex } from "../../../core/src/algolia/init";
 import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType } from "../../../core/src/models/types";
 import ColRef = firestore.CollectionReference;
 import DocRef = firestore.DocumentReference;

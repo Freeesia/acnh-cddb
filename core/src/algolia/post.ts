@@ -1,11 +1,6 @@
-import algoliasearch from "algoliasearch";
-import { DesignInfo } from "../models/types";
-import { Timestamp } from "@google-cloud/firestore";
+import { DesignInfo, Timestamp } from "../models/types";
 import _ from "lodash";
-const algoliaId = process.env.VUE_APP_ALGOLIA_ID ?? process.env.ALGOLIA_ID ?? "";
-const algoliaKey = process.env.VUE_APP_ALGOLIA_KEY ?? process.env.ALGOLIA_KEY ?? "";
-const algoliaClient = algoliasearch(algoliaId, algoliaKey);
-export const designsIndex = algoliaClient.initIndex("designs");
+import { designsIndex } from "./init";
 
 export function adjunstInfo(info: DesignInfo) {
   const data = _.cloneDeep(info) as any;

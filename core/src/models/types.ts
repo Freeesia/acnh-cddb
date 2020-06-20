@@ -1,6 +1,11 @@
-import "@google-cloud/firestore";
-import DocRef = FirebaseFirestore.DocumentReference;
-import { Timestamp } from "@google-cloud/firestore";
+interface DocumentReference<T> {
+  readonly id: string;
+  readonly path: string;
+}
+export interface Timestamp {
+  readonly seconds: number;
+  readonly nanoseconds: number;
+}
 
 export const ColorTypes = [
   "red",
@@ -57,7 +62,7 @@ export interface DesignInfo extends AnalyzedDesignInfo {
     large: string;
   };
   post: {
-    contributor: string | Contributor | DocRef<Contributor>;
+    contributor: string | Contributor | DocumentReference<Contributor>;
     postId: string;
     fromSwitch: boolean;
     platform: Platform;
