@@ -3,7 +3,9 @@ import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
 import { TweetUser, SearchResponse } from "./types/twitterTypes";
-import { PostDesignInfo } from "./types/types";
+import { postAlgolia } from "./algoliasearch";
+import { DesignInfo, Contributor } from "@core/models/types";
+import { DocumentReference } from "@google-cloud/firestore";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");
@@ -38,7 +40,7 @@ function getMaxFromQuery(query?: string) {
 async function getOrCreateContributors(user: TweetUser) {
   const contributorRef = contributors.doc(user.id);
   await contributorRef.set(user, { merge: true });
-  return contributorRef;
+  return contributorRef as DocumentReference<Contributor>;
 }
 
 export async function searchTweets() {
@@ -92,8 +94,12 @@ export async function searchTweets() {
         if (!info) {
           continue;
         }
-        const postInfo = info as PostDesignInfo;
-        postInfo.imageUrl = media.media_url_https;
+        const postInfo = info as DesignInfo;
+        postInfo.imageUrls = {
+          thumb1: media.media_url_https + "?name=thumb",
+          thumb2: media.media_url_https + "?name=small",
+          large: media.media_url_https + "?name=large",
+        };
         postInfo.post = {
           contributor: await getOrCreateContributors({
             id: tweet.user.id_str,
@@ -105,7 +111,7 @@ export async function searchTweets() {
           fromSwitch,
         };
         postInfo.createdAt = createdAt;
-        await designs.doc(postInfo.designId).set(postInfo);
+        await Promise.all([designs.doc(postInfo.designId).set(postInfo), postAlgolia(postInfo)]);
         console.log(postInfo.title);
       }
     }

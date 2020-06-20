@@ -3,11 +3,14 @@
   "compilerOptions": {
     "module": "CommonJS",
     "outDir": "lib",
-    "target": "ESNext",
+    "target": "ES2019",
     "baseUrl": ".",
+    "lib": [
+      "ES2020",
+    ],
     "paths": {
       "@core/*": [
-        "../core/src/*"
+        "./../core/src/*"
       ]
     }
   },

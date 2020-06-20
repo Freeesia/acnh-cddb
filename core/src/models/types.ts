@@ -1,3 +1,7 @@
+import "@google-cloud/firestore";
+import DocRef = FirebaseFirestore.DocumentReference;
+import { Timestamp } from "@google-cloud/firestore";
+
 export const ColorTypes = [
   "red",
   "pink",
@@ -37,25 +41,28 @@ export type DesignType = typeof DesignTypes[number];
 
 export type Platform = "Instagram" | "Twitter";
 
-export interface DesignInfo {
-  imageUrl: string;
-  thumbUrl: string;
+export interface AnalyzedDesignInfo {
   title: string;
   designId: string;
-  dominantColors: DominantColor[];
+  dominantColors: string[];
+  dominantColorTypes: string[];
   designType: DesignType;
   author: AuthorInfo;
+}
+
+export interface DesignInfo extends AnalyzedDesignInfo {
   imageUrls: {
     thumb1: string;
     thumb2: string;
     large: string;
   };
   post: {
+    contributor: string | Contributor | DocRef<Contributor>;
     postId: string;
     fromSwitch: boolean;
     platform: Platform;
   };
-  createdAt: Date;
+  createdAt: Date | Timestamp;
 }
 
 export interface AuthorInfo {

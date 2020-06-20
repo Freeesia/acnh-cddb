@@ -13,7 +13,9 @@
       ],
       "runtimeArgs": [
         "-r",
-        "ts-node/register"
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register",
       ],
       "smartStep": true,
       "skipFiles": [
@@ -26,6 +28,7 @@
         "TS_NODE_IGNORE": "false",
         "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/gcp-service-key.json"
       },
+      "envFile": "${workspaceFolder}/bat/.env"
     },
     {
       "name": "hosting",

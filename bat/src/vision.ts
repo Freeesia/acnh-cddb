@@ -8,8 +8,7 @@ import _ from "lodash";
 import sharp from "sharp";
 import axios from "axios";
 import "./lodash.extensions";
-import { ColorType, DominantColor, DesignType } from "@core/models/types";
-import { DesignInfo } from "./types/types";
+import { ColorType, DominantColor, DesignType, AnalyzedDesignInfo } from "@core/models/types";
 
 const visionClient = new ImageAnnotatorClient();
 
@@ -66,7 +65,7 @@ function scale(rect: Rect, rate: number): Rect {
   };
 }
 
-export async function analyzeImageUrl(imageUrl: string, width: number): Promise<DesignInfo | null> {
+export async function analyzeImageUrl(imageUrl: string, width: number): Promise<AnalyzedDesignInfo | null> {
   let buf: Buffer;
   let title = "";
   let authorName = "";
@@ -132,7 +131,6 @@ export async function analyzeImageUrl(imageUrl: string, width: number): Promise<
     dominantColors.push(...colors.take(2).value());
   }
   return {
-    imageUrl,
     title,
     designId,
     dominantColors: dominantColors.map(c => c.hex),

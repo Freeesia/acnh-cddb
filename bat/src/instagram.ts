@@ -2,8 +2,8 @@ import { db, Timestamp } from "./firestore";
 import { analyzeImageUrl } from "./vision";
 import axios from "axios";
 import { GraphqlResponce } from "./types/instagamTypes";
-import { Contributor } from "@core/models/types";
-import { PostDesignInfo } from "./types/types";
+import { Contributor, DesignInfo } from "@core/models/types";
+import { DocumentReference } from "@google-cloud/firestore";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");
@@ -11,7 +11,7 @@ const designs = db.collection("designs");
 async function getOrCreateContributors(user: Contributor) {
   const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
   await contributorRef.set(user, { merge: true });
-  return contributorRef;
+  return contributorRef as DocumentReference<Contributor>;
 }
 
 export async function searchPosts() {
@@ -53,9 +53,9 @@ export async function searchPosts() {
       if (!info) {
         continue;
       }
-      const postInfo = info as PostDesignInfo;
-      postInfo.imageUrl = media.node.display_url;
-      postInfo.thumbUrl = media.node.thumbnail_src;
+      const postInfo = info as DesignInfo;
+      // postInfo.imageUrl = media.node.display_url;
+      // postInfo.thumbUrl = media.node.thumbnail_src;
       postInfo.post = {
         contributor: await getOrCreateContributors({
           id: media.node.owner.id,
