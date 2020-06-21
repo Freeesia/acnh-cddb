@@ -4,6 +4,15 @@
     "module": "commonjs",
     "outDir": "lib",
     "target": "es2017",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@core/*": [
+        "../core/src/*"
+      ]
+    },
   },
   "compileOnSave": true,
   "include": [
