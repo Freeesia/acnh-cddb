@@ -91,3 +91,23 @@ export interface Contributor {
   id: string;
   platform: Platform;
 }
+
+export interface PostedMedia {
+  imageUrls: {
+    thumb1: string;
+    thumb2: string;
+    large: string;
+  };
+  post: {
+    contributor: string;
+    postId: string;
+    fromSwitch: boolean;
+    platform: Platform;
+  };
+  createdAt: Date | Timestamp;
+}
+
+export interface UserMediaTweets {
+  posts: PostedMedia[];
+  sinceId: string;
+}
