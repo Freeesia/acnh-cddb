@@ -45,6 +45,11 @@
           "beginsPattern": "^\\s*WAIT\\s+Compiling",
           "endsPattern": "^\\s*(DONE|WARNING)\\s+Compiled"
         }
+      },
+      "options": {
+        "env": {
+          "VUE_APP_FUNCTIONS_EMU": "http://localhost:5001"
+        }
       }
     },
     {
