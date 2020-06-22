@@ -7,7 +7,7 @@ import convertFirestore from "./convertFirestore";
   console.log("Start");
   // await convertFirestore();
   await searchPosts();
-  // await searchTweets();
+  await searchTweets();
   // await batchAll();
   console.log("Finish");
 })();

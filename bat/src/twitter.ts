@@ -2,10 +2,11 @@ import { db, Timestamp } from "./firestore";
 import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
-import { TweetUser, SearchResponse } from "./types/twitterTypes";
+import { SearchResponse } from "./types/twitterTypes";
 import { DesignInfo, Contributor } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
 import { postAlgolia } from "@core/algolia/post";
+import { TweetUser } from "@core/models/twitterTypes";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");
@@ -77,7 +78,7 @@ export async function searchTweets() {
       }
 
       // メディアがないツイートはスキップ
-      if (!tweet.extended_entities.media) {
+      if (!tweet.extended_entities?.media) {
         continue;
       }
       const createdAt = Timestamp.fromMillis(Date.parse(tweet.created_at));
