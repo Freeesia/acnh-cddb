@@ -1,3 +1,5 @@
+import { Contributor } from "./types";
+
 export interface TwitterUserCredential {
   token: string;
   secret: string;
@@ -26,8 +28,7 @@ export interface Tweet {
   };
 }
 
-export interface TweetUser {
-  id: string;
+export interface TweetUser extends Contributor {
   name: string;
   screenName: string;
 }

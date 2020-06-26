@@ -7,6 +7,8 @@ export interface Timestamp {
   readonly nanoseconds: number;
 }
 
+export interface FieldValue {}
+
 export const ColorTypes = [
   "red",
   "pink",
@@ -20,7 +22,7 @@ export const ColorTypes = [
   "white",
   "black",
   "transparent",
-];
+] as const;
 export type ColorType = typeof ColorTypes[number];
 
 export const DesignTypes = [
@@ -40,7 +42,7 @@ export const DesignTypes = [
   "つばつきキャップ",
   "ニットキャップ",
   "つばつきハット",
-];
+] as const;
 
 export type DesignType = typeof DesignTypes[number];
 
@@ -52,7 +54,7 @@ export interface AnalyzedDesignInfo {
   dominantColors: string[];
   dominantColorTypes: string[];
   designType: DesignType;
-  author: AuthorInfo;
+  author?: AuthorInfo;
 }
 
 export interface DesignInfo extends AnalyzedDesignInfo {
@@ -67,7 +69,7 @@ export interface DesignInfo extends AnalyzedDesignInfo {
     fromSwitch: boolean;
     platform: Platform;
   };
-  createdAt: Date | Timestamp;
+  createdAt: Date | Timestamp | FieldValue;
 }
 
 export interface AuthorInfo {
