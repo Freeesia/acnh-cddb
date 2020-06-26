@@ -35,6 +35,7 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off", // 出来れば対応したい
     "@typescript-eslint/explicit-member-accessibility": ["error", { accessibility: "no-public" }],
     "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-empty-interface": "off",
   },
   parserOptions: {
     parser: "@typescript-eslint/parser",
