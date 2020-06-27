@@ -2,14 +2,20 @@ import { auth, https, config } from "firebase-functions";
 import { initializeApp, firestore } from "firebase-admin";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { TwitterUserCredential, Tweet } from "../../core/src/models/twitterTypes";
-import { UserMediaTweets, PostedMedia } from "../../core/src/models/types";
+import { UserMediaTweets, PostedMedia, DesignInfo, Contributor } from "../../core/src/models/types";
+import { assertIsDesignInfo, assertIsContributor } from "../../core/src/models/assert";
 import { assertIsDefined } from "../../core/src/utilities/assert";
+import { postAlgolia } from "../../core/src/algolia/post";
 import Twitter from "twitter-lite";
-import _ from "lodash";
+import algoliasearch from "algoliasearch";
+import DocumentReference = firestore.DocumentReference;
+import FieldValue = firestore.FieldValue;
 initializeApp();
 
 const db = firestore();
 const users = db.collection("users");
+const contributors = db.collection("contributors");
+const designs = db.collection("designs");
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -76,3 +82,81 @@ export const getTweetImages = https.onCall(
     };
   }
 );
+
+export const registerDesignInfo = https.onCall(async (data: DesignInfo, context) => {
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "認証されていません");
+  }
+  if (data === undefined || data === null) {
+    throw new HttpsError("data-loss", "データが指定されていません");
+  }
+
+  const contributor = data.post.contributor;
+  try {
+    assertIsDesignInfo(data);
+    assertIsContributor(contributor);
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new HttpsError("data-loss", e.message);
+    } else {
+      throw new HttpsError("unknown", e);
+    }
+  }
+
+  const copy: DesignInfo = {
+    title: data.title,
+    designId: data.designId,
+    dominantColors: data.dominantColors,
+    dominantColorTypes: data.dominantColorTypes,
+    designType: data.designType,
+    imageUrls: {
+      large: data.imageUrls.large,
+      thumb1: data.imageUrls.thumb1,
+      thumb2: data.imageUrls.thumb2,
+    },
+    post: {
+      contributor: await getOrCreateContributorRef(contributor),
+      postId: data.post.postId,
+      fromSwitch: data.post.fromSwitch,
+      platform: data.post.platform,
+    },
+    createdAt: FieldValue.serverTimestamp(),
+  };
+
+  if (data.author) {
+    copy.author = {
+      authorName: data.author.authorName,
+      islandName: data.author.islandName,
+      authorId: data.author.authorId,
+    };
+  }
+
+  const docRef = designs.doc(copy.designId);
+
+  await docRef.set(copy);
+  const doc = await docRef.get();
+  assertIsDefined(doc.createTime);
+  copy.createdAt = doc.createTime;
+
+  await postDesignInfoToAlgolia(copy);
+});
+
+async function getOrCreateContributorRef(user: Contributor) {
+  const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
+  await contributorRef.set(user, { merge: true });
+  return contributorRef as DocumentReference<Contributor>;
+}
+
+async function postDesignInfoToAlgolia(copy: DesignInfo) {
+  const algoliaConfig = config().algolia;
+  console.log(algoliaConfig);
+  assertIsDefined(algoliaConfig);
+  const algoliaId = algoliaConfig.id;
+  const algoliaKey = algoliaConfig.key;
+  assertIsDefined(algoliaId);
+  assertIsDefined(algoliaKey);
+
+  const algoliaClient = algoliasearch(algoliaId, algoliaKey);
+  const designsIndex = algoliaClient.initIndex("designs");
+  await postAlgolia(designsIndex, copy);
+}

@@ -8,7 +8,14 @@ import VuetifyDialog from "vuetify-dialog";
 import "vuetify-dialog/dist/vuetify-dialog.css";
 import "./plugins/firebase";
 import { firestorePlugin } from "vuefire";
+import InputFacade from "vue-input-facade";
 
+Vue.use(InputFacade, {
+  tokens: {
+    "#": { pattern: /\d/ },
+    D: { pattern: /[0-9A-HJ-NP-Y]/i, transform: (v: string) => v.toLocaleUpperCase() },
+  },
+});
 Vue.use(firestorePlugin);
 
 Vue.use(VuetifyDialog, {

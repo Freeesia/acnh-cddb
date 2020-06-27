@@ -1,6 +1,6 @@
 import { DesignInfo, Timestamp } from "../models/types";
 import _ from "lodash";
-import { designsIndex } from "./init";
+import { SearchIndex } from "algoliasearch";
 
 export function adjunstInfo(info: DesignInfo) {
   const data = _.cloneDeep(info) as any;
@@ -16,7 +16,7 @@ export function adjunstInfo(info: DesignInfo) {
   return data;
 }
 
-export async function postAlgolia(info: DesignInfo) {
+export async function postAlgolia(index: SearchIndex, info: DesignInfo) {
   const data = adjunstInfo(info);
-  await designsIndex.saveObject(data, { autoGenerateObjectIDIfNotExist: false });
+  await index.saveObject(data, { autoGenerateObjectIDIfNotExist: false });
 }

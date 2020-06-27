@@ -46,13 +46,15 @@ export const DesignTypes = [
 
 export type DesignType = typeof DesignTypes[number];
 
-export type Platform = "Instagram" | "Twitter";
+export const Platforms = ["Instagram", "Twitter"] as const;
+
+export type Platform = typeof Platforms[number];
 
 export interface AnalyzedDesignInfo {
   title: string;
   designId: string;
   dominantColors: string[];
-  dominantColorTypes: string[];
+  dominantColorTypes: ColorType[];
   designType: DesignType;
   author?: AuthorInfo;
 }
@@ -113,3 +115,6 @@ export interface UserMediaTweets {
   posts: PostedMedia[];
   sinceId: string;
 }
+
+export const designIdPattern = /^MO(-[0-9A-HJ-NP-Y]{4}){3}$/;
+export const authorIdPattern = /^MA(-\d{4}){3}$/;
