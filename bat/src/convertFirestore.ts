@@ -7,24 +7,15 @@ initializeApp();
 export default async function convertFirestore() {
   const db = firestore();
   const contributorsRef = db.collection("contributors");
-  const designsRef = db.collection("designs").where("post.platform", "==", "Twitter");
-  const designs = await designsRef.get();
-  for (const doc of designs.docs) {
-    const oldConRef = doc.get("post.contributor") as DocRef;
-    if (oldConRef.id.startsWith("Twitter")) {
+  const contributors = await contributorsRef.listDocuments();
+  for (const docRef of contributors) {
+    if (docRef.id.includes(":")) {
       continue;
     }
-    const conDoc = await oldConRef.get();
-    if (conDoc.exists) {
-      const contributor = conDoc.data() as Contributor;
-      contributor.platform = "Twitter";
-      const newConRef = contributorsRef.doc(`${contributor.platform}:${contributor.id}`);
-      await newConRef.set(contributor);
-      await oldConRef.delete();
-      await doc.ref.update("post.contributor", newConRef);
-    } else {
-      const newConRef = contributorsRef.doc(`Twitter:${conDoc.id}`);
-      await doc.ref.update("post.contributor", newConRef);
-    }
+    const doc = await docRef.get();
+    const contributor = doc.data() as Contributor;
+    contributor.platform = "Twitter";
+    await docRef.delete();
+    await contributorsRef.doc(`${contributor.platform}:${contributor.id}`).set(contributor);
   }
 }
