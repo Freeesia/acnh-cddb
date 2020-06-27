@@ -39,7 +39,7 @@ function getMaxFromQuery(query?: string) {
 }
 
 async function getOrCreateContributors(user: TweetUser) {
-  const contributorRef = contributors.doc(user.id);
+  const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
   await contributorRef.set(user, { merge: true });
   return contributorRef as DocumentReference<Contributor>;
 }
@@ -106,6 +106,7 @@ export async function searchTweets() {
             id: tweet.user.id_str,
             name: tweet.user.name,
             screenName: tweet.user.screen_name,
+            platform: "Twitter",
           }),
           postId: tweet.id_str,
           platform: "Twitter",
