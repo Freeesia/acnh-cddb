@@ -149,7 +149,6 @@ async function getOrCreateContributorRef(user: Contributor) {
 
 async function postDesignInfoToAlgolia(copy: DesignInfo) {
   const algoliaConfig = config().algolia;
-  console.log(algoliaConfig);
   assertIsDefined(algoliaConfig);
   const algoliaId = algoliaConfig.id;
   const algoliaKey = algoliaConfig.key;
