@@ -5,6 +5,7 @@ import { GraphqlResponce } from "./types/instagamTypes";
 import { Contributor, DesignInfo } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
 import { postAlgolia } from "@core/algolia/post";
+import { designsIndex } from "@core/algolia/init";
 
 const contributors = db.collection("contributors");
 const designs = db.collection("designs");
@@ -70,7 +71,7 @@ export async function searchPosts() {
         fromSwitch: false,
       };
       postInfo.createdAt = Timestamp.fromDate(new Date(media.node.taken_at_timestamp * 1000));
-      await Promise.all([designs.doc(postInfo.designId).set(postInfo), postAlgolia(postInfo)]);
+      await Promise.all([designs.doc(postInfo.designId).set(postInfo), postAlgolia(designsIndex, postInfo)]);
       console.log(postInfo.title);
     }
   } while (hasNext);
