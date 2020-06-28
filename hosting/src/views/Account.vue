@@ -25,7 +25,7 @@
         <v-tabs-items v-model="activeTab" class="fill-height">
           <v-tab-item>
             <v-row dense>
-              <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2" lg="1">
+              <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" lg="2">
                 <DesignCard :favs="favs" :info="design" @click="select" />
               </v-col>
             </v-row>

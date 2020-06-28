@@ -40,6 +40,7 @@
             <v-img
               v-if="selected"
               height="200"
+              contain
               :src="selected.imageUrls.large"
               :lazy-src="selected.imageUrls.thumb2"
               class="secondary"
