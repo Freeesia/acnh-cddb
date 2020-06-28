@@ -4,7 +4,7 @@ import { HttpsError } from "firebase-functions/lib/providers/https";
 import { TwitterUserCredential, Tweet } from "../../core/src/models/twitterTypes";
 import { UserMediaTweets, PostedMedia, DesignInfo, Contributor } from "../../core/src/models/types";
 import { assertIsDesignInfo, assertIsContributor } from "../../core/src/models/assert";
-import { assertIsDefined } from "../../core/src/utilities/assert";
+import { assertIsDefined, assertIsArray, assertIsString } from "../../core/src/utilities/assert";
 import { postAlgolia } from "../../core/src/algolia/post";
 import Twitter from "twitter-lite";
 import algoliasearch from "algoliasearch";
@@ -147,15 +147,56 @@ async function getOrCreateContributorRef(user: Contributor) {
   return contributorRef as DocumentReference<Contributor>;
 }
 
-async function postDesignInfoToAlgolia(copy: DesignInfo) {
+function initAlgolia() {
   const algoliaConfig = config().algolia;
   assertIsDefined(algoliaConfig);
   const algoliaId = algoliaConfig.id;
   const algoliaKey = algoliaConfig.key;
   assertIsDefined(algoliaId);
   assertIsDefined(algoliaKey);
-
   const algoliaClient = algoliasearch(algoliaId, algoliaKey);
-  const designsIndex = algoliaClient.initIndex("designs");
+  return algoliaClient.initIndex("designs");
+}
+
+async function postDesignInfoToAlgolia(copy: DesignInfo) {
+  const designsIndex = initAlgolia();
   await postAlgolia(designsIndex, copy);
 }
+
+export const unregisterDesignInfo = https.onCall(async (data: string[], context) => {
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "認証されていません");
+  }
+  const userId = context.auth.token.firebase.identities["twitter.com"];
+  if (!userId) {
+    throw new HttpsError("unavailable", "Twiiter以外のデザインは削除できません");
+  }
+  const conId = "Twitter:" + userId;
+  const ids: string[] = [];
+  try {
+    assertIsDefined(data);
+    assertIsArray(data, "data");
+    await Promise.all(
+      data.map(async id => {
+        assertIsString(id, "");
+        const docRef = designs.doc(id);
+        const doc = await docRef.get();
+        if (!doc.exists) {
+          return;
+        }
+        const conRef = doc.get("post.contributor") as DocumentReference;
+        if (conRef.id === conId) {
+          ids.push(id);
+        }
+      })
+    );
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new HttpsError("data-loss", e.message);
+    } else {
+      throw new HttpsError("unknown", e);
+    }
+  }
+  const designsIndex = initAlgolia();
+  await Promise.all([designsIndex.deleteObjects(ids), Promise.all([ids.map(id => designs.doc(id).delete())])]);
+});
