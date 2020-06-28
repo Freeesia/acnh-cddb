@@ -34,6 +34,8 @@
         </v-col>
         <v-col class="text-center" md="3">
           <router-link to="/privacy">プライバシーポリシー</router-link>
+          |
+          <router-link to="/tos">利用規約</router-link>
         </v-col>
         <v-col class="text-right">
           <a href="https://github.com/Freeesia/acnh-cddb">
