@@ -11,6 +11,7 @@ if (localUrl) {
 }
 const _getTweetImages = functions.httpsCallable("getTweetImages");
 const _registerDesignInfo = functions.httpsCallable("registerDesignInfo");
+const _unregisterDesignInfo = functions.httpsCallable("unregisterDesignInfo");
 
 export async function getTweetImages(data: TwitterUserCredential): Promise<UserMediaTweets> {
   const res = await _getTweetImages(data);
@@ -19,4 +20,8 @@ export async function getTweetImages(data: TwitterUserCredential): Promise<UserM
 
 export async function registerDesignInfo(design: DesignInfo) {
   await _registerDesignInfo(design);
+}
+
+export async function unregisterDesignInfo(ids: string[]) {
+  await _unregisterDesignInfo(ids);
 }

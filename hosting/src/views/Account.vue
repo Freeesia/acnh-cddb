@@ -37,7 +37,30 @@
               <v-btn icon @click="add">
                 <v-icon>add</v-icon>
               </v-btn>
+              <v-btn icon :disabled="!canDelete" :loading="deleting" @click="deleteDesigns">
+                <v-icon>delete</v-icon>
+              </v-btn>
             </v-toolbar>
+            <v-data-table
+              v-model="selected"
+              :headers="headers"
+              :items="myDesigns"
+              mobile-breakpoint="0"
+              show-select
+              hide-default-footer
+              fixed-header
+              :items-per-page="-1"
+            >
+              <template v-slot:item.imageUrls="{ item }">
+                <v-img width="40" aspect-ratio="1" class="secondary" :src="item.imageUrls.thumb1">
+                  <template v-slot:placeholder>
+                    <v-row class="fill-height ma-0" align="center" justify="center">
+                      <v-progress-circular indeterminate color="accent"></v-progress-circular>
+                    </v-row>
+                  </template>
+                </v-img>
+              </template>
+            </v-data-table>
           </v-tab-item>
           <v-tab-item>
             <section class="ma-2">
@@ -64,11 +87,11 @@ import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
 import { AuthModule, GeneralModule } from "../store";
 import { User, firestore } from "firebase/app";
-import "firebase/auth";
 import "firebase/firestore";
 import { UserInfo, DesignInfo } from "../../../core/src/models/types";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AddDesign from "../components/AddDesign.vue";
+import { unregisterDesignInfo } from "../plugins/functions";
 
 @Component({ components: { DesignCard } })
 export default class Account extends Vue {
@@ -76,6 +99,14 @@ export default class Account extends Vue {
   private user!: User;
   private userInfo: UserInfo | null = null;
   private activeTab: any = null;
+  private myDesigns: DesignInfo[] = [];
+  private headers = [
+    { text: "", value: "imageUrls", sortable: false, filterable: false },
+    { text: "タイトル", value: "title" },
+    { text: "タイプ", value: "designType" },
+  ];
+  private selected: DesignInfo[] = [];
+  private deleting = false;
 
   private get designs(): DesignInfo[] {
     return this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string") ?? [];
@@ -89,11 +120,19 @@ export default class Account extends Vue {
     return this.user.photoURL?.replace("_normal.png", ".png");
   }
 
+  private get canDelete() {
+    return this.selected.length > 0;
+  }
+
   private created() {
     const user = AuthModule.user;
     assertIsDefined(user);
     this.user = user;
     this.$bind("userInfo", this.db.doc(`/users/${this.user.uid}`));
+    const provData = this.user.providerData.find(p => p && p.providerId == "twitter.com");
+    assertIsDefined(provData);
+    const conRef = this.db.doc(`contributors/Twitter:${provData.uid}`);
+    this.$bind("myDesigns", this.db.collection("designs").where("post.contributor", "==", conRef));
   }
 
   private async signOut() {
@@ -138,6 +177,21 @@ export default class Account extends Vue {
     this.$dialog.show(AddDesign, {
       showClose: false,
     });
+  }
+
+  private async deleteDesigns() {
+    const titles = this.selected.map(d => d.title);
+    const res = await this.$dialog.confirm({
+      text: "以下のデザインを削除します<br/>" + titles.map(t => `<pre>${t}</pre><br/>`),
+      title: "確認",
+    });
+    if (res) {
+      this.deleting = true;
+      const ids = this.selected.map(d => d.designId);
+      await unregisterDesignInfo(ids);
+      this.selected = [];
+      this.deleting = false;
+    }
   }
 }
 </script>
