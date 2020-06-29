@@ -12,6 +12,20 @@
       </v-col>
     </v-row>
     <v-row>
+      <v-col cols="12">
+        <v-card>
+          <v-card-title>{{ info.title }}</v-card-title>
+          <v-card-subtitle>{{ info.designId }}</v-card-subtitle>
+          <v-card-actions>
+            <v-btn color="pink" rounded dark depressed :icon="faved" :loading="faving" @click="fav">
+              <v-icon left>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
+              {{ faved ? "" : "お気に入り" }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col v-if="info.post.platform !== 'Instagram'" cols="12">
         <Tweet :id="info.post.postId" :options="options">
           <v-row align="center" justify="center">
@@ -30,20 +44,28 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import InstagramEmbed from "vue-instagram-embed";
 import { Prop } from "vue-property-decorator";
+import { firestore } from "firebase/app";
 import "firebase/firestore";
 import { DesignInfo } from "../../../core/src/models/types";
+import { AuthModule } from "../store";
+import { assertIsDefined } from "../../../core/src/utilities/assert";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Tweet } = require("vue-tweet-embed");
+import DocRef = firestore.DocumentReference;
+import FieldValue = firestore.FieldValue;
 
 @Component({ components: { Tweet, InstagramEmbed } })
 export default class DesignDetail extends Vue {
-  @Prop()
-  private info!: DesignInfo;
-
+  private readonly db = firestore();
   private readonly options = {
     conversation: "none",
     lang: "ja",
   };
+
+  @Prop()
+  private info!: DesignInfo;
+  private userRef!: DocRef;
+  private faving = false;
 
   private get src() {
     return this.info.imageUrls.large;
@@ -53,8 +75,39 @@ export default class DesignDetail extends Vue {
     return this.info.imageUrls.thumb2;
   }
 
+  private get path() {
+    return `designs/${this.info.designId}`;
+  }
+
+  private get favs() {
+    return AuthModule.info?.favs ?? [];
+  }
+
+  private get faved() {
+    return this.favs.includes(this.path);
+  }
+
   private get instagramUrl() {
     return `https://www.instagram.com/p/${this.info.post.postId}/`;
+  }
+
+  private created() {
+    const user = AuthModule.user;
+    assertIsDefined(user);
+    this.userRef = this.db.doc(`/users/${user.uid}`);
+  }
+  private async fav() {
+    this.faving = true;
+    if (this.faved) {
+      await this.userRef.update({
+        favs: FieldValue.arrayRemove(this.db.doc(this.path)),
+      });
+    } else {
+      await this.userRef.update({
+        favs: FieldValue.arrayUnion(this.db.doc(this.path)),
+      });
+    }
+    this.faving = false;
   }
 }
 </script>

@@ -21,7 +21,7 @@
     </v-row>
     <v-row dense>
       <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2" lg="1">
-        <DesignCard :info="design" :favs="favs" @click="select" />
+        <DesignCard :info="design" @click="select" />
       </v-col>
     </v-row>
     <v-row v-if="next !== null" align="center" justify="center">
@@ -37,12 +37,11 @@ import { firestore } from "firebase/app";
 import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
-import { SearchModule, GeneralModule, AuthModule } from "../store";
+import { SearchModule, GeneralModule } from "../store";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import { designsIndex } from "../../../core/src/algolia/init";
 import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType } from "../../../core/src/models/types";
 import ColRef = firestore.CollectionReference;
-import DocRef = firestore.DocumentReference;
 
 @Component({ components: { DesignCard } })
 export default class Home extends Vue {
@@ -50,7 +49,6 @@ export default class Home extends Vue {
   private readonly index = designsIndex;
   private designsRef?: ColRef<DesignInfo>;
   private designs: DesignInfo[] = [];
-  private favs: string[] = [];
   private next: number | null = 0;
   private loading = false;
   private colors = ColorTypes;
@@ -82,7 +80,6 @@ export default class Home extends Vue {
 
   private created() {
     this.designsRef = this.db.collection("/designs") as ColRef<DesignInfo>;
-    this.getUserInfo();
   }
 
   private mounted() {
@@ -95,21 +92,11 @@ export default class Home extends Vue {
     );
   }
 
-  private async getUserInfo() {
-    const user = AuthModule.user;
-    assertIsDefined(user);
-    const userInfoRef = this.db.doc(`/users/${user.uid}`);
-    const userInfoSs = await userInfoRef.get();
-    const favs = userInfoSs.get("favs") as DocRef[];
-    this.favs.push(...favs.map(f => f.id));
-  }
-
   private async refreshDesigns(init: boolean) {
     if (this.loading) {
       return;
     }
     this.loading = true;
-    assertIsDefined(this.designsRef);
     const facetFilters: string[] = [];
     if (this.selectedType) {
       facetFilters.push(`designType:${this.selectedType}`);

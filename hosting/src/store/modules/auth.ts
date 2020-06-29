@@ -1,10 +1,17 @@
 import { VuexModule, Module, Mutation, Action } from "vuex-module-decorators";
-import { auth, User } from "firebase/app";
+import { auth, User, firestore } from "firebase/app";
 import "firebase/auth";
+import "firebase/firestore";
+import FirestoreAction, { FirestoreActionContext } from "@/modules/vuexfire-decorator";
+
+interface UserInfo {
+  favs: string[];
+}
 
 @Module({ namespaced: true, name: "auth" })
 export default class Auth extends VuexModule {
   user: User | null = null;
+  info: UserInfo | null = null;
 
   @Mutation
   private setUser(user: User | null) {
@@ -18,6 +25,15 @@ export default class Auth extends VuexModule {
   }
 
   @Action
+  @FirestoreAction()
+  init(user: User) {
+    // Refactor: this line is kind of danger, so it should be refactored
+    const { bindFirestoreRef } = this.context as FirestoreActionContext<any, any>;
+
+    return bindFirestoreRef("info", firestore().doc(`users/${user.uid}`), { maxRefDepth: 0 });
+  }
+
+  @Action
   async isSignedIn() {
     let user = this.user;
     if (!user) {
@@ -28,6 +44,7 @@ export default class Auth extends VuexModule {
         auth().signOut();
       }
       this.context.commit("setUser", user);
+      this.context.dispatch("init", user);
     }
     return user ? true : false;
   }

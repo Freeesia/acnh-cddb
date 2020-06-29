@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import { vuexfireMutations } from "vuexfire";
 import { getModule } from "vuex-module-decorators";
 import Auth from "./modules/auth";
 import Search from "./modules/search";
@@ -12,6 +13,9 @@ const store = new Vuex.Store({
     auth: Auth,
     search: Search,
     general: General,
+  },
+  mutations: {
+    ...vuexfireMutations,
   },
 });
 

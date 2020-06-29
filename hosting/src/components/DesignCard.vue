@@ -29,7 +29,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { firestore } from "firebase/app";
-import { Prop, Emit, Watch } from "vue-property-decorator";
+import { Prop, Emit } from "vue-property-decorator";
 import "firebase/firestore";
 import { AuthModule } from "../store";
 import { DesignInfo } from "../../../core/src/models/types";
@@ -43,12 +43,8 @@ export default class DesignCard extends Vue {
 
   @Prop({ required: true })
   private info!: DesignInfo;
-
-  @Prop()
-  private favs?: string[];
   private userRef!: DocRef;
   private faving = false;
-  private faved = false;
 
   private get src() {
     return this.info.imageUrls.thumb2;
@@ -59,7 +55,15 @@ export default class DesignCard extends Vue {
   }
 
   private get path() {
-    return `/designs/${this.info.designId}`;
+    return `designs/${this.info.designId}`;
+  }
+
+  private get favs() {
+    return AuthModule.info?.favs ?? [];
+  }
+
+  private get faved() {
+    return this.favs.includes(this.path);
   }
 
   private created() {
@@ -73,16 +77,6 @@ export default class DesignCard extends Vue {
     return this.info;
   }
 
-  @Watch("info", { immediate: true })
-  private async checkFav() {
-    if (!this.favs || this.favs.length === 0) {
-      return;
-    }
-    this.faving = true;
-    this.faved = this.favs.includes(this.info.designId);
-    this.faving = false;
-  }
-
   private async fav() {
     this.faving = true;
     if (this.faved) {
@@ -94,7 +88,6 @@ export default class DesignCard extends Vue {
         favs: FieldValue.arrayUnion(this.db.doc(this.path)),
       });
     }
-    this.faved = !this.faved;
     this.faving = false;
   }
 }
