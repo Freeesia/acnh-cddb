@@ -2,7 +2,7 @@ import { db, Timestamp } from "./firestore";
 import { analyzeImageUrl } from "./vision";
 import axios from "axios";
 import { GraphqlResponce } from "./types/instagamTypes";
-import { Contributor, DesignInfo } from "@core/models/types";
+import { Contributor, DesignInfo, Platforms } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
 import { postAlgolia } from "@core/algolia/post";
 import { designsIndex } from "@core/algolia/init";
@@ -26,6 +26,8 @@ export async function searchPosts() {
     first: 12, // 謎
   } as any;
   let hasNext = true;
+  const exists = await designs.where("post.platform", "==", Platforms[0]).select("post.postId").get();
+  const existsPosts = exists.docs.map(d => d.data().post.postId as string);
   do {
     const json = JSON.stringify(t);
     const params = `?query_hash=${process.env.INSTAGRAM_QUERY_HASH}&variables=${encodeURIComponent(json)}`;
@@ -44,6 +46,9 @@ export async function searchPosts() {
       if (media.node.id <= lastLatestId) {
         hasNext = false;
         break;
+      }
+      if (existsPosts.includes(media.node.shortcode)) {
+        continue;
       }
 
       // ビデオはスキップ

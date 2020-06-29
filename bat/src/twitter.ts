@@ -3,7 +3,7 @@ import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
 import { SearchResponse } from "./types/twitterTypes";
-import { DesignInfo, Contributor } from "@core/models/types";
+import { DesignInfo, Contributor, Platforms } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
 import { postAlgolia } from "@core/algolia/post";
 import { TweetUser } from "@core/models/twitterTypes";
@@ -52,6 +52,8 @@ export async function searchTweets() {
   const lastLatestId = mgt.get("latestId") as string;
   let nextMax = "";
   let latestId = "";
+  const exists = await designs.where("post.platform", "==", Platforms[1]).select("post.postId").get();
+  const existsPosts = exists.docs.map(d => d.data().post.postId as string);
   do {
     // ツイートの検索
     const res = await client.get<SearchResponse>("search/tweets", {
@@ -76,6 +78,9 @@ export async function searchTweets() {
       if (tweet.id_str <= lastLatestId) {
         nextMax = "";
         break;
+      }
+      if (existsPosts.includes(tweet.id_str)) {
+        continue;
       }
 
       // メディアがないツイートはスキップ
