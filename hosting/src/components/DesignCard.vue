@@ -59,7 +59,7 @@ export default class DesignCard extends Vue {
   }
 
   private get favs() {
-    return AuthModule.info?.favs ?? [];
+    return AuthModule.info?.favs || [];
   }
 
   private get faved() {
