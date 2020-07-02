@@ -26,15 +26,39 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-if="info.post.platform !== 'Instagram'" cols="12">
+      <v-col v-if="platform === 'Twitter'" cols="12">
         <Tweet :id="info.post.postId" :options="options">
           <v-row align="center" justify="center">
             <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
           </v-row>
         </Tweet>
       </v-col>
-      <v-col v-if="info.post.platform === 'Instagram'" align="center" cols="12">
+      <v-col v-if="platform === 'Instagram'" align="center" cols="12">
         <instagram-embed :url="instagramUrl" />
+      </v-col>
+    </v-row>
+    <v-row v-if="postDesigns.length > 0">
+      <v-col cols="12">
+        <v-card outlined>
+          <v-card-title>一緒に投稿されているデザイン</v-card-title>
+          <v-row>
+            <v-col v-for="design in postDesigns" :key="design.designId" cols="6" sm="4" md="3">
+              <DesignCard :info="design" @click="select" />
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row v-if="userDesigns.length > 0">
+      <v-col cols="12">
+        <v-card outlined>
+          <v-card-title>同じユーザーが投稿したデザイン</v-card-title>
+          <v-row>
+            <v-col v-for="design in userDesigns" :key="design.designId" cols="6" sm="4" md="3">
+              <DesignCard :info="design" @click="select" />
+            </v-col>
+          </v-row>
+        </v-card>
       </v-col>
     </v-row>
   </v-card>
@@ -43,7 +67,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import InstagramEmbed from "vue-instagram-embed";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch, Emit } from "vue-property-decorator";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import { DesignInfo } from "../../../core/src/models/types";
@@ -51,12 +75,14 @@ import { AuthModule } from "../store";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Tweet } = require("vue-tweet-embed");
+import DesignCard from "./DesignCard.vue";
 import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 
-@Component({ components: { Tweet, InstagramEmbed } })
+@Component({ components: { Tweet, InstagramEmbed, DesignCard } })
 export default class DesignDetail extends Vue {
   private readonly db = firestore();
+  private readonly designsRef = this.db.collection("designs");
   private readonly options = {
     conversation: "none",
     lang: "ja",
@@ -64,7 +90,10 @@ export default class DesignDetail extends Vue {
 
   @Prop()
   private info!: DesignInfo;
+  private postDesigns: DesignInfo[] = [];
+  private userDesigns: DesignInfo[] = [];
   private userRef!: DocRef;
+  private platform = "";
   private faving = false;
 
   private get src() {
@@ -96,6 +125,7 @@ export default class DesignDetail extends Vue {
     assertIsDefined(user);
     this.userRef = this.db.doc(`/users/${user.uid}`);
   }
+
   private async fav() {
     this.faving = true;
     if (this.faved) {
@@ -108,6 +138,35 @@ export default class DesignDetail extends Vue {
       });
     }
     this.faving = false;
+  }
+
+  @Watch("info", { immediate: true })
+  private setPlatform() {
+    this.platform = this.info.post.platform;
+  }
+
+  @Watch("info", { immediate: true })
+  private async getRelatedDesigns() {
+    {
+      const res = await this.designsRef.where("post.postId", "==", this.info.post.postId).get();
+      if (res.empty) {
+        return;
+      }
+      this.postDesigns = res.docs.filter(d => d.id !== this.info.designId).map(d => d.data()) as DesignInfo[];
+    }
+    {
+      const res = await this.designsRef.where("post.contributor", "==", this.info.post.contributor).limit(6).get();
+      if (res.empty) {
+        return;
+      }
+      this.userDesigns = res.docs.filter(d => d.id !== this.info.designId).map(d => d.data()) as DesignInfo[];
+    }
+  }
+
+  @Emit()
+  private select(info: DesignInfo) {
+    this.platform = "";
+    return info;
   }
 }
 </script>
