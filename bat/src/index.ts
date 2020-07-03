@@ -7,7 +7,7 @@ import { deleteDeadRef } from "./deleteDeadRef";
 (async () => {
   console.log("Start");
   // await convertFirestore();
-  // await deleteDeadRef();
+  await deleteDeadRef();
   await searchPosts();
   await searchTweets();
   // await batchAll();
