@@ -14,8 +14,9 @@ const firebaseConfig = {
 };
 initializeApp(firebaseConfig);
 
-const perf = performance();
-perf.dataCollectionEnabled = true;
-perf.instrumentationEnabled = true;
-
-analytics();
+if (process.env.NODE_ENV === "production") {
+  const perf = performance();
+  perf.dataCollectionEnabled = true;
+  perf.instrumentationEnabled = true;
+  analytics();
+}
