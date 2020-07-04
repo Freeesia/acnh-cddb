@@ -20,6 +20,7 @@ const designs = db.collection("designs");
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
     favs: [],
+    downloaded: [],
   });
 });
 
