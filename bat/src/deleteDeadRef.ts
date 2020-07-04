@@ -23,15 +23,14 @@ export async function deleteDeadRef() {
       await Axios.get(url);
     } catch (error) {
       deleteIds.push(id);
-      console.warn(error);
     }
   }
-  // 削除されたデータが見つかったら残りの処理対応する
   console.log(deleteIds);
-  await designsIndex.deleteObjects(deleteIds);
-  const batch = db.batch();
-  for (const id of deleteIds) {
-    batch.delete(designsRef.doc(id));
-  }
-  await batch.commit();
+  // もうちょっと様子見
+  // await designsIndex.deleteObjects(deleteIds);
+  // const batch = db.batch();
+  // for (const id of deleteIds) {
+  //   batch.delete(designsRef.doc(id));
+  // }
+  // await batch.commit();
 }
