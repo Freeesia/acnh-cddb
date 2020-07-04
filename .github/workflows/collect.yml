@@ -3,6 +3,8 @@ name: collect
 on:
   schedule:
     - cron: 12 0 * * *
+  repository_dispatch:
+    types: [mamual_trigger]
 
 jobs:
   collect:
