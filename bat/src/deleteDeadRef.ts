@@ -17,6 +17,7 @@ export async function deleteDeadRef() {
           await Axios.get(url);
         } catch (error) {
           deleteIds.push(item.objectID);
+          console.warn(error);
         }
       }
     },
