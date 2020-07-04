@@ -4,31 +4,34 @@ import { designsIndex } from "@core/algolia/init";
 import { DesignInfo } from "@core/models/types";
 
 export async function deleteDeadRef() {
-  const deleteIds: string[] = [];
+  const items: { id: string; url: string }[] = [];
   await designsIndex.browseObjects<DesignInfo>({
     query: "",
-    batch: async batch => {
+    batch: batch => {
       for (const item of batch) {
         let url = item.imageUrls.thumb1;
         if (!url) {
           url = item.imageUrls.thumb2;
         }
-        try {
-          await Axios.get(url);
-        } catch (error) {
-          deleteIds.push(item.objectID);
-          console.warn(error);
-        }
+        items.push({ id: item.objectID, url });
       }
     },
   });
+  const deleteIds: string[] = [];
+  for (const { id, url } of items) {
+    try {
+      await Axios.get(url);
+    } catch (error) {
+      deleteIds.push(id);
+      console.warn(error);
+    }
+  }
   // 削除されたデータが見つかったら残りの処理対応する
   console.log(deleteIds);
-  // たぶん動く
-  // designsIndex.deleteObjects(deleteIds);
-  // const batch = db.batch();
-  // for (const id of deleteIds) {
-  //   batch.delete(designsRef.doc(id));
-  // }
-  // await batch.commit();
+  await designsIndex.deleteObjects(deleteIds);
+  const batch = db.batch();
+  for (const id of deleteIds) {
+    batch.delete(designsRef.doc(id));
+  }
+  await batch.commit();
 }
