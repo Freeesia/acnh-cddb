@@ -109,7 +109,7 @@ export default class Account extends Vue {
   private deleting = false;
 
   private get designs(): DesignInfo[] {
-    return this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string") ?? [];
+    return this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string" && f !== null) ?? [];
   }
 
   private get favs(): string[] {
