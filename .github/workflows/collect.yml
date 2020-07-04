@@ -18,6 +18,12 @@ jobs:
         # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
         node-version: 10.21.0
 
-    - run: |
+    - env:
+        TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
+        TWITTER_CONSUMER_SECRET: ${{ secrets.TWITTER_CONSUMER_SECRET }}
+        INSTAGRAM_QUERY_HASH: ${{ secrets.INSTAGRAM_QUERY_HASH }}
+        ALGOLIA_ID: ${{ secrets.ALGOLIA_ID }}
+        ALGOLIA_KEY: ${{ secrets.ALGOLIA_KEY }}
+      run: |
         yarn install
         yarn workspace @acnh-cddb/bat collect
