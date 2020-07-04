@@ -17,7 +17,7 @@ jobs:
       with:
         node-version: 10.21.0
 
-        - run: ./.github/scripts/decrypt_secret.sh $FIREBASE_ADMIN_SECRET_PASSPHRASE ./bat/acnh-cddb-firebase-adminsdk.json.gpg
+    - run: ./.github/scripts/decrypt_secret.sh $FIREBASE_ADMIN_SECRET_PASSPHRASE ./bat/acnh-cddb-firebase-adminsdk.json.gpg
       env:
         FIREBASE_ADMIN_SECRET_PASSPHRASE: ${{ secrets.FIREBASE_ADMIN_SECRET_PASSPHRASE }}
 
