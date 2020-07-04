@@ -41,8 +41,8 @@
       <v-col cols="12">
         <v-card outlined>
           <v-card-title>一緒に投稿されているデザイン</v-card-title>
-          <v-row>
-            <v-col v-for="design in postDesigns" :key="design.designId" cols="6" sm="4" md="3">
+          <v-row dense>
+            <v-col v-for="design in postDesigns" :key="design.designId" cols="6" sm="4">
               <DesignCard :info="design" @click="select" />
             </v-col>
           </v-row>
@@ -53,8 +53,8 @@
       <v-col cols="12">
         <v-card outlined>
           <v-card-title>同じユーザーが投稿したデザイン</v-card-title>
-          <v-row>
-            <v-col v-for="design in userDesigns" :key="design.designId" cols="6" sm="4" md="3">
+          <v-row dense>
+            <v-col v-for="design in userDesigns" :key="design.designId" cols="6" sm="4">
               <DesignCard :info="design" @click="select" />
             </v-col>
           </v-row>
