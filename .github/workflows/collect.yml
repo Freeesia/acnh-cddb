@@ -20,4 +20,4 @@ jobs:
 
     - run: |
         yarn install
-        yarn workpace @acnh-cddb/bat collect
+        yarn workspace @acnh-cddb/bat collect
