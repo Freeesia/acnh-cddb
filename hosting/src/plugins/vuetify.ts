@@ -22,6 +22,9 @@ export default new Vuetify({
         accent: "#997046",
       },
     },
+    options: {
+      customProperties: true,
+    },
   },
   icons: {
     iconfont: "md",

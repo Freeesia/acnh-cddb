@@ -14,34 +14,40 @@
       </v-col>
       <v-col cols="6">
         <v-select
-          v-model="selectedColor"
+          v-model="selectedColors"
           item-value="type"
           item-text="name"
           hide-details
           prepend-icon="palette"
           :items="colors"
+          multiple
           label="カラー"
           clearable
         >
           <template v-slot:selection="{ item }">
-            <v-avatar class="mr-4" size="24" :color="item.type"></v-avatar>
-            {{ item.name }}
+            <v-avatar class="mr-1 color-type" size="24" :color="getColor(item.type)"></v-avatar>
           </template>
           <template v-slot:item="{ item }">
-            <v-avatar class="mr-4" size="24" :color="item.type"></v-avatar>
+            <v-avatar class="mr-4 color-type" size="24" :color="getColor(item.type)"></v-avatar>
             {{ item.name }}
           </template>
         </v-select>
       </v-col>
       <v-col cols="6">
         <v-select
-          v-model="selectedType"
+          v-model="selectedTypes"
           hide-details
           prepend-icon="design_services"
           :items="types"
+          multiple
           label="カテゴリー"
           clearable
-        />
+        >
+          <template v-slot:selection="{ item, index }">
+            <span v-if="index === 0">{{ item }}</span>
+            <span v-if="index === 1" class="grey--text caption">(+{{ selectedTypes.length - 1 }})</span>
+          </template>
+        </v-select>
       </v-col>
     </v-row>
     <v-row dense>
@@ -54,7 +60,22 @@
     </v-row>
   </v-container>
 </template>
-
+<style lang="scss" scoped>
+.color-type {
+  border: solid 1px gray !important;
+}
+.primary--text .color-type {
+  border-color: var(--v-primary-base) !important;
+}
+.transparent {
+  background: whitesmoke;
+  background-image: linear-gradient(45deg, darkgray 25%, transparent 0),
+    linear-gradient(45deg, transparent 75%, darkgray 0), linear-gradient(45deg, darkgray 25%, transparent 0),
+    linear-gradient(45deg, transparent 75%, darkgray 0);
+  background-size: 10px 10px;
+  background-position: 0 0, 15px 15px, 15px 15px, 30px 30px;
+}
+</style>
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -63,6 +84,7 @@ import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
 import { SearchModule, GeneralModule } from "../store";
+import { getColor } from "../modules/color";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import { designsIndex } from "../../../core/src/algolia/init";
 import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType, ColorNames } from "../../../core/src/models/types";
@@ -76,6 +98,7 @@ export default class Home extends Vue {
   private designs: DesignInfo[] = [];
   private next: number | null = 0;
   private loading = false;
+  private getColor = getColor;
   private colors = ColorTypes.map(c => {
     return {
       name: ColorNames[c],
@@ -92,20 +115,20 @@ export default class Home extends Vue {
     SearchModule.setText(val);
   }
 
-  private get selectedColor(): ColorType {
-    return SearchModule.color as ColorType;
+  private get selectedColors(): ColorType[] {
+    return SearchModule.colors as ColorType[];
   }
 
-  private set selectedColor(val: ColorType) {
-    SearchModule.setColor(val);
+  private set selectedColors(val: ColorType[]) {
+    SearchModule.setColors(val);
   }
 
-  private get selectedType() {
-    return SearchModule.type as DesignType;
+  private get selectedTypes() {
+    return SearchModule.types as DesignType[];
   }
 
-  private set selectedType(val: DesignType) {
-    SearchModule.setType(val);
+  private set selectedTypes(val: DesignType[]) {
+    SearchModule.setTypes(val);
   }
 
   private created() {
@@ -127,12 +150,12 @@ export default class Home extends Vue {
       return;
     }
     this.loading = true;
-    const facetFilters: string[] = [];
-    if (this.selectedType) {
-      facetFilters.push(`designType:${this.selectedType}`);
+    const facetFilters: string[][] = [];
+    if (this.selectedTypes.length > 0) {
+      facetFilters.push(this.selectedTypes.map(t => `designType:${t}`));
     }
-    if (this.selectedColor) {
-      facetFilters.push(`dominantColorTypes:${this.selectedColor}`);
+    if (this.selectedColors.length > 0) {
+      facetFilters.push(this.selectedColors.map(t => `dominantColorTypes:${t}`));
     }
     GeneralModule.setLoading(true);
     let page = init ? 0 : this.next ?? 0;
