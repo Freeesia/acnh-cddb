@@ -13,5 +13,6 @@ import { deleteDeadRef } from "./deleteDeadRef";
   // await batchAll();
   console.log("Finish");
 })().catch(error => {
-  throw error;
+  console.error(error);
+  process.exit(1);
 });
