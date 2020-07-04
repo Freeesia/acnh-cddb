@@ -9,6 +9,21 @@ export interface Timestamp {
 
 export interface FieldValue {}
 
+export const ColorNames: { [K in ColorType]: string } = {
+  red: "レッド",
+  pink: "ピンク",
+  orange: "オレンジ",
+  yellow: "イエロー",
+  green: "グリーン",
+  blue: "ブルー",
+  sky: "スカイブルー",
+  purple: "パープル",
+  brown: "ブラウン",
+  white: "ホワイト",
+  black: "ブラック",
+  transparent: "透明",
+} as const;
+
 export const ColorTypes = [
   "red",
   "pink",

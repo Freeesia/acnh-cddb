@@ -13,7 +13,25 @@
         ></v-text-field>
       </v-col>
       <v-col cols="6">
-        <v-combobox v-model="selectedColor" :items="colors" label="カラー" clearable></v-combobox>
+        <v-select
+          v-model="selectedColor"
+          item-value="type"
+          item-text="name"
+          hide-details
+          prepend-icon="palette"
+          :items="colors"
+          label="カラー"
+          clearable
+        >
+          <template v-slot:selection="{ item }">
+            <v-avatar class="mr-4" size="24" :color="item.type"></v-avatar>
+            {{ item.name }}
+          </template>
+          <template v-slot:item="{ item }">
+            <v-avatar class="mr-4" size="24" :color="item.type"></v-avatar>
+            {{ item.name }}
+          </template>
+        </v-select>
       </v-col>
       <v-col cols="6">
         <v-select
@@ -47,7 +65,7 @@ import DesignDetail from "../components/DesignDetail.vue";
 import { SearchModule, GeneralModule } from "../store";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import { designsIndex } from "../../../core/src/algolia/init";
-import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType } from "../../../core/src/models/types";
+import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType, ColorNames } from "../../../core/src/models/types";
 import ColRef = firestore.CollectionReference;
 
 @Component({ components: { DesignCard } })
@@ -58,7 +76,12 @@ export default class Home extends Vue {
   private designs: DesignInfo[] = [];
   private next: number | null = 0;
   private loading = false;
-  private colors = ColorTypes;
+  private colors = ColorTypes.map(c => {
+    return {
+      name: ColorNames[c],
+      type: c,
+    };
+  });
   private types = DesignTypes;
 
   private get search() {
