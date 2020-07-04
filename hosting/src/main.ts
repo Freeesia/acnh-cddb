@@ -7,6 +7,7 @@ import vuetify from "./plugins/vuetify";
 import VuetifyDialog from "vuetify-dialog";
 import "vuetify-dialog/dist/vuetify-dialog.css";
 import "./plugins/firebase";
+import "./plugins/sentry";
 import { firestorePlugin } from "vuefire";
 import InputFacade from "vue-input-facade";
 
