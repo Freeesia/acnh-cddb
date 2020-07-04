@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row dense class="px-4">
-      <v-col cols="12">
+      <v-col cols="12" md="6">
         <v-text-field
           v-model="search"
           hide-details
@@ -12,7 +12,7 @@
           label="検索"
         ></v-text-field>
       </v-col>
-      <v-col cols="6">
+      <v-col cols="12" sm="6" md="3">
         <v-select
           v-model="selectedColors"
           item-value="type"
@@ -35,7 +35,7 @@
           </template>
         </v-select>
       </v-col>
-      <v-col cols="6">
+      <v-col cols="12" sm="6" md="3">
         <v-select
           v-model="selectedTypes"
           hide-details
