@@ -7,7 +7,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop, PropSync, Watch } from "vue-property-decorator";
+import { PropSync, Watch } from "vue-property-decorator";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import DesignDetail from "../components/DesignDetail.vue";
