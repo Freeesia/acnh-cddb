@@ -31,6 +31,4 @@ jobs:
       run: |
         yarn install
         export GOOGLE_APPLICATION_CREDENTIALS=$HOME/secrets/acnh-cddb-firebase-adminsdk.json
-        echo $GOOGLE_APPLICATION_CREDENTIALS
-        ls -l $HOME/secrets
         yarn workspace @acnh-cddb/bat collect
