@@ -27,6 +27,7 @@ jobs:
         INSTAGRAM_QUERY_HASH: ${{ secrets.INSTAGRAM_QUERY_HASH }}
         ALGOLIA_ID: ${{ secrets.ALGOLIA_ID }}
         ALGOLIA_KEY: ${{ secrets.ALGOLIA_KEY }}
+        GCLOUD_PROJECT: acnh-cddb
       run: |
         yarn install
         GOOGLE_APPLICATION_CREDENTIALS=$HOME/secrets/acnh-cddb-firebase-adminsdk.json
