@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row dense>
+    <v-row dense class="px-4">
       <v-col cols="12">
         <v-text-field
           v-model="search"
