@@ -27,8 +27,10 @@
           <template v-slot:selection="{ item }">
             <v-avatar class="mr-1 color-type" size="24" :color="getColor(item.type)"></v-avatar>
           </template>
-          <template v-slot:item="{ item }">
-            <v-avatar class="mr-4 color-type" size="24" :color="getColor(item.type)"></v-avatar>
+          <template v-slot:item="{ item, attrs }">
+            <v-avatar class="mr-4 color-type" size="24" :color="getColor(item.type)">
+              <v-icon v-if="attrs.inputValue">check</v-icon>
+            </v-avatar>
             {{ item.name }}
           </template>
         </v-select>
