@@ -16,7 +16,14 @@
         <v-combobox v-model="selectedColor" :items="colors" label="カラー" clearable></v-combobox>
       </v-col>
       <v-col cols="6">
-        <v-combobox v-model="selectedType" :items="types" label="カテゴリー" clearable></v-combobox>
+        <v-select
+          v-model="selectedType"
+          hide-details
+          prepend-icon="design_services"
+          :items="types"
+          label="カテゴリー"
+          clearable
+        />
       </v-col>
     </v-row>
     <v-row dense>
