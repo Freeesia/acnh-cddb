@@ -15,8 +15,11 @@ jobs:
 
     - uses: actions/setup-node@v2.1.0
       with:
-        # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
         node-version: 10.21.0
+
+        - run: ./.github/scripts/decrypt_secret.sh $FIREBASE_ADMIN_SECRET_PASSPHRASE ./bat/acnh-cddb-firebase-adminsdk.json.gpg
+      env:
+        FIREBASE_ADMIN_SECRET_PASSPHRASE: ${{ secrets.FIREBASE_ADMIN_SECRET_PASSPHRASE }}
 
     - env:
         TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
@@ -24,6 +27,7 @@ jobs:
         INSTAGRAM_QUERY_HASH: ${{ secrets.INSTAGRAM_QUERY_HASH }}
         ALGOLIA_ID: ${{ secrets.ALGOLIA_ID }}
         ALGOLIA_KEY: ${{ secrets.ALGOLIA_KEY }}
+        GOOGLE_APPLICATION_CREDENTIALS: $HOME/secrets/acnh-cddb-firebase-adminsdk.json
       run: |
         yarn install
         yarn workspace @acnh-cddb/bat collect
