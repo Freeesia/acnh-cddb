@@ -12,4 +12,6 @@ import { deleteDeadRef } from "./deleteDeadRef";
   await searchTweets();
   // await batchAll();
   console.log("Finish");
-})();
+})().catch(error => {
+  throw error;
+});
