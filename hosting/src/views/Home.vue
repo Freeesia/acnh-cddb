@@ -138,6 +138,8 @@ export default class Home extends Vue {
   }
 
   private mounted() {
+    this.analyzeQuery();
+
     this.$store.watch(
       state => state.search,
       () => {
@@ -145,6 +147,41 @@ export default class Home extends Vue {
       },
       { deep: true }
     );
+  }
+
+  private analyzeQuery() {
+    const search = this.$route.query.search;
+    if (typeof search === "string") {
+      this.search = search;
+    } else if (search) {
+      this.search = search.join(" ");
+    }
+    const color = this.$route.query.color;
+    if (typeof color === "string") {
+      const c = color as ColorType;
+      if (ColorTypes.includes(c) && !this.selectedColors.includes(c)) {
+        this.selectedColors.push(c);
+      }
+    } else if (color) {
+      this.selectedColors.push(
+        ...color
+          .map(t => t as ColorType)
+          .filter(t => t !== null && ColorTypes.includes(t) && !this.selectedColors.includes(t))
+      );
+    }
+    const type = this.$route.query.type;
+    if (typeof type === "string") {
+      const t = type as DesignType;
+      if (DesignTypes.includes(t) && !this.selectedTypes.includes(t)) {
+        this.selectedTypes.push(t);
+      }
+    } else if (type) {
+      this.selectedTypes.push(
+        ...type
+          .map(t => t as DesignType)
+          .filter(t => t !== null && DesignTypes.includes(t) && !this.selectedTypes.includes(t))
+      );
+    }
   }
 
   private async refreshDesigns(init: boolean) {
