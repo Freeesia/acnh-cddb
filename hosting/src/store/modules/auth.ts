@@ -26,11 +26,15 @@ export default class Auth extends VuexModule {
 
   @Action
   @FirestoreAction()
-  init(user: User) {
+  init(user: User | null) {
     // Refactor: this line is kind of danger, so it should be refactored
-    const { bindFirestoreRef } = this.context as FirestoreActionContext<any, any>;
+    const { bindFirestoreRef, unbindFirestoreRef } = this.context as FirestoreActionContext<any, any>;
 
-    return bindFirestoreRef("info", firestore().doc(`users/${user.uid}`), { maxRefDepth: 0 });
+    if (user) {
+      return bindFirestoreRef("info", firestore().doc(`users/${user.uid}`), { maxRefDepth: 0 });
+    } else {
+      return unbindFirestoreRef("info");
+    }
   }
 
   @Action
