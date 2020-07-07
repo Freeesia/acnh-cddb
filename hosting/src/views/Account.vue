@@ -139,7 +139,7 @@ export default class Account extends Vue {
     GeneralModule.setLoading(true);
     await AuthModule.signOut();
     GeneralModule.setLoading(false);
-    this.$router.push("/");
+    this.$router.push("/signin");
   }
 
   private async deleteMe() {
