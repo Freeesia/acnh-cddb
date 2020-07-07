@@ -16,14 +16,17 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 import { auth } from "firebase/app";
 import "firebase/auth";
 import firebaseui from "firebaseui-ja";
 import "firebaseui-ja/dist/firebaseui.css";
 
 @Component({})
-export default class Login extends Vue {
+export default class Signin extends Vue {
+  @Prop({ type: String, default: "/" })
+  private redirect!: string;
+
   private created() {
     auth().useDeviceLanguage();
   }
@@ -43,7 +46,7 @@ export default class Login extends Vue {
   }
 
   private signInSuccess() {
-    this.$router.push("/");
+    this.$router.push(this.redirect);
     return false;
   }
 }

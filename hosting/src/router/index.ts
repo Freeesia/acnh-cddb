@@ -23,6 +23,9 @@ const routes: Array<RouteConfig> = [
     meta: {
       anonymous: true,
     },
+    props: route => ({
+      redirect: route.query.redirect,
+    }),
   },
   {
     path: "/account",
@@ -69,7 +72,7 @@ router.beforeEach(async (to, _, next) => {
   if (to.meta.anonymous || (await AuthModule.isSignedIn())) {
     next();
   } else {
-    next({ name: "signin" });
+    next({ name: "signin", query: { redirect: to.fullPath } });
   }
 });
 
