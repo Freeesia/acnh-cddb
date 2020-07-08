@@ -7,6 +7,16 @@
             <v-icon size="80" color="grey">image</v-icon>
           </v-row>
         </template>
+        <v-btn
+          v-if="viewDownloaded"
+          class="ma-1 fav float-left"
+          :loading="downloading"
+          icon
+          :color="isDownloaded ? 'primary' : 'blue'"
+          @click.stop="download"
+        >
+          <v-icon>{{ isDownloaded ? "cloud_done" : "cloud_download" }}</v-icon>
+        </v-btn>
         <v-btn class="ma-1 fav float-right" :loading="faving" icon color="pink" @click.stop="fav">
           <v-icon>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
         </v-btn>
@@ -43,8 +53,11 @@ export default class DesignCard extends Vue {
 
   @Prop({ required: true })
   private info!: DesignInfo;
+  @Prop({ type: Boolean, default: false })
+  private viewDownloaded!: boolean;
   private userRef!: DocRef;
   private faving = false;
+  private downloading = false;
 
   private get src() {
     return this.info.imageUrls.thumb2;
@@ -62,8 +75,16 @@ export default class DesignCard extends Vue {
     return AuthModule.info?.favs || [];
   }
 
+  private get downloaded() {
+    return AuthModule.info?.downloaded || [];
+  }
+
   private get faved() {
     return this.favs.includes(this.path);
+  }
+
+  private get isDownloaded() {
+    return this.downloaded.includes(this.path);
   }
 
   private created() {
@@ -79,16 +100,22 @@ export default class DesignCard extends Vue {
 
   private async fav() {
     this.faving = true;
-    if (this.faved) {
-      await this.userRef.update({
-        favs: FieldValue.arrayRemove(this.db.doc(this.path)),
-      });
-    } else {
-      await this.userRef.update({
-        favs: FieldValue.arrayUnion(this.db.doc(this.path)),
-      });
-    }
+    const ref = this.db.doc(this.path);
+    const arrayFunc = this.faved ? FieldValue.arrayRemove : FieldValue.arrayUnion;
+    await this.userRef.update({
+      favs: arrayFunc(ref),
+    });
     this.faving = false;
+  }
+
+  private async download() {
+    this.downloading = true;
+    const ref = this.db.doc(this.path);
+    const arrayFunc = this.isDownloaded ? FieldValue.arrayRemove : FieldValue.arrayUnion;
+    await this.userRef.update({
+      downloaded: arrayFunc(ref),
+    });
+    this.downloading = false;
   }
 }
 </script>
