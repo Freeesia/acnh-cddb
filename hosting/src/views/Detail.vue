@@ -1,7 +1,5 @@
 <template>
-  <v-container fluid>
-    <DesignDetail v-if="info" :info="info" @select="select"></DesignDetail>
-  </v-container>
+  <DesignDetail v-if="info" :info="info" @select="select"></DesignDetail>
 </template>
 
 <script lang="ts">

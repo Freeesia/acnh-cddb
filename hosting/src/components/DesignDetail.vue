@@ -1,66 +1,48 @@
 <template>
-  <v-card flat class="pa-2">
-    <v-row>
-      <v-col cols="12">
-        <v-img :src="src" :lazy-src="lazySrc">
-          <template v-slot:placeholder>
-            <v-row class="fill-height ma-0" align="center" justify="center">
-              <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
-            </v-row>
-          </template>
-        </v-img>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
-        <v-card>
-          <v-card-title>{{ info.title }}</v-card-title>
-          <v-card-subtitle>{{ info.designId }}</v-card-subtitle>
-          <v-card-actions>
-            <v-btn color="pink" rounded dark depressed :icon="faved" :loading="faving" @click="fav">
-              <v-icon left>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
-              {{ faved ? "" : "お気に入り" }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col v-if="platform === 'Twitter'" cols="12">
-        <Tweet :id="info.post.postId" :options="options">
-          <v-row align="center" justify="center">
-            <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
-          </v-row>
-        </Tweet>
-      </v-col>
-      <v-col v-if="platform === 'Instagram'" align="center" cols="12">
-        <instagram-embed :url="instagramUrl" />
-      </v-col>
-    </v-row>
-    <v-row v-if="postDesigns.length > 0">
-      <v-col cols="12">
-        <v-card outlined>
-          <v-card-title>一緒に投稿されているデザイン</v-card-title>
-          <v-row dense>
-            <v-col v-for="design in postDesigns" :key="design.designId" cols="6" sm="4">
-              <DesignCard :info="design" @click="select" />
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row v-if="userDesigns.length > 0">
-      <v-col cols="12">
-        <v-card outlined>
-          <v-card-title>同じユーザーが投稿したデザイン</v-card-title>
-          <v-row dense>
-            <v-col v-for="design in userDesigns" :key="design.designId" cols="6" sm="4">
-              <DesignCard :info="design" @click="select" />
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
+  <v-card tile flat class="pa-2">
+    <v-img class="ma-2" :src="src" :lazy-src="lazySrc">
+      <template v-slot:placeholder>
+        <v-row class="fill-height" align="center" justify="center">
+          <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
+        </v-row>
+      </template>
+    </v-img>
+    <v-card-title>{{ info.title }}</v-card-title>
+    <v-card-subtitle>{{ info.designId }}</v-card-subtitle>
+    <v-card-actions>
+      <v-btn color="pink" rounded dark depressed :icon="faved" :loading="faving" @click="fav">
+        <v-icon left>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
+        {{ faved ? "" : "お気に入り" }}
+      </v-btn>
+    </v-card-actions>
+    <Tweet v-if="platform === 'Twitter'" :id="info.post.postId" :options="options" class="d-flex justify-center ma-2">
+      <v-container fluid>
+        <v-row align="center" justify="center">
+          <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
+        </v-row>
+      </v-container>
+    </Tweet>
+    <instagram-embed v-if="platform === 'Instagram'" :url="instagramUrl" />
+    <v-card v-if="postDesigns.length > 0" class="ma-2" outlined>
+      <v-card-title>一緒に投稿されているデザイン</v-card-title>
+      <v-container>
+        <v-row dense>
+          <v-col v-for="design in postDesigns" :key="design.designId" cols="6" sm="4">
+            <DesignCard :info="design" @click="select" />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
+    <v-card v-if="userDesigns.length > 0" class="ma-2" outlined>
+      <v-card-title>同じユーザーが投稿したデザイン</v-card-title>
+      <v-container>
+        <v-row dense>
+          <v-col v-for="design in userDesigns" :key="design.designId" cols="6" sm="4">
+            <DesignCard :info="design" @click="select" />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
   </v-card>
 </template>
 <script lang="ts">

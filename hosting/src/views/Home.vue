@@ -53,7 +53,7 @@
       </v-col>
     </v-row>
     <v-row dense>
-      <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2" lg="1">
+      <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2">
         <DesignCard :info="design" @click="select" />
       </v-col>
     </v-row>
@@ -224,6 +224,7 @@ export default class Home extends Vue {
       const data = doc.data();
       this.$dialog.show(DesignDetail, {
         info: data,
+        width: 600,
       });
     } else {
       this.$router.push({
