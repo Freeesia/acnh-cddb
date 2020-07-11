@@ -1,5 +1,5 @@
 import { db, designsRef } from "./firestore";
-import Axios from "axios";
+import Axios, { AxiosError } from "axios";
 import { designsIndex } from "@core/algolia/init";
 import { DesignInfo } from "@core/models/types";
 
@@ -22,15 +22,21 @@ export async function deleteDeadRef() {
     try {
       await Axios.get(url);
     } catch (error) {
-      deleteIds.push(id);
+      const e = error as AxiosError;
+      if (e?.response?.status === 404) {
+        console.log(`Not Found : ${id}`);
+        deleteIds.push(id);
+      }
     }
   }
-  console.log(deleteIds);
-  // もうちょっと様子見
-  // await designsIndex.deleteObjects(deleteIds);
-  // const batch = db.batch();
-  // for (const id of deleteIds) {
-  //   batch.delete(designsRef.doc(id));
-  // }
-  // await batch.commit();
+  if (deleteIds.length > 20) {
+    console.log("数が多いので障害の懸念があるため見送ります");
+    return;
+  }
+  await designsIndex.deleteObjects(deleteIds);
+  const batch = db.batch();
+  for (const id of deleteIds) {
+    batch.delete(designsRef.doc(id));
+  }
+  await batch.commit();
 }

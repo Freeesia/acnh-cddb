@@ -31,6 +31,32 @@
       "envFile": "${workspaceFolder}/bat/.env"
     },
     {
+      "name": "collect",
+      "type": "node",
+      "request": "launch",
+      "args": [
+        "${workspaceRoot}/bat/src/collect.ts"
+      ],
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register",
+      ],
+      "smartStep": true,
+      "skipFiles": [
+        "node_modules",
+      ],
+      "cwd": "${workspaceRoot}/bat",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "TS_NODE_IGNORE": "false",
+        "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/gcp-service-key.json"
+      },
+      "envFile": "${workspaceFolder}/bat/.env"
+    },
+    {
       "name": "hosting",
       "type": "chrome",
       "request": "launch",
