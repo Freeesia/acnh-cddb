@@ -6,7 +6,8 @@ import { SearchResponse } from "./types/twitterTypes";
 import { DesignInfo, Contributor, Platforms } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
 import { postAlgolia } from "@core/algolia/post";
-import { TweetUser } from "@core/models/twitterTypes";
+import { TweetUser, Tweet } from "@core/models/twitterTypes";
+import _ from "lodash";
 import { designsIndex } from "@core/algolia/init";
 
 const contributors = db.collection("contributors");
@@ -22,6 +23,22 @@ async function createClient() {
   return new Twitter({
     bearer_token: response.access_token,
   } as any);
+}
+
+export async function getTweets(ids: string[]) {
+  const client = await createClient();
+  const texts: Tweet[] = [];
+  for (const chunk of _(ids).chunk(100).value()) {
+    const res = await client.post<Tweet[]>("statuses/lookup", {
+      id: chunk.join(","),
+      trim_user: true,
+      include_entities: true,
+      tweet_mode: "extended",
+    });
+    texts.push(...res);
+  }
+
+  return texts;
 }
 
 function getMaxFromQuery(query?: string) {
