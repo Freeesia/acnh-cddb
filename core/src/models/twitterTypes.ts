@@ -10,9 +10,7 @@ export interface Tweet {
   id_str: string;
   text: string;
   truncated: boolean;
-  extended_tweet: {
-    full_text: string;
-  };
+  full_text: string;
   entities: {
     hashtags: HashTag[];
     media?: Media[];

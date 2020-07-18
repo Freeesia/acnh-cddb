@@ -1,4 +1,4 @@
-import { db, Timestamp } from "./firestore";
+import { db, Timestamp, designsRef } from "./firestore";
 import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
@@ -9,9 +9,6 @@ import { postAlgolia } from "@core/algolia/post";
 import { TweetUser, Tweet } from "@core/models/twitterTypes";
 import _ from "lodash";
 import { designsIndex } from "@core/algolia/init";
-
-const contributors = db.collection("contributors");
-const designs = db.collection("designs");
 
 async function createClient() {
   const user = new Twitter({
@@ -57,6 +54,7 @@ function getMaxFromQuery(query?: string) {
 }
 
 async function getOrCreateContributors(user: TweetUser) {
+  const contributors = db.collection("contributors");
   const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
   await contributorRef.set(user, { merge: true });
   return contributorRef as DocumentReference<Contributor>;
@@ -69,7 +67,7 @@ export async function searchTweets() {
   const lastLatestId = mgt.get("latestId") as string;
   let nextMax = "";
   let latestId = "";
-  const exists = await designs.where("post.platform", "==", Platforms[1]).select("post.postId").get();
+  const exists = await designsRef.where("post.platform", "==", Platforms[1]).select("post.postId").get();
   const existsPosts = exists.docs.map(d => d.data().post.postId as string);
   do {
     // ツイートの検索
@@ -136,7 +134,7 @@ export async function searchTweets() {
           fromSwitch,
         };
         postInfo.createdAt = createdAt;
-        await Promise.all([designs.doc(postInfo.designId).set(postInfo), postAlgolia(designsIndex, postInfo)]);
+        await Promise.all([designsRef.doc(postInfo.designId).set(postInfo), postAlgolia(designsIndex, postInfo)]);
         console.log(postInfo.title);
       }
     }
