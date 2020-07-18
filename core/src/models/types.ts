@@ -86,6 +86,7 @@ export interface DesignInfo extends AnalyzedDesignInfo {
     fromSwitch: boolean;
     platform: Platform;
   };
+  tags: string[];
   createdAt: Date | Timestamp | FieldValue;
 }
 

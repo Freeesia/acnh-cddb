@@ -11,7 +11,6 @@ export function adjunstInfo(info: DesignInfo) {
   delete data.dominantColors;
   delete data.post.contributor;
   delete data.post.fromSwitch;
-  delete data.post.postId;
   data.objectID = id;
   return data;
 }

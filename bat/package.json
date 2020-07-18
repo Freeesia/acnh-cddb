@@ -5,11 +5,13 @@
     "collect": "node -r ts-node/register -r tsconfig-paths/register src/collect.ts"
   },
   "dependencies": {
+    "@google-cloud/language": "^4.1.0",
     "@google-cloud/vision": "^2.0.0",
     "algoliasearch": "^4.3.0",
     "axios": "^0.19.2",
     "color-convert": "^2.0.1",
     "color-diff": "^1.2.0",
+    "decode-html": "^2.0.0",
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.7.0",
     "intersects": "^2.7.2",

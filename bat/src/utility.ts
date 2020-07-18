@@ -55,3 +55,7 @@ export function toRect(vertices?: IVertex[] | null): Rect {
 export function intersect(rect: Rect, line: Line): boolean {
   return boxLine(rect.x, rect.y, rect.w, rect.h, line.x1, line.y1, line.x2, line.y2);
 }
+
+export function includePartRegex(targets: string[]) {
+  return new RegExp(`(${targets.join("|")})`, "i");
+}
