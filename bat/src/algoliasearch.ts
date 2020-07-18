@@ -4,7 +4,6 @@ import { designsIndex } from "@core/algolia/init";
 import { adjunstInfo } from "@core/algolia/post";
 import { getDesigns } from "@core/algolia/get";
 import { includePartRegex } from "./utility";
-import _ from "lodash";
 
 export async function batchAll() {
   const designs = await designsRef.get();
