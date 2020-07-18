@@ -230,6 +230,7 @@ export default class AddDesign extends Vue {
       dominantColorTypes: this.dominantColorTypes,
       imageUrls: this.selected.imageUrls,
       post: this.selected.post,
+      tags: [],
       createdAt: {},
     };
     design.post.contributor = this.contoributor;
