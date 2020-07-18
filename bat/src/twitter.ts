@@ -1,4 +1,4 @@
-import { db, Timestamp, designsRef } from "./firestore";
+import { db, Timestamp, designsRef, getExcludeTags } from "./firestore";
 import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
@@ -9,6 +9,7 @@ import { postAlgolia } from "@core/algolia/post";
 import { TweetUser, Tweet } from "@core/models/twitterTypes";
 import _ from "lodash";
 import { designsIndex } from "@core/algolia/init";
+import { includePartRegex } from "./utility";
 
 async function createClient() {
   const user = new Twitter({
@@ -65,6 +66,7 @@ export async function searchTweets() {
   const mgtRef = db.collection("management").doc("twitter");
   const mgt = await mgtRef.get();
   const lastLatestId = mgt.get("latestId") as string;
+  const excludeTags = includePartRegex(await getExcludeTags());
   let nextMax = "";
   let latestId = "";
   const exists = await designsRef.where("post.platform", "==", Platforms[1]).select("post.postId").get();
@@ -122,6 +124,10 @@ export async function searchTweets() {
           thumb2: media.media_url_https + "?name=small",
           large: media.media_url_https + "?name=large",
         };
+        postInfo.tags = _(tweet.entities.hashtags)
+          .map(h => h.text)
+          .filter(h => !excludeTags.test(h))
+          .value();
         postInfo.post = {
           contributor: await getOrCreateContributors({
             id: tweet.user.id_str,
@@ -135,7 +141,7 @@ export async function searchTweets() {
         };
         postInfo.createdAt = createdAt;
         await Promise.all([designsRef.doc(postInfo.designId).set(postInfo), postAlgolia(designsIndex, postInfo)]);
-        console.log(postInfo.title);
+        console.log(postInfo.title + ":" + postInfo.tags.join(","));
       }
     }
     console.log(res.search_metadata.max_id_str);
