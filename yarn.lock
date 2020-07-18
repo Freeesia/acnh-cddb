@@ -383,6 +383,13 @@
     readable-stream "^3.4.0"
     through2 "^3.0.0"
 
+"@google-cloud/language@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@google-cloud/language/-/language-4.1.0.tgz#59ad7a9f6e631ec1c19c231659da31e07884562c"
+  integrity sha512-JIay5w0xe+1ZSwxnYRfzdkmfAOE+H1rVaS/cQpX4VOemEQ189GKjnKeeGdko8FNI0h+4RX/BqWaa/r1jK+PXDw==
+  dependencies:
+    google-gax "^2.1.0"
+
 "@google-cloud/paginator@^2.0.0":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@google-cloud/paginator/-/paginator-2.0.3.tgz#c7987ad05d1c3ebcef554381be80e9e8da4e4882"
@@ -2904,6 +2911,11 @@ decamelize@^1.1.2, decamelize@^1.2.0:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   integrity sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
 
+decode-html@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/decode-html/-/decode-html-2.0.0.tgz#7d0a887ce44280e60978a707ebb7f8081fd61eaa"
+  integrity sha1-fQqIfORCgOYJeKcH67f4CB/WHqo=
+
 decode-uri-component@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
@@ -4435,7 +4447,7 @@ google-gax@^1.15.3:
     semver "^6.0.0"
     walkdir "^0.4.0"
 
-google-gax@^2.3.1:
+google-gax@^2.1.0, google-gax@^2.3.1:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-2.6.3.tgz#81510dfd44f7827937d0b81ae6d9f96d85a247f1"
   integrity sha512-hqY6H53Qmaku8rE8dGAM89RSUc1nc4JYG81whrVJRmDQZ2jhJK8AwCd3pJQ3V48rgp9xiWBzBQsyeaxnb3Eikw==
