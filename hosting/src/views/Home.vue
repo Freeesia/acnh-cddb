@@ -230,7 +230,7 @@ export default class Home extends Vue {
       facetFilters.push(this.selectedColors.map(t => `dominantColorTypes:${t}`));
     }
     if (this.selectedTags.length > 0) {
-      facetFilters.push(this.selectedTags.map(t => `tags:${t}`));
+      facetFilters.push(...this.selectedTags.map(t => [`tags:${t}`]));
     }
     GeneralModule.setLoading(true);
     let page = init ? 0 : this.next ?? 0;
