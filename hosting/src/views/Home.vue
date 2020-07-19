@@ -128,7 +128,6 @@ export default class Home extends Vue {
   private designsRef?: ColRef<DesignInfo>;
   private designs: DesignInfo[] = [];
   private next: number | null = 0;
-  private loading = false;
   private getColor = getColor;
   private colors = ColorTypes.map(c => {
     return {
@@ -223,10 +222,6 @@ export default class Home extends Vue {
   }
 
   private async refreshDesigns(init: boolean) {
-    if (this.loading) {
-      return;
-    }
-    this.loading = true;
     const facetFilters: string[][] = [];
     if (this.selectedTypes.length > 0) {
       facetFilters.push(this.selectedTypes.map(t => `designType:${t}`));
@@ -253,7 +248,6 @@ export default class Home extends Vue {
       .value();
     this.designs.push(...res.hits);
     GeneralModule.setLoading(false);
-    this.loading = false;
   }
 
   private addTag(tag: string) {
