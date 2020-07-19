@@ -73,6 +73,15 @@
             {{ tag.count }}
           </v-avatar>
         </v-chip>
+        <v-chip
+          v-if="showTagCount < tags.length"
+          small
+          color="primary lighten-2"
+          class="ma-1 accent--text"
+          @click="showTagCount += 10"
+        >
+          ...more
+        </v-chip>
       </v-col>
     </v-row>
     <v-row dense>
@@ -137,6 +146,7 @@ export default class Home extends Vue {
   });
   private types = DesignTypes;
   private tags: { name: string; count: number }[] = [];
+  private showTagCount = 10;
 
   private get search() {
     return SearchModule.text;
@@ -167,7 +177,10 @@ export default class Home extends Vue {
   }
 
   private get selectableTags() {
-    return this.tags.filter(t => !this.selectedTags.includes(t.name));
+    return _(this.tags)
+      .take(this.showTagCount)
+      .filter(t => !this.selectedTags.includes(t.name))
+      .value();
   }
 
   private created() {
@@ -251,10 +264,12 @@ export default class Home extends Vue {
   }
 
   private addTag(tag: string) {
+    this.showTagCount = 10;
     SearchModule.addTag(tag);
   }
 
   private remTag(tag: string) {
+    this.showTagCount = 10;
     SearchModule.remTag(tag);
   }
 
