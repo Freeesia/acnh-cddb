@@ -51,6 +51,29 @@
           </template>
         </v-select>
       </v-col>
+      <v-col cols="12">
+        <v-chip v-for="tag in selectedTags" :key="tag" small color="primary" class="ma-1" @click="remTag(tag)">
+          <v-icon left small>tag</v-icon>
+          {{ tag }}
+          <v-avatar right color="secondary">
+            <v-icon small>check</v-icon>
+          </v-avatar>
+        </v-chip>
+        <v-chip
+          v-for="tag in selectableTags"
+          :key="tag.name"
+          small
+          color="primary lighten-2"
+          class="ma-1 accent--text"
+          @click="addTag(tag.name)"
+        >
+          <v-icon left small>tag</v-icon>
+          {{ tag.name }}
+          <v-avatar right color="secondary lighten-2">
+            {{ tag.count }}
+          </v-avatar>
+        </v-chip>
+      </v-col>
     </v-row>
     <v-row dense>
       <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2">
@@ -63,6 +86,11 @@
   </v-container>
 </template>
 <style lang="scss" scoped>
+.v-chip.v-size--small .v-avatar {
+  height: 20px !important;
+  min-width: 20px !important;
+  width: 20px !important;
+}
 .color-type {
   border: solid 1px gray !important;
 }
@@ -88,9 +116,10 @@ import DesignDetail from "../components/DesignDetail.vue";
 import { SearchModule, GeneralModule } from "../store";
 import { getColor } from "../modules/color";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
-import { designsIndex } from "../../../core/src/algolia/init";
+import { designsIndex } from "../../../core/src/algolia/lite";
 import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType, ColorNames } from "../../../core/src/models/types";
 import ColRef = firestore.CollectionReference;
+import _ from "lodash";
 
 @Component({ components: { DesignCard } })
 export default class Home extends Vue {
@@ -108,6 +137,7 @@ export default class Home extends Vue {
     };
   });
   private types = DesignTypes;
+  private tags: { name: string; count: number }[] = [];
 
   private get search() {
     return SearchModule.text;
@@ -131,6 +161,14 @@ export default class Home extends Vue {
 
   private set selectedTypes(val: DesignType[]) {
     SearchModule.setTypes(val);
+  }
+
+  private get selectedTags() {
+    return SearchModule.tags;
+  }
+
+  private get selectableTags() {
+    return this.tags.filter(t => !this.selectedTags.includes(t.name));
   }
 
   private created() {
@@ -196,19 +234,34 @@ export default class Home extends Vue {
     if (this.selectedColors.length > 0) {
       facetFilters.push(this.selectedColors.map(t => `dominantColorTypes:${t}`));
     }
+    if (this.selectedTags.length > 0) {
+      facetFilters.push(this.selectedTags.map(t => `tags:${t}`));
+    }
     GeneralModule.setLoading(true);
     let page = init ? 0 : this.next ?? 0;
     const res = await this.index.search<DesignInfo>(this.search, {
       facetFilters,
       page,
+      facets: ["tags"],
     });
     this.next = ++page > res.nbPages ? null : page;
     if (init) {
       this.designs = [];
     }
+    this.tags = _(res.facets?.tags ?? {})
+      .map((v, k) => ({ name: k, count: v }))
+      .value();
     this.designs.push(...res.hits);
     GeneralModule.setLoading(false);
     this.loading = false;
+  }
+
+  private addTag(tag: string) {
+    SearchModule.addTag(tag);
+  }
+
+  private remTag(tag: string) {
+    SearchModule.remTag(tag);
   }
 
   private async onIntersect(e: IntersectionObserverEntry[]) {

@@ -5,6 +5,7 @@ import { ColorType, DesignType } from "../../../../core/src/models/types";
 export default class Search extends VuexModule {
   types: DesignType[] = [];
   colors: ColorType[] = [];
+  tags: string[] = [];
   text = "";
 
   @Mutation
@@ -20,5 +21,15 @@ export default class Search extends VuexModule {
   @Mutation
   setText(value?: string) {
     this.text = value ?? "";
+  }
+
+  @Mutation
+  addTag(value: string) {
+    this.tags.push(value);
+  }
+
+  @Mutation
+  remTag(value: string) {
+    this.tags = this.tags.filter(t => t !== value);
   }
 }
