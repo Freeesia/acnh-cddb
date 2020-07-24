@@ -32,4 +32,9 @@ export default class Search extends VuexModule {
   remTag(value: string) {
     this.tags = this.tags.filter(t => t !== value);
   }
+
+  @Mutation
+  setTags(value: string[]) {
+    this.tags = value;
+  }
 }

@@ -124,6 +124,7 @@ import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
 import { SearchModule, GeneralModule } from "../store";
 import { getColor } from "../modules/color";
+import { flatQuery } from "../modules/utility";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import { designsIndex } from "../../../core/src/algolia/lite";
 import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType, ColorNames } from "../../../core/src/models/types";
@@ -176,6 +177,10 @@ export default class Home extends Vue {
     return SearchModule.tags;
   }
 
+  private set selectedTags(val: string[]) {
+    SearchModule.setTags(val);
+  }
+
   private get selectableTags() {
     return _(this.tags)
       .take(this.showTagCount)
@@ -206,32 +211,17 @@ export default class Home extends Vue {
     } else if (search) {
       this.search = search.join(" ");
     }
-    const color = this.$route.query.color;
-    if (typeof color === "string") {
-      const c = color as ColorType;
-      if (ColorTypes.includes(c) && !this.selectedColors.includes(c)) {
-        this.selectedColors.push(c);
-      }
-    } else if (color) {
-      this.selectedColors.push(
-        ...color
-          .map(t => t as ColorType)
-          .filter(t => t !== null && ColorTypes.includes(t) && !this.selectedColors.includes(t))
-      );
-    }
-    const type = this.$route.query.type;
-    if (typeof type === "string") {
-      const t = type as DesignType;
-      if (DesignTypes.includes(t) && !this.selectedTypes.includes(t)) {
-        this.selectedTypes.push(t);
-      }
-    } else if (type) {
-      this.selectedTypes.push(
-        ...type
-          .map(t => t as DesignType)
-          .filter(t => t !== null && DesignTypes.includes(t) && !this.selectedTypes.includes(t))
-      );
-    }
+    this.selectedColors = _(flatQuery(this.$route.query.color))
+      .map(t => t as ColorType)
+      .filter(t => t !== null && ColorTypes.includes(t))
+      .uniq()
+      .value();
+    this.selectedTypes = _(flatQuery(this.$route.query.type))
+      .map(t => t as DesignType)
+      .filter(t => t !== null && DesignTypes.includes(t))
+      .uniq()
+      .value();
+    this.selectedTags = _(flatQuery(this.$route.query.tag)).uniq().value();
   }
 
   private async refreshDesigns(init: boolean) {
