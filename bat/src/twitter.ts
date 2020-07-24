@@ -94,10 +94,14 @@ export async function searchTweets() {
     .map(d => d.post.postId)
     .uniq()
     .value();
+  const existsIds = _(exists)
+    .filter(d => d.post.platform === "Twitter")
+    .map(d => d.designId)
+    .value();
   do {
     // ツイートの検索
     const res = await client.get<SearchResponse>("search/tweets", {
-      q: "#ACNH #マイデザイン filter:images -filter:retweets",
+      q: "#マイデザイン filter:images -filter:retweets",
       max_id: nextMax,
       lang: "ja",
       locale: "ja",
@@ -138,7 +142,8 @@ export async function searchTweets() {
         const info = await analyzeImageUrl(media.media_url_https + "?name=large", media.sizes.large.w);
 
         // 情報が取得できなければ対象の画像ではないのでスキップ
-        if (!info) {
+        // 既に登録済ならスキップ
+        if (!info || existsIds.includes(info.designId)) {
           continue;
         }
         const postInfo = info as DesignInfo;
