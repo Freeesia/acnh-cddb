@@ -9,6 +9,19 @@
     </v-img>
     <v-card-title>{{ info.title }}</v-card-title>
     <v-card-subtitle>{{ info.designId }}</v-card-subtitle>
+    <v-card-text>
+      <v-chip
+        v-for="tag in info.tags"
+        :key="tag"
+        small
+        color="primary lighten-2"
+        class="mx-1 accent--text"
+        @click="selectTag(tag)"
+      >
+        <v-icon left small>tag</v-icon>
+        {{ tag }}
+      </v-chip>
+    </v-card-text>
     <v-card-actions>
       <v-btn color="pink" rounded dark depressed :icon="faved" :loading="faving" @click="fav">
         <v-icon left>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
@@ -149,6 +162,11 @@ export default class DesignDetail extends Vue {
   private select(info: DesignInfo) {
     this.platform = "";
     return info;
+  }
+
+  @Emit()
+  private selectTag(tag: string) {
+    return tag;
   }
 }
 </script>

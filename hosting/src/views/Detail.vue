@@ -1,5 +1,5 @@
 <template>
-  <DesignDetail v-if="info" :info="info" @select="select"></DesignDetail>
+  <DesignDetail v-if="info" :info="info" @select="select" @select-tag="selectTag"></DesignDetail>
 </template>
 
 <script lang="ts">
@@ -31,6 +31,13 @@ export default class Detail extends Vue {
       params: {
         id: info.designId,
       },
+    });
+  }
+
+  private selectTag(tag: string) {
+    this.$router.push({
+      name: "home",
+      query: { tag },
     });
   }
 }
