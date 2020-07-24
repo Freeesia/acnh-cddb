@@ -3,9 +3,9 @@ import convertFirestore from "./convertFirestore";
 
 (async () => {
   console.log("Start");
-  // await convertFirestore();
+  await convertFirestore();
   // await batchAll();
-  await refreshTags();
+  // await refreshTags();
   console.log("Finish");
 })().catch(error => {
   console.error(error);
