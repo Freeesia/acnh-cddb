@@ -1,21 +1,15 @@
 import { auth, https, config } from "firebase-functions";
-import { initializeApp, firestore } from "firebase-admin";
+import { firestore } from "firebase-admin";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { TwitterUserCredential, Tweet } from "../../core/src/models/twitterTypes";
-import { UserMediaTweets, PostedMedia, DesignInfo, Contributor } from "../../core/src/models/types";
+import { UserMediaTweets, PostedMedia, DesignInfo } from "../../core/src/models/types";
 import { assertIsDesignInfo, assertIsContributor } from "../../core/src/models/assert";
 import { assertIsDefined, assertIsArray, assertIsString } from "../../core/src/utilities/assert";
-import { postAlgolia } from "../../core/src/algolia/post";
 import Twitter from "twitter-lite";
-import algoliasearch from "algoliasearch";
 import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
-initializeApp();
-
-const db = firestore();
-const users = db.collection("users");
-const contributors = db.collection("contributors");
-const designs = db.collection("designs");
+import { postDesignInfoToAlgolia, initAlgolia } from "./algolia";
+import { getOrCreateContributorRef, users, designs } from "./firestore";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -110,6 +104,7 @@ export const registerDesignInfo = https.onCall(async (data: DesignInfo, context)
     dominantColors: data.dominantColors,
     dominantColorTypes: data.dominantColorTypes,
     designType: data.designType,
+    tags: [],
     imageUrls: {
       large: data.imageUrls.large,
       thumb1: data.imageUrls.thumb1,
@@ -141,28 +136,6 @@ export const registerDesignInfo = https.onCall(async (data: DesignInfo, context)
 
   await postDesignInfoToAlgolia(copy);
 });
-
-async function getOrCreateContributorRef(user: Contributor) {
-  const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
-  await contributorRef.set(user, { merge: true });
-  return contributorRef as DocumentReference<Contributor>;
-}
-
-function initAlgolia() {
-  const algoliaConfig = config().algolia;
-  assertIsDefined(algoliaConfig);
-  const algoliaId = algoliaConfig.id;
-  const algoliaKey = algoliaConfig.key;
-  assertIsDefined(algoliaId);
-  assertIsDefined(algoliaKey);
-  const algoliaClient = algoliasearch(algoliaId, algoliaKey);
-  return algoliaClient.initIndex("designs");
-}
-
-async function postDesignInfoToAlgolia(copy: DesignInfo) {
-  const designsIndex = initAlgolia();
-  await postAlgolia(designsIndex, copy);
-}
 
 export const unregisterDesignInfo = https.onCall(async (data: string[], context) => {
   if (!context.auth) {
