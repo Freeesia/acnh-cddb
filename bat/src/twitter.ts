@@ -3,13 +3,14 @@ import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
 import { SearchResponse } from "./types/twitterTypes";
-import { DesignInfo, Contributor, Platforms } from "@core/models/types";
+import { DesignInfo, Contributor } from "@core/models/types";
 import { DocumentReference } from "@google-cloud/firestore";
 import { postAlgolia } from "@core/algolia/post";
 import { TweetUser, Tweet } from "@core/models/twitterTypes";
 import _ from "lodash";
 import { designsIndex } from "@core/algolia/init";
 import { includePartRegex } from "./utility";
+import { getDesigns } from "@core/algolia/get";
 
 async function createClient() {
   const user = new Twitter({
@@ -69,8 +70,12 @@ export async function searchTweets() {
   const excludeTags = includePartRegex(await getExcludeTags());
   let nextMax = "";
   let latestId = "";
-  const exists = await designsRef.where("post.platform", "==", Platforms[1]).select("post.postId").get();
-  const existsPosts = exists.docs.map(d => d.data().post.postId as string);
+  const exists = await getDesigns();
+  const existsPosts = _(exists)
+    .filter(d => d.post.platform === "Twitter")
+    .map(d => d.post.postId)
+    .uniq()
+    .value();
   do {
     // ツイートの検索
     const res = await client.get<SearchResponse>("search/tweets", {
