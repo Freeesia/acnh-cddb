@@ -12,7 +12,7 @@
     "color-convert": "^2.0.1",
     "color-diff": "^1.2.0",
     "decode-html": "^2.0.0",
-    "firebase-admin": "^8.12.1",
+    "firebase-admin": "^9.0.0",
     "firebase-functions": "^3.7.0",
     "intersects": "^2.7.2",
     "lodash": "^4.17.15",
