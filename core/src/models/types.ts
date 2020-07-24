@@ -83,6 +83,7 @@ export interface DesignInfo extends AnalyzedDesignInfo {
   post: {
     contributor: string | Contributor | DocumentReference<Contributor>;
     postId: string;
+    text?: string;
     fromSwitch: boolean;
     platform: Platform;
   };

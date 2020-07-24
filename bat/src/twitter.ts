@@ -40,6 +40,18 @@ export async function getTweets(ids: string[]) {
   return texts;
 }
 
+export function getPlainText(text: string) {
+  return (
+    text
+      // ハッシュタグとURLを削除
+      .replace(/(＃|#|https?:\/\/).*?(\s+|$)/g, "")
+      // 空行削除
+      .replace(/\n+/g, "\n")
+      // 最後の空行削除
+      .replace(/\n(\s+)?$/, "")
+  );
+}
+
 function getMaxFromQuery(query?: string) {
   if (!query) {
     return "";
@@ -140,6 +152,7 @@ export async function searchTweets() {
             screenName: tweet.user.screen_name,
             platform: "Twitter",
           }),
+          text: getPlainText(tweet.full_text),
           postId: tweet.id_str,
           platform: "Twitter",
           fromSwitch,
