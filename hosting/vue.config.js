@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ScriptExtHtmlWebpackPlugin = require("script-ext-html-webpack-plugin");
+
 module.exports = {
   pages: {
     index: {
@@ -12,6 +15,17 @@ module.exports = {
   },
   configureWebpack: {
     devtool: "source-map",
+    plugins: [
+      new ScriptExtHtmlWebpackPlugin({
+        defaultAttribute: "defer",
+      }),
+    ],
+  },
+  chainWebpack: config => {
+    config.plugin("html-index").tap(args => {
+      args[0].inject = "head";
+      return args;
+    });
   },
   transpileDependencies: ["vuetify", "vuex-module-decorators"],
 };
