@@ -1,12 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Home from "@/views/Home.vue";
-import Signin from "@/views/Signin.vue";
-import Account from "@/views/Account.vue";
-import Detail from "@/views/Detail.vue";
-import Privacy from "@/views/Privacy.vue";
-import ToS from "@/views/ToS.vue";
-import { AuthModule } from "@/store";
+import { AuthModule, GeneralModule } from "@/store";
 
 Vue.use(VueRouter);
 
@@ -14,12 +8,12 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "home",
-    component: Home,
+    component: () => import(/* webpackChunkName: "main", webpackPrefetch: true */ "@/views/Home.vue"),
   },
   {
     path: "/signin",
     name: "signin",
-    component: Signin,
+    component: () => import(/* webpackChunkName: "signin", webpackPrefetch: true */ "@/views/Signin.vue"),
     meta: {
       anonymous: true,
     },
@@ -30,18 +24,18 @@ const routes: Array<RouteConfig> = [
   {
     path: "/account",
     name: "account",
-    component: Account,
+    component: () => import(/* webpackChunkName: "main", webpackPrefetch: true */ "@/views/Account.vue"),
   },
   {
     path: "/detail/:id",
     name: "detail",
-    component: Detail,
+    component: () => import(/* webpackChunkName: "main", webpackPrefetch: true */ "@/views/Detail.vue"),
     props: true,
   },
   {
     path: "/privacy",
     name: "privacy",
-    component: Privacy,
+    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/Privacy.vue"),
     meta: {
       anonymous: true,
     },
@@ -49,7 +43,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/tos",
     name: "tos",
-    component: ToS,
+    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/ToS.vue"),
     meta: {
       anonymous: true,
     },
@@ -69,7 +63,9 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, _, next) => {
-  if (to.meta.anonymous || (await AuthModule.isSignedIn())) {
+  if (GeneralModule.swUpdated) {
+    window.location.href = to.fullPath;
+  } else if (to.meta.anonymous || (await AuthModule.isSignedIn())) {
     next();
   } else {
     next({ name: "signin", query: { redirect: to.fullPath } });

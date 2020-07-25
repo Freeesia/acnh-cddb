@@ -12,6 +12,9 @@ module.exports = {
     name: process.env.VUE_APP_NAME,
     themeColor: process.env.VUE_APP_PRIMARY_COLOR,
     msTileColor: process.env.VUE_APP_PRIMARY_COLOR,
+    workboxOptions: {
+      skipWaiting: true,
+    },
   },
   configureWebpack: {
     devtool: "source-map",
