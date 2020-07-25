@@ -65,6 +65,7 @@ node_modules/
 .env
 
 gcp-service-key.json
+acnh-cddb-7eb933a48d47.json
 
 # TypeScriptの成果物
 lib/
