@@ -10,9 +10,9 @@
       property="og:description"
       content="<%= htmlWebpackPlugin.options.title %>はSNS上に公開されているマイデザインを集めたデータベースサイトです"
     />
-    <meta property="og:url" content="https://acnh-cddb.web.app/" />
+    <meta property="og:url" content="<%= VUE_APP_DOMAIN %>" />
     <meta property="og:site_name" content="<%= htmlWebpackPlugin.options.title %>" />
-    <meta property="og:image" content="https://acnh-cddb.web.app/img/ogp_image.png" />
+    <meta property="og:image" content="<%= VUE_APP_DOMAIN %>img/ogp_image.png" />
     <meta name="twitter:card" content="summary" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title><%= htmlWebpackPlugin.options.title %></title>
