@@ -12,14 +12,14 @@ export default new Vuetify({
   theme: {
     themes: {
       light: {
-        primary: "#7cb894",
-        secondary: "#9ad4e4",
-        accent: "#997046",
+        primary: process.env.VUE_APP_PRIMARY_COLOR,
+        secondary: process.env.VUE_APP_SECONDARY_COLOR,
+        accent: process.env.VUE_APP_ACCENT_COLOR,
       },
       dark: {
-        primary: "#7cb894",
-        secondary: "#9ad4e4",
-        accent: "#997046",
+        primary: process.env.VUE_APP_PRIMARY_COLOR,
+        secondary: process.env.VUE_APP_SECONDARY_COLOR,
+        accent: process.env.VUE_APP_ACCENT_COLOR,
       },
     },
     options: {

@@ -62,7 +62,7 @@ node_modules/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+*.local
 
 gcp-service-key.json
 acnh-cddb-7eb933a48d47.json
