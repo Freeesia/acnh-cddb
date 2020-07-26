@@ -29,6 +29,15 @@ module.exports = {
       args[0].inject = "head";
       return args;
     });
+    config.module
+      .rule("md")
+      .test(/\.md$/)
+      .use("vue-loader")
+      .loader("vue-loader")
+      .end()
+      .use("markdown-to-vue-loader")
+      .loader("markdown-to-vue-loader")
+      .end();
   },
   transpileDependencies: ["vuetify", "vuex-module-decorators"],
 };
