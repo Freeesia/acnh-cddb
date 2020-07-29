@@ -142,19 +142,18 @@ export default class DesignDetail extends Vue {
 
   @Watch("info", { immediate: true })
   private async getRelatedDesigns() {
-    {
-      const res = await this.designsRef.where("post.postId", "==", this.info.post.postId).get();
-      if (res.empty) {
-        return;
-      }
-      this.postDesigns = res.docs.filter(d => d.id !== this.info.designId).map(d => d.data()) as DesignInfo[];
+    const [res1, res2] = await Promise.all([
+      this.designsRef.where("post.postId", "==", this.info.post.postId).get(),
+      this.designsRef.where("post.contributor", "==", this.info.post.contributor).limit(8).get(),
+    ]);
+    if (!res1.empty) {
+      this.postDesigns = res1.docs.filter(d => d.id !== this.info.designId).map(d => d.data()) as DesignInfo[];
     }
-    {
-      const res = await this.designsRef.where("post.contributor", "==", this.info.post.contributor).limit(6).get();
-      if (res.empty) {
-        return;
-      }
-      this.userDesigns = res.docs.filter(d => d.id !== this.info.designId).map(d => d.data()) as DesignInfo[];
+    if (!res2.empty) {
+      const postIds = this.postDesigns.map(d => d.designId);
+      this.userDesigns = res2.docs
+        .filter(d => d.id !== this.info.designId && !postIds.includes(d.id))
+        .map(d => d.data()) as DesignInfo[];
     }
   }
 
