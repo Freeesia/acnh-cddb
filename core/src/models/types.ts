@@ -42,6 +42,9 @@ export type ColorType = typeof ColorTypes[number];
 
 export const DesignTypes = [
   "マイデザイン",
+  "じめんゆか",
+  "フェイスペイント",
+  "そのほか",
   "タンクトップ",
   "はんそでTシャツ",
   "ながそでYシャツ",
