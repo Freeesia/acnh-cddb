@@ -1,5 +1,5 @@
 import { assertIsDefined } from "@core/utilities/assert";
-import { intersect, toRect, toRGBColor, Line, TRANSPARENT_DISTANCE_THRESHOLD, Rect } from "./utility";
+import { intersect, toRect, toRGBColor, Line, TRANSPARENT_DISTANCE_THRESHOLD, Rect, intersectBox } from "./utility";
 import { ImageAnnotatorClient, protos } from "@google-cloud/vision";
 import diff, { RGBColor, rgb_to_lab } from "color-diff";
 import convert from "color-convert";
@@ -13,10 +13,11 @@ import { ColorType, DominantColor, DesignType, AnalyzedDesignInfo } from "@core/
 const visionClient = new ImageAnnotatorClient();
 
 // 幅1280換算
-const titleLine: Line = { x1: 400, y1: 156, x2: 880, y2: 156 };
+const titleLine: Rect = { x: 400, y: 100, w: 480, h: 80 };
 const authorNameLine: Line = { x1: 150, y1: 490, x2: 400, y2: 490 };
 const islandNameLine: Line = { x1: 150, y1: 535, x2: 400, y2: 535 };
 const designTypeLine: Line = { x1: 940, y1: 535, x2: 1200, y2: 535 };
+const usageLine: Line = { x1: 1060, y1: 475, x2: 1130, y2: 475 };
 const authorIdPattern = /^MA-\d{4}-\d{4}-\d{4}$/;
 const designIdPattern = /^MO-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/;
 const transparent = toRGBColor([244, 246, 232]);
@@ -73,6 +74,7 @@ export async function analyzeImageUrl(imageUrl: string, width: number): Promise<
   let designType = "";
   let authorId = "";
   let designId = "";
+  let v2 = false;
   const dominantColors: DominantColor[] = [];
   const rate = 1280 / width;
   {
@@ -86,7 +88,7 @@ export async function analyzeImageUrl(imageUrl: string, width: number): Promise<
     assertIsDefined(textAnnotations);
     for (const t of textAnnotations.slice(1)) {
       const r = scale(toRect(t.boundingPoly?.vertices), rate);
-      if (intersect(r, titleLine)) {
+      if (intersectBox(r, titleLine)) {
         title += t.description;
       } else if (intersect(r, authorNameLine)) {
         authorName += t.description;
@@ -98,6 +100,8 @@ export async function analyzeImageUrl(imageUrl: string, width: number): Promise<
         authorId = t.description;
       } else if (t.description && designIdPattern.test(t.description)) {
         designId = t.description;
+      } else if (intersect(r, usageLine) && t.description === "使い道") {
+        v2 = true;
       }
     }
     if (!designId || !designType) {
@@ -108,8 +112,8 @@ export async function analyzeImageUrl(imageUrl: string, width: number): Promise<
     // デザイン部分の切り抜き
     buf = await sharp(buf)
       .extract({
-        left: Math.floor(998 / rate),
-        top: Math.floor(328 / rate),
+        left: Math.floor((v2 ? 1012 : 998) / rate),
+        top: Math.floor((v2 ? 260 : 328) / rate),
         width: Math.floor(154 / rate),
         height: Math.floor(154 / rate),
       })

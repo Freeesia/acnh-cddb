@@ -54,7 +54,7 @@
         "TS_NODE_IGNORE": "false",
         "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/gcp-service-key.json"
       },
-      "envFile": "${workspaceFolder}/bat/.env"
+      "envFile": "${workspaceFolder}/bat/.env.local"
     },
     {
       "name": "hosting",

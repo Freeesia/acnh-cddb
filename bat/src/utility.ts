@@ -3,7 +3,7 @@ import { RGBColor } from "color-diff";
 import { assertIsDefined } from "@core/utilities/assert";
 import _ from "lodash";
 import IVertex = protos.google.cloud.vision.v1.IVertex;
-import { boxLine } from "intersects";
+import { boxLine, boxBox } from "intersects";
 
 export const COLOR_DISTANCE_THRESHOLD = 15;
 export const TRANSPARENT_DISTANCE_THRESHOLD = 3;
@@ -54,6 +54,10 @@ export function toRect(vertices?: IVertex[] | null): Rect {
 
 export function intersect(rect: Rect, line: Line): boolean {
   return boxLine(rect.x, rect.y, rect.w, rect.h, line.x1, line.y1, line.x2, line.y2);
+}
+
+export function intersectBox(rect0: Rect, rect1: Rect): boolean {
+  return boxBox(rect0.x, rect0.y, rect0.w, rect0.h, rect1.x, rect1.y, rect1.w, rect1.h);
 }
 
 export function includePartRegex(targets: string[]) {
