@@ -1,35 +1,30 @@
-import { db, designsRef, getExcludeTags } from "./firestore";
-import { getTweets, getPlainText } from "./twitter";
+import { db, designsRef } from "./firestore";
 import _ from "lodash";
-import fs from "fs";
-import { Tweet } from "@core/models/twitterTypes";
-import { includePartRegex } from "./utility";
-import { getDesigns } from "@core/algolia/get";
 import { designsIndex } from "@core/algolia/init";
+import { DesignInfo } from "@core/models/types";
+import { analyzeImageUrl } from "./vision";
+import { adjunstInfo } from "@core/algolia/post";
 
 export default async function convertFirestore() {
-  const designs = (await getDesigns()).filter(
-    d => d.post.platform === "Twitter" && (d.post.text?.includes("＃") || d.post.text?.match(/&[a-zA-Z]+;/))
-  );
-  // const ids = _(designs)
-  //   .map(d => d.post.postId)
-  //   .uniq()
-  //   .value();
-  // const tweets = _(await getTweets(ids))
-  //   .keyBy(t => t.id_str)
-  //   .value();
-  // fs.writeFileSync("./tweets.json", JSON.stringify(tweets));
-  // const tweets = JSON.parse(fs.readFileSync("./tweets.json", { encoding: "utf8" })) as { [id: string]: Tweet };
-  for (const design of designs) {
-    design.post.text = getPlainText(design.post.text ?? "");
+  const docs = await designsRef.where("title", "==", "").where("post.platform", "==", "Twitter").get();
+  const designs: DesignInfo[] = [];
+  for (const doc of docs.docs) {
+    const design = doc.data() as DesignInfo;
+    const info = await analyzeImageUrl(design.imageUrls.large, 1280);
+    design.title = info?.title ?? "";
+    design.dominantColorTypes = info?.dominantColorTypes ?? [];
+    design.dominantColors = info?.dominantColors ?? [];
+    designs.push(design);
   }
-  await designsIndex.saveObjects(designs);
+  await designsIndex.saveObjects(designs.map(d => adjunstInfo(d)));
   for (const chunk of _(designs).chunk(500).value()) {
     const batch = db.batch();
     for (const design of chunk) {
-      if (design.post.text) {
-        batch.update(designsRef.doc(design.designId), "post.text", design.post.text);
-      }
+      batch.update(designsRef.doc(design.designId), {
+        title: design.title,
+        dominantColorTypes: design.dominantColorTypes,
+        dominantColors: design.dominantColors,
+      });
     }
     await batch.commit();
   }
