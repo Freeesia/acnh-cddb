@@ -241,6 +241,7 @@ export default class Home extends Vue {
       facetFilters,
       page,
       facets: ["tags"],
+      optionalWords: this.search,
     });
     this.next = ++page > res.nbPages ? null : page;
     if (init) {
