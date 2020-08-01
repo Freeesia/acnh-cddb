@@ -12,7 +12,7 @@ import { designsIndex } from "@core/algolia/init";
 import { includePartRegex } from "./utility";
 import { getDesigns } from "@core/algolia/get";
 
-async function createClient() {
+export async function createClient() {
   const user = new Twitter({
     consumer_key: process.env.TWITTER_CONSUMER_KEY ?? "",
     consumer_secret: process.env.TWITTER_CONSUMER_SECRET ?? "",
@@ -58,7 +58,7 @@ export function getPlainText(text: string) {
   );
 }
 
-function getMaxFromQuery(query?: string) {
+export function getMaxFromQuery(query?: string) {
   if (!query) {
     return "";
   }
@@ -73,7 +73,7 @@ function getMaxFromQuery(query?: string) {
   }
 }
 
-async function getOrCreateContributors(user: TweetUser) {
+export async function getOrCreateContributors(user: TweetUser) {
   const contributors = db.collection("contributors");
   const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
   await contributorRef.set(user, { merge: true });
