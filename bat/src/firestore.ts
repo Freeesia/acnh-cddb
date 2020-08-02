@@ -4,7 +4,7 @@ initializeApp();
 
 export const db = firestore();
 export const designsRef = db.collection("designs");
-export const dreadmsRef = db.collection("doreams");
+export const dreadmsRef = db.collection("dreams");
 export const Timestamp = firestore.Timestamp;
 export const DocRef = firestore.DocumentReference;
 export async function getExcludeTags() {
