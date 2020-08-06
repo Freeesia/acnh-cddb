@@ -10,6 +10,12 @@ import "./plugins/firebase";
 import "./plugins/sentry";
 import { firestorePlugin } from "vuefire";
 import InputFacade from "vue-input-facade";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fab } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(fab);
+Vue.component("v-fa", FontAwesomeIcon);
 
 Vue.use(InputFacade, {
   tokens: {
