@@ -48,6 +48,11 @@ const routes: Array<RouteConfig> = [
       anonymous: true,
     },
   },
+  {
+    path: "/dreams",
+    name: "dreams",
+    component: () => import(/* webpackChunkName: "dreams", webpackPrefetch: true */ "@/views/Dreams.vue"),
+  },
 ];
 
 const router = new VueRouter({

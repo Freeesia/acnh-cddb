@@ -7,6 +7,7 @@ import FirestoreAction, { FirestoreActionContext } from "@/modules/vuexfire-deco
 interface UserInfo {
   favs: string[];
   downloaded: string[];
+  dreamFavs: string[];
 }
 
 @Module({ namespaced: true, name: "auth" })
