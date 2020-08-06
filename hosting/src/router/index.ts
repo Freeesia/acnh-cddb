@@ -51,7 +51,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/dreams",
     name: "dreams",
-    component: () => import(/* webpackChunkName: "dreams", webpackPrefetch: true */ "@/views/Dreams.vue"),
+    component: () => import(/* webpackChunkName: "dream", webpackPrefetch: true */ "@/views/Dreams.vue"),
     meta: {
       dream: true,
     },
