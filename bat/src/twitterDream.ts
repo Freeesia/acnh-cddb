@@ -32,7 +32,7 @@ export async function searchDreamTweets() {
   do {
     // ツイートの検索
     const res = await client.get<SearchResponse>("search/tweets", {
-      q: "#夢番地 filter:images -filter:retweets",
+      q: "#夢番地 -#とび森 filter:images -filter:retweets",
       max_id: nextMax,
       lang: "ja",
       locale: "ja",
@@ -64,6 +64,10 @@ export async function searchDreamTweets() {
       }
       let dreamId = "";
       let islandName = "";
+      let tags = _(tweet.entities.hashtags)
+        .map(h => h.text)
+        .filter(h => !excludeTags.test(h))
+        .value();
       const text = getPlainText(tweet.full_text);
       const dreamMatch = text.match(/(DA-)?\d{4}(-\d{4}){2}/);
       if (dreamMatch) {
@@ -100,9 +104,14 @@ export async function searchDreamTweets() {
       if (!dreamId) {
         continue;
       }
-      // 一旦追加済みはスキップ(更新時に画像を差し替えるために今後はスキップしない)
-      if (existsIds.includes(dreamId) && registered.includes(dreamId)) {
+      // 1回の収集では最新を使う
+      if (registered.includes(dreamId)) {
         continue;
+      }
+      const name = tags.find(t => t.endsWith("島"));
+      if (name) {
+        islandName = islandName || name;
+        tags = tags.filter(t => !t.endsWith("島"));
       }
       registered.push(dreamId);
       const dream: DreamInfo = {
@@ -127,10 +136,7 @@ export async function searchDreamTweets() {
             tweet.source ===
             '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>',
         },
-        tags: _(tweet.entities.hashtags)
-          .map(h => h.text)
-          .filter(h => !excludeTags.test(h))
-          .value(),
+        tags,
         createdAt: Timestamp.fromMillis(Date.parse(tweet.created_at)),
       };
       await Promise.all([dreadmsRef.doc(dream.dreamId).set(dream), postDreamAlgolia(dreamsIndex, dream)]);
