@@ -15,6 +15,7 @@ export async function searchDreamTweets() {
   const mgt = await mgtRef.get();
   const lastLatestId = mgt.get("dreamLastId") as string;
   const low = mgt.get("lowContributors") as string[];
+  const excludeConts = mgt.get("excludeContributors") as string[];
   const excludeTags = includePartRegex(await getExcludeTags());
   let nextMax = "";
   let dreamLastId = "";
@@ -54,7 +55,7 @@ export async function searchDreamTweets() {
         nextMax = "";
         break;
       }
-      if (existsPosts.includes(tweet.id_str)) {
+      if (existsPosts.includes(tweet.id_str) || excludeConts.includes(tweet.id_str)) {
         continue;
       }
 
