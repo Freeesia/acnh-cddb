@@ -1,4 +1,4 @@
-import { db, Timestamp, getExcludeTags, dreadmsRef } from "./firestore";
+import { db, Timestamp, getExcludeTags, dreamsRef } from "./firestore";
 import { analyzeDreamImageUrl } from "./vision";
 import { SearchResponse } from "./types/twitterTypes";
 import { DreamInfo } from "@core/models/types";
@@ -139,7 +139,7 @@ export async function searchDreamTweets() {
         tags,
         createdAt: Timestamp.fromMillis(Date.parse(tweet.created_at)),
       };
-      await Promise.all([dreadmsRef.doc(dream.dreamId).set(dream), postDreamAlgolia(dreamsIndex, dream)]);
+      await Promise.all([dreamsRef.doc(dream.dreamId).set(dream), postDreamAlgolia(dreamsIndex, dream)]);
       console.log(dream.islandName + ":" + dream.tags.join(","));
     }
     console.log(res.search_metadata.max_id_str);

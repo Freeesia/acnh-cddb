@@ -1,4 +1,4 @@
-import { db, dreadmsRef, getExcludeTags } from "./firestore";
+import { db, dreamsRef, getExcludeTags } from "./firestore";
 import _ from "lodash";
 import { getDreams } from "@core/algolia/get";
 import { includePartRegex } from "./utility";
@@ -22,7 +22,7 @@ export default async function convertFirestore() {
   for (const chunk of _(dreams).chunk(500).value()) {
     const batch = db.batch();
     for (const dream of chunk) {
-      batch.update(dreadmsRef.doc(dream.dreamId), {
+      batch.update(dreamsRef.doc(dream.dreamId), {
         islandName: dream.islandName,
         tags: dream.tags,
       });
