@@ -18,7 +18,8 @@
       </v-col>
       <v-col md="8" cols="12">
         <v-tabs v-model="activeTab">
-          <v-tab>お気に入り</v-tab>
+          <v-tab>マイデザイン</v-tab>
+          <v-tab>ゆめみ</v-tab>
           <v-tab>管理</v-tab>
           <v-tab>アカウント</v-tab>
         </v-tabs>
@@ -27,6 +28,13 @@
             <v-row dense>
               <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" lg="2">
                 <DesignCard :view-downloaded="true" :info="design" @click="select" />
+              </v-col>
+            </v-row>
+          </v-tab-item>
+          <v-tab-item>
+            <v-row dense>
+              <v-col v-for="dream in dreams" :key="dream.dreamId" cols="12" sm="6" md="4">
+                <DreamCard :info="dream" />
               </v-col>
             </v-row>
           </v-tab-item>
@@ -64,6 +72,18 @@
           </v-tab-item>
           <v-tab-item>
             <section class="ma-2">
+              <header class="headline">ユーザー情報</header>
+              <v-text-field
+                v-model="user.uid"
+                readonly
+                label="ID"
+                prepend-icon="perm_identity"
+                persistent-hint
+                hint="お問い合わせの際、こちらのIDをご連絡ください"
+              />
+            </section>
+            <v-divider class="my-4" />
+            <section class="ma-2">
               <header class="headline">サインアウト</header>
               <p>サインアウトし、サインイン画面に遷移します</p>
               <v-btn color="info" @click="signOut">サインアウト</v-btn>
@@ -85,15 +105,16 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
+import DreamCard from "../components/DreamCard.vue";
 import { AuthModule, GeneralModule } from "../store";
 import { User, firestore } from "firebase/app";
 import "firebase/firestore";
-import { UserInfo, DesignInfo } from "../../../core/src/models/types";
+import { UserInfo, DesignInfo, DreamInfo } from "../../../core/src/models/types";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AddDesign from "../components/AddDesign.vue";
 import { unregisterDesignInfo } from "../plugins/functions";
 
-@Component({ components: { DesignCard } })
+@Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
   private readonly db = firestore();
   private user!: User;
@@ -112,6 +133,14 @@ export default class Account extends Vue {
     return (
       this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string" && f !== null).reverse() ??
       []
+    );
+  }
+
+  private get dreams(): DreamInfo[] {
+    return (
+      this.userInfo?.dreamFavs
+        .filter<DreamInfo>((f): f is DreamInfo => typeof f !== "string" && f !== null)
+        .reverse() ?? []
     );
   }
 
