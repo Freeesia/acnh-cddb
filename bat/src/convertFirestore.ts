@@ -1,12 +1,31 @@
-import { db, dreadmsRef } from "./firestore";
+import { db, dreadmsRef, getExcludeTags } from "./firestore";
 import _ from "lodash";
+import { getDreams } from "@core/algolia/get";
+import { includePartRegex } from "./utility";
+import { dreamsIndex } from "@core/algolia/init";
+import fs from "fs";
 
 export default async function convertFirestore() {
-  const docs = await db.collection("doreams").get();
-  for (const chunk of _(docs.docs).chunk(500).value()) {
+  const dreams = await getDreams();
+  const excludeTags = includePartRegex(await getExcludeTags());
+  for (const dream of dreams) {
+    dream.tags = dream.tags.filter(h => !excludeTags.test(h));
+    const name = dream.tags.find(t => t.endsWith("島"));
+    if (name) {
+      dream.islandName = dream.islandName || name;
+      dream.tags = dream.tags.filter(t => t !== name);
+    }
+  }
+  fs.writeFileSync("./dream.json", JSON.stringify(dreams));
+  await dreamsIndex.clearObjects();
+  await dreamsIndex.saveObjects(dreams, { autoGenerateObjectIDIfNotExist: false });
+  for (const chunk of _(dreams).chunk(500).value()) {
     const batch = db.batch();
-    for (const doc of chunk) {
-      batch.create(dreadmsRef.doc(doc.id), doc.data());
+    for (const dream of chunk) {
+      batch.update(dreadmsRef.doc(dream.dreamId), {
+        islandName: dream.islandName,
+        tags: dream.tags,
+      });
     }
     await batch.commit();
   }
