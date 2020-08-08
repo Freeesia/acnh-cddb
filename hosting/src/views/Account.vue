@@ -160,7 +160,7 @@ export default class Account extends Vue {
   private get dreams(): DreamInfo[] {
     return (
       this.userInfo?.dreamFavs
-        .filter<DreamInfo>((f): f is DreamInfo => typeof f !== "string" && f !== null)
+        ?.filter<DreamInfo>((f): f is DreamInfo => typeof f !== "string" && f !== null)
         .reverse() ?? []
     );
   }
