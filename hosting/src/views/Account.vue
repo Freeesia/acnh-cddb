@@ -29,6 +29,10 @@
               <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" lg="2">
                 <DesignCard :view-downloaded="true" :info="design" @click="select" />
               </v-col>
+              <p v-if="designs.length === 0">
+                まだお気に入りのマイデザインが登録されていません😭<br />
+                <router-link to="/">こちら</router-link>のたくさんのマイデザインの中からお気に入りを探してみてください💖
+              </p>
             </v-row>
           </v-tab-item>
           <v-tab-item>
@@ -36,6 +40,10 @@
               <v-col v-for="dream in dreams" :key="dream.dreamId" cols="12" sm="6" md="4">
                 <DreamCard :info="dream" />
               </v-col>
+              <p v-if="dreams.length === 0">
+                まだお気に入りの夢番地が登録されていません😭<br />
+                <router-link to="/dream">こちら</router-link>のたくさんの夢の中からお気に入りを探してみてください💖
+              </p>
             </v-row>
           </v-tab-item>
           <v-tab-item>
@@ -90,19 +98,19 @@
                 label="ID"
                 prepend-icon="perm_identity"
                 persistent-hint
-                hint="お問い合わせの際、こちらのIDをご連絡ください"
+                hint="お問い合わせの際、こちらのIDをご連絡ください🙏"
               />
             </section>
             <v-divider class="my-4" />
             <section class="ma-2">
               <header class="headline">サインアウト</header>
-              <p>サインアウトし、サインイン画面に遷移します</p>
+              <p>サインアウトし、サインイン画面に遷移します👋</p>
               <v-btn color="info" @click="signOut">サインアウト</v-btn>
             </section>
             <v-divider class="my-4" />
             <section class="ma-2">
               <header class="headline">退会</header>
-              <p>アカウントを削除します</p>
+              <p>アカウントを削除します🥺</p>
               <v-btn color="error" @click="deleteMe">退会</v-btn>
             </section>
           </v-tab-item>
