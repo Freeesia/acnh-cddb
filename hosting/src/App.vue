@@ -5,7 +5,7 @@
         <v-btn text to="/">
           <v-toolbar-title>{{ isDream ? "" : "あつまれ マイデザの" }}🌳</v-toolbar-title>
         </v-btn>
-        <v-btn text to="/dreams">
+        <v-btn text to="/dream">
           <v-toolbar-title>{{ isDream ? "あつまれ ゆめみの" : "" }}⛪️</v-toolbar-title>
         </v-btn>
       </v-toolbar-items>
