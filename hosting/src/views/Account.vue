@@ -19,7 +19,7 @@
       <v-col md="8" cols="12">
         <v-tabs v-model="activeTab">
           <v-tab>マイデザイン</v-tab>
-          <v-tab>ゆめみ</v-tab>
+          <v-tab>夢番地</v-tab>
           <v-tab>管理</v-tab>
           <v-tab>アカウント</v-tab>
         </v-tabs>
@@ -39,6 +39,17 @@
             </v-row>
           </v-tab-item>
           <v-tab-item>
+            <v-toolbar dense flat>
+              <v-toolbar-title>投稿した夢番地</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="setDream">
+                <v-icon>add</v-icon>
+              </v-btn>
+              <v-btn icon :disabled="!myDream" :loading="deleting" @click="deleteDream">
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <DreamCard v-if="myDream" mine :info="myDream" />
             <v-toolbar dense flat>
               <v-toolbar-title>投稿したマイデザ</v-toolbar-title>
               <v-spacer></v-spacer>
@@ -112,7 +123,8 @@ import "firebase/firestore";
 import { UserInfo, DesignInfo, DreamInfo } from "../../../core/src/models/types";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AddDesign from "../components/AddDesign.vue";
-import { unregisterDesignInfo } from "../plugins/functions";
+import { unregisterDesignInfo, unregisterDreamInfo } from "../plugins/functions";
+import SetDream from "../components/SetDream.vue";
 
 @Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
@@ -121,6 +133,7 @@ export default class Account extends Vue {
   private userInfo: UserInfo | null = null;
   private activeTab: any = null;
   private myDesigns: DesignInfo[] = [];
+  private myDreams: DreamInfo[] = [];
   private headers = [
     { text: "", value: "imageUrls", sortable: false, filterable: false },
     { text: "タイトル", value: "title" },
@@ -144,6 +157,10 @@ export default class Account extends Vue {
     );
   }
 
+  private get myDream() {
+    return this.myDreams.length > 0 ? this.myDreams[0] : null;
+  }
+
   private get profileUrl() {
     return this.user.photoURL?.replace("_normal.png", ".png");
   }
@@ -161,6 +178,7 @@ export default class Account extends Vue {
     assertIsDefined(provData);
     const conRef = this.db.doc(`contributors/Twitter:${provData.uid}`);
     this.$bind("myDesigns", this.db.collection("designs").where("post.contributor", "==", conRef));
+    this.$bind("myDreams", this.db.collection("dreams").where("post.contributor", "==", conRef).limit(1));
   }
 
   private async signOut() {
@@ -218,6 +236,32 @@ export default class Account extends Vue {
       const ids = this.selected.map(d => d.designId);
       await unregisterDesignInfo(ids);
       this.selected = [];
+      this.deleting = false;
+    }
+  }
+
+  private async setDream() {
+    if (this.myDream) {
+      const res = await this.$dialog.confirm({
+        text: "現在投稿されている夢番地を上書きしますが、よろしいですか？",
+      });
+      if (!res) {
+        return;
+      }
+    }
+    this.$dialog.show(SetDream, {
+      showClose: false,
+    });
+  }
+
+  private async deleteDream() {
+    const res = await this.$dialog.confirm({
+      text: "投稿した夢番地を削除してよろしいですか？",
+    });
+    if (res) {
+      this.deleting = true;
+      assertIsDefined(this.myDream);
+      await unregisterDreamInfo(this.myDream.dreamId);
       this.deleting = false;
     }
   }

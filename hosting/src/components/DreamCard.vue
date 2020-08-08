@@ -1,6 +1,6 @@
 <template>
   <v-lazy min-height="360">
-    <v-card>
+    <v-card :flat="mine">
       <v-carousel cycle interval="4000" height="360" hide-delimiter-background show-arrows-on-hover>
         <v-carousel-item v-for="(urls, i) in info.imageUrls" :key="i">
           <v-img height="360" :src="urls.large" :lazy-src="urls.thumb2" class="align-end">
@@ -24,7 +24,7 @@
         <v-btn icon :href="tweetUrl" target="_brank">
           <v-fa :icon="['fab', 'twitter']" size="lg" :style="{ color: '#1DA1F2' }" />
         </v-btn>
-        <v-btn class="ma-1 fav float-right" :loading="faving" icon color="pink" @click="fav">
+        <v-btn v-if="!mine" class="ma-1 fav float-right" :loading="faving" icon color="pink" @click="fav">
           <v-icon>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
         </v-btn>
       </v-card-actions>
@@ -57,6 +57,8 @@ export default class DreamCard extends Vue {
 
   @Prop({ required: true })
   private info!: DreamInfo;
+  @Prop({ type: Boolean, default: false })
+  private mine!: boolean;
   private faving = false;
   private userRef!: DocRef;
 
