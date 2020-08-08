@@ -7,6 +7,8 @@ import {
   authorIdPattern,
   Platforms,
   Contributor,
+  DreamInfo,
+  dreamIdPattern,
 } from "./types";
 import {
   assertIsDefined,
@@ -57,4 +59,24 @@ export function assertIsContributor(val: unknown): asserts val is Contributor {
   const con = val as Contributor;
   assertIsString<Contributor>(con.id, "id");
   assertIncludes<Contributor>(con.platform, "platform", Platforms);
+}
+
+export function assertDreamInfo(val?: DreamInfo): asserts val is DreamInfo {
+  assertIsDefined(val);
+  assertIsString<DreamInfo>(val.islandName, "islandName");
+  assertRegex<DreamInfo>(val.dreamId, "dreamId", dreamIdPattern);
+
+  assertIsArray<DreamInfo>(val.imageUrls, "imageUrls");
+  for (const urls of val.imageUrls) {
+    assertRegex(urls.large, "large", /^http(s):\/\//);
+    assertRegex(urls.thumb1, "thumb1", /^http(s):\/\//);
+    assertRegex(urls.thumb2, "thumb2", /^http(s):\/\//);
+  }
+
+  const post = val.post;
+  assertIsDefined(post);
+  assertIsString(post.postId, "postId");
+  assertIsBoolean(post.fromSwitch, "fromSwitch");
+  assertIncludes(post.platform, "postId", Platforms);
+  assertIsDefined(val.createdAt);
 }
