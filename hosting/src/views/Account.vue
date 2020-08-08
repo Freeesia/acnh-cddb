@@ -251,6 +251,7 @@ export default class Account extends Vue {
     }
     this.$dialog.show(SetDream, {
       showClose: false,
+      oldId: this.myDream?.dreamId ?? "",
     });
   }
 

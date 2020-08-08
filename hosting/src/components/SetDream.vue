@@ -91,11 +91,11 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Emit } from "vue-property-decorator";
+import { Emit, Prop } from "vue-property-decorator";
 import { auth } from "firebase/app";
 import "firebase/auth";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
-import { registerDreamInfo, getTweets } from "../plugins/functions";
+import { registerDreamInfo, getTweets, unregisterDreamInfo } from "../plugins/functions";
 import { DreamInfo, PostedTweet } from "../../../core/src/models/types";
 import { TweetUser } from "../../../core/src/models/twitterTypes";
 
@@ -114,6 +114,9 @@ export default class SetDream extends Vue {
   private contoributor?: TweetUser;
   private cred: auth.OAuthCredential | null = null;
 
+  @Prop({ type: String, default: "" })
+  private oldId!: string;
+
   private created() {
     auth().useDeviceLanguage();
   }
@@ -123,6 +126,7 @@ export default class SetDream extends Vue {
   }
 
   private async login() {
+    console.log("oldId:" + this.oldId);
     this.getting = true;
     if (!this.cred) {
       const res = await auth().signInWithPopup(new auth.TwitterAuthProvider());
@@ -187,6 +191,9 @@ export default class SetDream extends Vue {
       createdAt: {},
     };
     dream.post.contributor = this.contoributor;
+    if (this.oldId) {
+      await unregisterDreamInfo(this.oldId);
+    }
     await registerDreamInfo(dream);
     this.close();
     this.posting = false;
