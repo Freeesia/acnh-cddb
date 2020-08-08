@@ -5,9 +5,10 @@ import { DreamInfo } from "@core/models/types";
 import { postDreamAlgolia } from "@core/algolia/post";
 import _ from "lodash";
 import { dreamsIndex } from "@core/algolia/init";
-import { includePartRegex } from "./utility";
 import { getDreams } from "@core/algolia/get";
-import { createClient, getMaxFromQuery, getPlainText, getOrCreateContributors } from "./twitter";
+import { createClient, getMaxFromQuery, getOrCreateContributors } from "./twitter";
+import { getPlainText } from "@core/twitter/utility";
+import { includePartRegex } from "@core/utilities/systemUtility";
 
 export async function searchDreamTweets() {
   const client = await createClient();

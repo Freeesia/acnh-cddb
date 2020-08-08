@@ -9,8 +9,9 @@ import { postAlgolia } from "@core/algolia/post";
 import { TweetUser, Tweet } from "@core/models/twitterTypes";
 import _ from "lodash";
 import { designsIndex } from "@core/algolia/init";
-import { includePartRegex } from "./utility";
 import { getDesigns } from "@core/algolia/get";
+import { getPlainText } from "@core/twitter/utility";
+import { includePartRegex } from "@core/utilities/systemUtility";
 
 export async function createClient() {
   const user = new Twitter({
@@ -38,24 +39,6 @@ export async function getTweets(ids: string[]) {
   }
 
   return texts;
-}
-
-export function getPlainText(text: string) {
-  return (
-    text
-      // ハッシュタグとURLを削除
-      .replace(/(＃|#|https?:\/\/).*?(\s+|$)/g, "")
-      // 空行削除
-      .replace(/\n+/g, "\n")
-      // 最後の空行削除
-      .replace(/\n(\s+)?$/, "")
-      .replace("&lt;", "<")
-      .replace("&gt;", ">")
-      .replace("&amp;", "&")
-      .replace("&apos;", "'")
-      .replace("&quot;", '"')
-      .replace("&nbsp;", "\xa0")
-  );
 }
 
 export function getMaxFromQuery(query?: string) {

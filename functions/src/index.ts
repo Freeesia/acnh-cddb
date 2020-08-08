@@ -5,6 +5,8 @@ import { TwitterUserCredential, Tweet } from "../../core/src/models/twitterTypes
 import { UserMediaTweets, PostedMedia, DesignInfo, DreamInfo } from "../../core/src/models/types";
 import { assertIsDesignInfo, assertIsContributor, assertDreamInfo } from "../../core/src/models/assert";
 import { assertIsDefined, assertIsArray, assertIsString } from "../../core/src/utilities/assert";
+import { getPlainText } from "../../core/src/twitter/utility";
+import { includePartRegex } from "../../core/src/utilities/systemUtility";
 import Twitter from "twitter-lite";
 import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;

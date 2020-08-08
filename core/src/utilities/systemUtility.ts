@@ -5,3 +5,7 @@ export const sleep = (val: number) => {
     }, val);
   });
 };
+
+export function includePartRegex(targets: string[]) {
+  return new RegExp(`(${targets.join("|")})`, "i");
+}

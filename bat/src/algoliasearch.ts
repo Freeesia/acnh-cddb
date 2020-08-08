@@ -3,7 +3,7 @@ import { DesignInfo } from "@core/models/types";
 import { designsIndex } from "@core/algolia/init";
 import { adjunstInfo } from "@core/algolia/post";
 import { getDesigns } from "@core/algolia/get";
-import { includePartRegex } from "./utility";
+import { includePartRegex } from "@core/utilities/systemUtility";
 
 export async function batchAll() {
   const designs = await designsRef.get();

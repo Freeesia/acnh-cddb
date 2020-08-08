@@ -1,9 +1,9 @@
 import { db, dreamsRef, getExcludeTags } from "./firestore";
 import _ from "lodash";
 import { getDreams } from "@core/algolia/get";
-import { includePartRegex } from "./utility";
 import { dreamsIndex } from "@core/algolia/init";
 import fs from "fs";
+import { includePartRegex } from "@core/utilities/systemUtility";
 
 export default async function convertFirestore() {
   const dreams = await getDreams();
