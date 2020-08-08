@@ -15,3 +15,8 @@ export async function getOrCreateContributorRef(user: Contributor) {
   await contributorRef.set(user, { merge: true });
   return contributorRef as DocumentReference<Contributor>;
 }
+
+export async function getExcludeTags() {
+  const common = await db.doc("management/common").get();
+  return common.get("excludeTags") as string[];
+}

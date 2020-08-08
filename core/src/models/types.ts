@@ -135,6 +135,16 @@ export interface UserMediaTweets {
   sinceId: string;
 }
 
+export interface PostedTweet {
+  contributor: string | Contributor | DocumentReference<Contributor>;
+  postId: string;
+  text?: string;
+  fromSwitch: boolean;
+  platform: Platform;
+  imageUrls: ImageUrls[];
+  tags: string[];
+}
+
 export interface DreamInfo {
   dreamId: string;
   imageUrls: ImageUrls[];

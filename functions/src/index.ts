@@ -2,7 +2,7 @@ import { auth, https, config } from "firebase-functions";
 import { firestore } from "firebase-admin";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { TwitterUserCredential, Tweet } from "../../core/src/models/twitterTypes";
-import { UserMediaTweets, PostedMedia, DesignInfo, DreamInfo } from "../../core/src/models/types";
+import { UserMediaTweets, PostedMedia, DesignInfo, DreamInfo, PostedTweet } from "../../core/src/models/types";
 import { assertIsDesignInfo, assertIsContributor, assertDreamInfo } from "../../core/src/models/assert";
 import { assertIsDefined, assertIsArray, assertIsString } from "../../core/src/utilities/assert";
 import { getPlainText } from "../../core/src/twitter/utility";
@@ -11,7 +11,7 @@ import Twitter from "twitter-lite";
 import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDreamIndex } from "./algolia";
-import { getOrCreateContributorRef, users, designs, dreams } from "./firestore";
+import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags } from "./firestore";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -77,6 +77,55 @@ export const getTweetImages = https.onCall(
       posts,
       sinceId: res[res.length - 1].id_str,
     };
+  }
+);
+
+export const getTweets = https.onCall(
+  async (data: TwitterUserCredential, context): Promise<PostedTweet[]> => {
+    if (!context.auth) {
+      throw new HttpsError("unauthenticated", "認証されていません");
+    }
+    const twitterConfig = config().twitter;
+    assertIsDefined(twitterConfig);
+    const key = twitterConfig.key;
+    const secret = twitterConfig.secret;
+    assertIsDefined(key);
+    assertIsDefined(secret);
+    const client = new Twitter({
+      consumer_key: key,
+      consumer_secret: secret,
+      access_token_key: data.token,
+      access_token_secret: data.secret,
+    });
+    const res = await client.get<Tweet[]>("statuses/user_timeline", {
+      count: 200,
+      trim_user: true,
+      exclude_replies: true,
+      include_rts: false,
+      tweet_mode: "extended",
+    });
+    return res
+      .filter(t => t.extended_entities?.media)
+      .map(t => {
+        const fromSwitch =
+          t.source === '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
+        return {
+          postId: t.id_str,
+          contributor: t.user.id_str,
+          platform: "Twitter",
+          fromSwitch,
+          imageUrls:
+            t.extended_entities?.media
+              ?.filter(m => m.type === "photo")
+              .map(m => ({
+                thumb1: m.media_url_https + "?name=thumb",
+                thumb2: m.media_url_https + "?name=small",
+                large: m.media_url_https + "?name=large",
+              })) ?? [],
+          tags: t.entities?.hashtags.map(h => h.text) ?? [],
+          text: getPlainText(t.full_text),
+        };
+      });
   }
 );
 
@@ -197,11 +246,17 @@ export const registerDreamInfo = https.onCall(async (data: DreamInfo, context) =
     }
   }
 
+  const excludeTags = includePartRegex(await getExcludeTags());
+
   const copy: DreamInfo = {
     islandName: data.islandName,
     dreamId: data.dreamId,
-    tags: [],
-    imageUrls: [],
+    tags: data.tags.filter(t => !excludeTags.test(t) && data.islandName !== t),
+    imageUrls: data.imageUrls.map(u => ({
+      thumb1: u.thumb1,
+      thumb2: u.thumb2,
+      large: u.large,
+    })),
     post: {
       contributor: await getOrCreateContributorRef(contributor),
       postId: data.post.postId,
@@ -211,14 +266,6 @@ export const registerDreamInfo = https.onCall(async (data: DreamInfo, context) =
     },
     createdAt: FieldValue.serverTimestamp(),
   };
-
-  for (const urls of data.imageUrls) {
-    copy.imageUrls.push({
-      thumb1: urls.thumb1,
-      thumb2: urls.thumb2,
-      large: urls.large,
-    });
-  }
 
   const docRef = dreams.doc(copy.dreamId);
 
