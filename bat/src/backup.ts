@@ -24,8 +24,8 @@ export async function deleteOld() {
   for (const key of _(group).keys().value()) {
     const date = moment.utc(key, "YYYY-MM-DDThh:mm:ss_SSSSS");
     if (date.diff(now, "days") < -7) {
-      // await Promise.all(group[key].map(f => f.delete()));
-      console.log("old:" + key);
+      await Promise.all(group[key].map(f => f.delete()));
+      console.log("deleted:" + key);
     }
   }
 }
