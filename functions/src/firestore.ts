@@ -7,6 +7,7 @@ initializeApp();
 const db = firestore();
 export const users = db.collection("users");
 export const designs = db.collection("designs");
+export const dreams = db.collection("dreams");
 const contributors = db.collection("contributors");
 
 export async function getOrCreateContributorRef(user: Contributor) {
