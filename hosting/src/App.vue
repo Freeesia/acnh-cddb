@@ -42,7 +42,7 @@
         </v-col>
         <v-col class="text-right">
           <a href="https://github.com/Freeesia/acnh-cddb">
-            <img width="12" src="./assets/GitHub-Mark-32px.png" />
+            <v-fa :icon="['fab', 'github']" />
             Source
           </a>
           &copy; {{ new Date().getFullYear() }} Freesia
