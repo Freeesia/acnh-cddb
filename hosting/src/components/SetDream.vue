@@ -126,7 +126,6 @@ export default class SetDream extends Vue {
   }
 
   private async login() {
-    console.log("oldId:" + this.oldId);
     this.getting = true;
     if (!this.cred) {
       const res = await auth().signInWithPopup(new auth.TwitterAuthProvider());
