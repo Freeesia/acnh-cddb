@@ -94,7 +94,7 @@ export default class DreamCard extends Vue {
     this.faving = false;
   }
 
-  private share() {
+  private async share() {
     let text = "あつまれゆめみの⛪️ で見つけたよ！";
     if (this.info.islandName) {
       text += "\n島名: " + this.info.islandName;
@@ -102,11 +102,15 @@ export default class DreamCard extends Vue {
     text += `
 ${process.env.VUE_APP_DOMAIN}
 #あつまれゆめみの⛪️ #ACNH #あつ森 #あつまれどうぶつの森`;
-    navigator.share({
-      title: this.info.islandName,
-      text: text,
-      url: this.tweetUrl,
-    });
+    try {
+      await navigator.share({
+        title: this.info.islandName,
+        text: text,
+        url: this.tweetUrl,
+      });
+    } catch (error) {
+      // 特に何もしない
+    }
   }
 }
 </script>
