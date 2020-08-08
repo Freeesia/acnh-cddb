@@ -2,10 +2,10 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <v-toolbar-items>
-        <v-btn text to="/">
+        <v-btn class="px-1" text to="/">
           <v-toolbar-title>{{ isDream ? "" : "あつまれ マイデザの" }}🌳</v-toolbar-title>
         </v-btn>
-        <v-btn text to="/dream">
+        <v-btn class="px-1" text to="/dream">
           <v-toolbar-title>{{ isDream ? "あつまれ ゆめみの" : "" }}⛪️</v-toolbar-title>
         </v-btn>
       </v-toolbar-items>
