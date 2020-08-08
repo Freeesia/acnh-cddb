@@ -147,3 +147,33 @@ export async function analyzeImageUrl(imageUrl: string, width: number): Promise<
     },
   };
 }
+
+export async function analyzeDreamImageUrl(imageUrl: string) {
+  let dreamId = "";
+  let islandName = "";
+  const image = await axios.get<Buffer>(imageUrl, { responseType: "arraybuffer" });
+  const [res] = await visionClient.textDetection(image.data);
+  const textAnnotations = res.textAnnotations;
+  assertIsDefined(textAnnotations);
+  if (textAnnotations.length > 0) {
+    const text = textAnnotations[0].description ?? "";
+    const dreamMatch = text.match(/(DA-)?\d{4}(-\d{4}){2}/);
+    if (dreamMatch) {
+      const id = dreamMatch[0];
+      dreamId = id.startsWith("DA") ? id : "DA-" + id;
+    }
+    const islandMatch = text.match(/(そうそう|引き続き|現在)、(?<island>.+?島)の/);
+    if (islandMatch?.groups) {
+      islandName = islandMatch.groups.island.trim();
+    } else if (text.match(/^PASPORT$/)) {
+      const islandMatch2 = text.match(/^.+島$/);
+      if (islandMatch2) {
+        islandName = islandMatch2[0];
+      }
+    }
+  }
+  return {
+    dreamId,
+    islandName,
+  };
+}

@@ -3,7 +3,10 @@
     <v-app-bar app color="primary" dark>
       <v-toolbar-items>
         <v-btn text to="/">
-          <v-toolbar-title>あつまれ マイデザの🌳</v-toolbar-title>
+          <v-toolbar-title>{{ isDream ? "" : "あつまれ マイデザの" }}🌳</v-toolbar-title>
+        </v-btn>
+        <v-btn text to="/dream">
+          <v-toolbar-title>{{ isDream ? "あつまれ ゆめみの" : "" }}⛪️</v-toolbar-title>
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
@@ -54,15 +57,31 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { AuthModule, GeneralModule } from "./store";
 import Fab from "./components/Fab.vue";
+import { Route } from "vue-router";
+import { Watch } from "vue-property-decorator";
 
 @Component({ components: { Fab } })
 export default class App extends Vue {
+  private isDream = false;
   private get loading() {
     return GeneralModule.loading;
   }
 
   private get user() {
     return AuthModule.user;
+  }
+
+  private created() {
+    this.$router.afterEach(this.afterEach);
+  }
+
+  private afterEach(to: Route) {
+    this.isDream = to.meta.dream ?? false;
+  }
+
+  @Watch("isDream")
+  private chanedMode(val: boolean) {
+    this.$vuetify.theme.dark = val;
   }
 }
 </script>

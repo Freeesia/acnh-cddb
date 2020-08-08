@@ -1,29 +1,30 @@
-import { db, designsRef } from "./firestore";
+import { db, dreamsRef, getExcludeTags } from "./firestore";
 import _ from "lodash";
-import { designsIndex } from "@core/algolia/init";
-import { DesignInfo } from "@core/models/types";
-import { analyzeImageUrl } from "./vision";
-import { adjunstInfo } from "@core/algolia/post";
+import { getDreams } from "@core/algolia/get";
+import { dreamsIndex } from "@core/algolia/init";
+import fs from "fs";
+import { includePartRegex } from "@core/utilities/systemUtility";
 
 export default async function convertFirestore() {
-  const docs = await designsRef.where("title", "==", "").where("post.platform", "==", "Twitter").get();
-  const designs: DesignInfo[] = [];
-  for (const doc of docs.docs) {
-    const design = doc.data() as DesignInfo;
-    const info = await analyzeImageUrl(design.imageUrls.large, 1280);
-    design.title = info?.title ?? "";
-    design.dominantColorTypes = info?.dominantColorTypes ?? [];
-    design.dominantColors = info?.dominantColors ?? [];
-    designs.push(design);
+  const dreams = await getDreams();
+  const excludeTags = includePartRegex(await getExcludeTags());
+  for (const dream of dreams) {
+    dream.tags = dream.tags.filter(h => !excludeTags.test(h));
+    const name = dream.tags.find(t => t.endsWith("島"));
+    if (name) {
+      dream.islandName = dream.islandName || name;
+      dream.tags = dream.tags.filter(t => t !== name);
+    }
   }
-  await designsIndex.saveObjects(designs.map(d => adjunstInfo(d)));
-  for (const chunk of _(designs).chunk(500).value()) {
+  fs.writeFileSync("./dream.json", JSON.stringify(dreams));
+  await dreamsIndex.clearObjects();
+  await dreamsIndex.saveObjects(dreams, { autoGenerateObjectIDIfNotExist: false });
+  for (const chunk of _(dreams).chunk(500).value()) {
     const batch = db.batch();
-    for (const design of chunk) {
-      batch.update(designsRef.doc(design.designId), {
-        title: design.title,
-        dominantColorTypes: design.dominantColorTypes,
-        dominantColors: design.dominantColors,
+    for (const dream of chunk) {
+      batch.update(dreamsRef.doc(dream.dreamId), {
+        islandName: dream.islandName,
+        tags: dream.tags,
       });
     }
     await batch.commit();

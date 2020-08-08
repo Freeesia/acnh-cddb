@@ -9,10 +9,11 @@ import { postAlgolia } from "@core/algolia/post";
 import { TweetUser, Tweet } from "@core/models/twitterTypes";
 import _ from "lodash";
 import { designsIndex } from "@core/algolia/init";
-import { includePartRegex } from "./utility";
 import { getDesigns } from "@core/algolia/get";
+import { getPlainText } from "@core/twitter/utility";
+import { includePartRegex } from "@core/utilities/systemUtility";
 
-async function createClient() {
+export async function createClient() {
   const user = new Twitter({
     consumer_key: process.env.TWITTER_CONSUMER_KEY ?? "",
     consumer_secret: process.env.TWITTER_CONSUMER_SECRET ?? "",
@@ -40,25 +41,7 @@ export async function getTweets(ids: string[]) {
   return texts;
 }
 
-export function getPlainText(text: string) {
-  return (
-    text
-      // ハッシュタグとURLを削除
-      .replace(/(＃|#|https?:\/\/).*?(\s+|$)/g, "")
-      // 空行削除
-      .replace(/\n+/g, "\n")
-      // 最後の空行削除
-      .replace(/\n(\s+)?$/, "")
-      .replace("&lt;", "<")
-      .replace("&gt;", ">")
-      .replace("&amp;", "&")
-      .replace("&apos;", "'")
-      .replace("&quot;", '"')
-      .replace("&nbsp;", "\xa0")
-  );
-}
-
-function getMaxFromQuery(query?: string) {
+export function getMaxFromQuery(query?: string) {
   if (!query) {
     return "";
   }
@@ -73,7 +56,7 @@ function getMaxFromQuery(query?: string) {
   }
 }
 
-async function getOrCreateContributors(user: TweetUser) {
+export async function getOrCreateContributors(user: TweetUser) {
   const contributors = db.collection("contributors");
   const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
   await contributorRef.set(user, { merge: true });

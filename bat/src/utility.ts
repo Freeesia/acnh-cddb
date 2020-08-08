@@ -59,7 +59,3 @@ export function intersect(rect: Rect, line: Line): boolean {
 export function intersectBox(rect0: Rect, rect1: Rect): boolean {
   return boxBox(rect0.x, rect0.y, rect0.w, rect0.h, rect1.x, rect1.y, rect1.w, rect1.h);
 }
-
-export function includePartRegex(targets: string[]) {
-  return new RegExp(`(${targets.join("|")})`, "i");
-}

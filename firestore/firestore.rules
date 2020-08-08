@@ -4,6 +4,9 @@ service cloud.firestore {
     match /designs/{document=**} {
       allow read: if true;
     }
+    match /dreams/{document=**} {
+      allow read: if true;
+    }
     match /contributors/{document=**} {
       allow read: if true;
     }

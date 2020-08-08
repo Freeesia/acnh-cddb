@@ -46,6 +46,8 @@
       "smartStep": true,
       "skipFiles": [
         "node_modules",
+        "<eval>",
+        "<node_internals>",
       ],
       "cwd": "${workspaceRoot}/bat",
       "protocol": "inspector",

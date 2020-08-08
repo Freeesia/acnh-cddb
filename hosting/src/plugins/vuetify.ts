@@ -17,9 +17,9 @@ export default new Vuetify({
         accent: process.env.VUE_APP_ACCENT_COLOR,
       },
       dark: {
-        primary: process.env.VUE_APP_PRIMARY_COLOR,
-        secondary: process.env.VUE_APP_SECONDARY_COLOR,
-        accent: process.env.VUE_APP_ACCENT_COLOR,
+        primary: "#bd3ba8",
+        secondary: "#fa7ac4",
+        accent: "#1b2471",
       },
     },
     options: {

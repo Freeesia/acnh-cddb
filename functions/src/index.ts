@@ -2,14 +2,16 @@ import { auth, https, config } from "firebase-functions";
 import { firestore } from "firebase-admin";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { TwitterUserCredential, Tweet } from "../../core/src/models/twitterTypes";
-import { UserMediaTweets, PostedMedia, DesignInfo } from "../../core/src/models/types";
-import { assertIsDesignInfo, assertIsContributor } from "../../core/src/models/assert";
+import { UserMediaTweets, PostedMedia, DesignInfo, DreamInfo, PostedTweet } from "../../core/src/models/types";
+import { assertIsDesignInfo, assertIsContributor, assertDreamInfo } from "../../core/src/models/assert";
 import { assertIsDefined, assertIsArray, assertIsString } from "../../core/src/utilities/assert";
+import { getPlainText } from "../../core/src/twitter/utility";
+import { includePartRegex } from "../../core/src/utilities/systemUtility";
 import Twitter from "twitter-lite";
 import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
-import { postDesignInfoToAlgolia, initAlgolia } from "./algolia";
-import { getOrCreateContributorRef, users, designs } from "./firestore";
+import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDreamIndex } from "./algolia";
+import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags } from "./firestore";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -75,6 +77,55 @@ export const getTweetImages = https.onCall(
       posts,
       sinceId: res[res.length - 1].id_str,
     };
+  }
+);
+
+export const getTweets = https.onCall(
+  async (data: TwitterUserCredential, context): Promise<PostedTweet[]> => {
+    if (!context.auth) {
+      throw new HttpsError("unauthenticated", "認証されていません");
+    }
+    const twitterConfig = config().twitter;
+    assertIsDefined(twitterConfig);
+    const key = twitterConfig.key;
+    const secret = twitterConfig.secret;
+    assertIsDefined(key);
+    assertIsDefined(secret);
+    const client = new Twitter({
+      consumer_key: key,
+      consumer_secret: secret,
+      access_token_key: data.token,
+      access_token_secret: data.secret,
+    });
+    const res = await client.get<Tweet[]>("statuses/user_timeline", {
+      count: 200,
+      trim_user: true,
+      exclude_replies: true,
+      include_rts: false,
+      tweet_mode: "extended",
+    });
+    return res
+      .filter(t => t.extended_entities?.media)
+      .map(t => {
+        const fromSwitch =
+          t.source === '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
+        return {
+          postId: t.id_str,
+          contributor: t.user.id_str,
+          platform: "Twitter",
+          fromSwitch,
+          imageUrls:
+            t.extended_entities?.media
+              ?.filter(m => m.type === "photo")
+              .map(m => ({
+                thumb1: m.media_url_https + "?name=thumb",
+                thumb2: m.media_url_https + "?name=small",
+                large: m.media_url_https + "?name=large",
+              })) ?? [],
+          tags: t.entities?.hashtags.map(h => h.text) ?? [],
+          text: getPlainText(t.full_text),
+        };
+      });
   }
 );
 
@@ -171,6 +222,88 @@ export const unregisterDesignInfo = https.onCall(async (data: string[], context)
       throw new HttpsError("unknown", e);
     }
   }
-  const designsIndex = initAlgolia();
+  const designsIndex = getDesignIndex();
   await Promise.all([designsIndex.deleteObjects(ids), Promise.all([ids.map(id => designs.doc(id).delete())])]);
+});
+
+export const registerDreamInfo = https.onCall(async (data: DreamInfo, context) => {
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "認証されていません");
+  }
+  if (data === undefined || data === null) {
+    throw new HttpsError("data-loss", "データが指定されていません");
+  }
+
+  const contributor = data.post.contributor;
+  try {
+    assertDreamInfo(data);
+    assertIsContributor(contributor);
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new HttpsError("data-loss", e.message);
+    } else {
+      throw new HttpsError("unknown", e);
+    }
+  }
+
+  const excludeTags = includePartRegex(await getExcludeTags());
+
+  const copy: DreamInfo = {
+    islandName: data.islandName,
+    dreamId: data.dreamId,
+    tags: data.tags.filter(t => !excludeTags.test(t) && data.islandName !== t),
+    imageUrls: data.imageUrls.map(u => ({
+      thumb1: u.thumb1,
+      thumb2: u.thumb2,
+      large: u.large,
+    })),
+    post: {
+      contributor: await getOrCreateContributorRef(contributor),
+      postId: data.post.postId,
+      fromSwitch: data.post.fromSwitch,
+      platform: data.post.platform,
+      text: data.post.text,
+    },
+    createdAt: FieldValue.serverTimestamp(),
+  };
+
+  const docRef = dreams.doc(copy.dreamId);
+
+  await docRef.set(copy);
+  const doc = await docRef.get();
+  assertIsDefined(doc.createTime);
+  copy.createdAt = doc.createTime;
+
+  await postDreamInfoToAlgolia(copy);
+});
+
+export const unregisterDreamInfo = https.onCall(async (data: string, context) => {
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "認証されていません");
+  }
+  const userId = context.auth.token.firebase.identities["twitter.com"];
+  if (!userId) {
+    throw new HttpsError("unavailable", "Twiiter以外のデザインは削除できません");
+  }
+  try {
+    assertIsDefined(data);
+    assertIsString(data, "data");
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new HttpsError("data-loss", e.message);
+    } else {
+      throw new HttpsError("unknown", e);
+    }
+  }
+  const docRef = dreams.doc(data);
+  const doc = await docRef.get();
+  if (!doc.exists) {
+    throw new HttpsError("not-found", `存在しないID:${data}が指定されました`);
+  }
+  const conRef = doc.get("post.contributor") as DocumentReference;
+  if (conRef.id !== "Twitter:" + userId) {
+    throw new HttpsError("permission-denied", "自分が投稿した夢番地のみ削除できます");
+  }
+  const dreamIndex = getDreamIndex();
+  await Promise.all([dreamIndex.deleteObject(data), dreams.doc(data).delete()]);
 });
