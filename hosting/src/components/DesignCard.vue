@@ -44,6 +44,7 @@ import "firebase/firestore";
 import { AuthModule } from "../store";
 import { DesignInfo } from "../../../core/src/models/types";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
+import { favDesign } from "../modules/gtag";
 import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 
@@ -102,6 +103,7 @@ export default class DesignCard extends Vue {
     this.faving = true;
     const ref = this.db.doc(this.path);
     const arrayFunc = this.faved ? FieldValue.arrayRemove : FieldValue.arrayUnion;
+    favDesign(this.$gtag, this.info, !this.faved);
     await this.userRef.update({
       favs: arrayFunc(ref),
     });

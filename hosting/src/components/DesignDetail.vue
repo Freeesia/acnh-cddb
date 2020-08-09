@@ -73,6 +73,7 @@ const { Tweet } = require("vue-tweet-embed");
 import DesignCard from "./DesignCard.vue";
 import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
+import { favDesign } from "../modules/gtag";
 
 @Component({ components: { Tweet, InstagramEmbed, DesignCard } })
 export default class DesignDetail extends Vue {
@@ -123,15 +124,12 @@ export default class DesignDetail extends Vue {
 
   private async fav() {
     this.faving = true;
-    if (this.faved) {
-      await this.userRef.update({
-        favs: FieldValue.arrayRemove(this.db.doc(this.path)),
-      });
-    } else {
-      await this.userRef.update({
-        favs: FieldValue.arrayUnion(this.db.doc(this.path)),
-      });
-    }
+    const ref = this.db.doc(this.path);
+    const arrayFunc = this.faved ? FieldValue.arrayRemove : FieldValue.arrayUnion;
+    favDesign(this.$gtag, this.info, !this.faved);
+    await this.userRef.update({
+      favs: arrayFunc(ref),
+    });
     this.faving = false;
   }
 

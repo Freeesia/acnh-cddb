@@ -55,6 +55,7 @@ export default class Signin extends Vue {
   }
 
   private signInSuccess() {
+    this.$gtag.event("login", { method: auth.TwitterAuthProvider.TWITTER_SIGN_IN_METHOD });
     this.$router.push(this.redirect);
     return false;
   }

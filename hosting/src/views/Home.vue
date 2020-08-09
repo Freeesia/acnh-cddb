@@ -271,6 +271,16 @@ export default class Home extends Vue {
   }
 
   private async select(info: DesignInfo) {
+    this.$gtag.event("select_item", {
+      items: [
+        {
+          item_id: info.designId,
+          item_name: info.title,
+          item_category: info.designType,
+          item_brand: info.author?.authorId,
+        },
+      ],
+    });
     assertIsDefined(this.designsRef);
     if (this.$vuetify.breakpoint.smAndUp) {
       const doc = await this.designsRef.doc(info.designId).get();
