@@ -2,7 +2,7 @@ import { initializeApp, performance, analytics } from "firebase/app";
 import "firebase/performance";
 import "firebase/analytics";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyBMyQQGyY_0IIxtx8dGSW-Q7ipecZN9Tfw",
   authDomain: "acnh-cddb.firebaseapp.com",
   databaseURL: "https://acnh-cddb.firebaseio.com",

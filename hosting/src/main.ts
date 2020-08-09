@@ -13,6 +13,8 @@ import InputFacade from "vue-input-facade";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import VueGtag from "vue-gtag";
+import { firebaseConfig } from "./plugins/firebase";
 
 library.add(fab);
 Vue.component("v-fa", FontAwesomeIcon);
@@ -30,6 +32,16 @@ Vue.use(VuetifyDialog, {
     vuetify,
   },
 });
+
+Vue.use(
+  VueGtag,
+  {
+    config: {
+      id: firebaseConfig.measurementId,
+    },
+  },
+  router
+);
 
 Vue.config.productionTip = false;
 
