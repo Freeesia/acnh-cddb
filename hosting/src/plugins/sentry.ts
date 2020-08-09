@@ -8,3 +8,5 @@ if (process.env.NODE_ENV === "production") {
     integrations: [new VueIntegration({ Vue, attachProps: true })],
   });
 }
+
+export default Sentry;
