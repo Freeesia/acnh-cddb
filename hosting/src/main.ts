@@ -8,6 +8,7 @@ import VuetifyDialog from "vuetify-dialog";
 import "vuetify-dialog/dist/vuetify-dialog.css";
 import "./plugins/firebase";
 import "./plugins/sentry";
+import i18n from "./plugins/i18n";
 import { firestorePlugin } from "vuefire";
 import InputFacade from "vue-input-facade";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -49,5 +50,6 @@ new Vue({
   router,
   store,
   vuetify,
+  i18n,
   render: h => h(App),
 }).$mount("#app");
