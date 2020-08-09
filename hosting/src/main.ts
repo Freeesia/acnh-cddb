@@ -11,12 +11,12 @@ import "./plugins/sentry";
 import { firestorePlugin } from "vuefire";
 import InputFacade from "vue-input-facade";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { fab } from "@fortawesome/free-brands-svg-icons";
+import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VueGtag from "vue-gtag";
 import { firebaseConfig } from "./plugins/firebase";
 
-library.add(fab);
+library.add(faGithub, faTwitter);
 Vue.component("v-fa", FontAwesomeIcon);
 
 Vue.use(InputFacade, {
