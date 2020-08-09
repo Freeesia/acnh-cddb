@@ -1,14 +1,20 @@
 <template>
   <v-container>
     <h1>
-      <p class="text-center text-h4">あつまれ マイデザの🌳</p>
-      <p class="text-center text-h5">へ ようこそ</p>
+      <i18n path="signin.title">
+        <template #title>
+          <p class="text-center text-h4">{{ $t("title") }}</p>
+        </template>
+        <template #welcome>
+          <p class="text-center text-h5">{{ $t("signin.welcome") }}</p>
+        </template>
+      </i18n>
     </h1>
     <section class="pa-6">
-      <p class="text-center">あつまれ マイデザの🌳はあつ森のマイデザが集まっているサービスです</p>
+      <p class="text-center">{{ $t("signin.desc") }}</p>
     </section>
     <section class="pa-6">
-      <p v-if="loading" class="text-center">ログイン中...</p>
+      <p v-if="loading" class="text-center">{{ $t("signin.signinning") }}</p>
       <div id="auth-container"></div>
     </section>
   </v-container>

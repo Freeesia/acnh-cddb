@@ -43,5 +43,16 @@
   },
   "dream": {
     "title": "ACNH-DADB⛪️"
+  },
+  "detail": {
+    "fav": "Favorite",
+    "sameUser": "Designs posted by the same user",
+    "together": "Designs posted together"
+  },
+  "signin": {
+    "welcome": "Welcome to",
+    "title": "{welcome}\n{title}",
+    "signinning": "Signing in...",
+    "desc": "ACNH-CDDB🌳 is a service where ACNH's custom designs gathered."
   }
 }
