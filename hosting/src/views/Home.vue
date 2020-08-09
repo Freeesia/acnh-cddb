@@ -9,7 +9,7 @@
           filled
           clearable
           prepend-inner-icon="search"
-          label="検索"
+          :label="$t('search')"
         ></v-text-field>
       </v-col>
       <v-col cols="12" sm="6" md="3">
@@ -21,7 +21,7 @@
           prepend-icon="palette"
           :items="colors"
           multiple
-          label="カラー"
+          :label="$t('color')"
           clearable
         >
           <template v-slot:selection="{ item }">
@@ -42,7 +42,7 @@
           prepend-icon="design_services"
           :items="types"
           multiple
-          label="カテゴリー"
+          :label="$t('category')"
           clearable
         >
           <template v-slot:selection="{ item, index }">

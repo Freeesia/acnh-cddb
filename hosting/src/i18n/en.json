@@ -1,0 +1,47 @@
+{
+  "title": "ACNH-CDDB🌳",
+  "account": "account",
+  "category": "Category",
+  "color": "Color",
+  "unofficial": "This site is Nintendo's unofficial fan site.",
+  "privacy": "privacy policy",
+  "tos": "Terms of service",
+  "deactive": {
+    "desc": "Delete account 🥺",
+    "label": "Deactive",
+    "faild": "Deactive process did not complete successfully. \nPlease sign in again to deactive"
+  },
+  "dreamaddress": {
+    "here": "here",
+    "noFav": "My favorite dream address is not registered yet 😭\nFind your favorite among the many dreams {here}💖",
+    "header": "Dream Addresses"
+  },
+  "signout": {
+    "desc": "Sign out and move to the sign-in page 👋",
+    "label": "Sign out"
+  },
+  "userInfo": "User information",
+  "hintId": "Please contact us with this ID 🙏",
+  "management": "management",
+  "search": "Search",
+  "language": "Language",
+  "mydesign": {
+    "here": "here",
+    "header": "Custom Designs",
+    "noFav": "Your favorite design is not registered yet 😭\nFind your favorite among many custom designs {here}💖"
+  },
+  "myMyDesigns": {
+    "title": "Title",
+    "type": "Type",
+    "delete": "Remove the following designs",
+    "header": "My Custom Designs"
+  },
+  "myDream": {
+    "header": "My Dream Address",
+    "overwrite": "Overwrite the currently your dream address, is that okay?",
+    "delete": "Are you want to delete your dream address?"
+  },
+  "dream": {
+    "title": "ACNH-DADB⛪️"
+  }
+}
