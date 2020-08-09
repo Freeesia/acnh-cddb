@@ -100,6 +100,14 @@
                 persistent-hint
                 hint="お問い合わせの際、こちらのIDをご連絡ください🙏"
               />
+              <v-select
+                v-model="locale"
+                label="言語"
+                :items="langs"
+                item-text="label"
+                item-value="value"
+                prepend-icon="language"
+              />
             </section>
             <v-divider class="my-4" />
             <section class="ma-2">
@@ -133,6 +141,7 @@ import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AddDesign from "../components/AddDesign.vue";
 import { unregisterDesignInfo, unregisterDreamInfo } from "../plugins/functions";
 import SetDream from "../components/SetDream.vue";
+import { setLocale } from "../plugins/i18n";
 
 @Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
@@ -149,6 +158,10 @@ export default class Account extends Vue {
   ];
   private selected: DesignInfo[] = [];
   private deleting = false;
+  private langs = [
+    { label: "日本語", value: "ja" },
+    { label: "English", value: "en" },
+  ];
 
   private get designs(): DesignInfo[] {
     return (
@@ -175,6 +188,15 @@ export default class Account extends Vue {
 
   private get canDelete() {
     return this.selected.length > 0;
+  }
+
+  private get locale() {
+    return GeneralModule.locale;
+  }
+
+  private set locale(val: string) {
+    GeneralModule.setLocale(val);
+    setLocale(val);
   }
 
   private created() {

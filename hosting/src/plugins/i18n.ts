@@ -32,3 +32,8 @@ export async function loadLanguage(lang: string) {
     Sentry.captureException(error, { level: Severity.Warning });
   }
 }
+
+export async function setLocale(val: string) {
+  await loadLanguage(val);
+  i18n.locale = val;
+}
