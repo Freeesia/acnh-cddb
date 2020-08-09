@@ -1,5 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const ScriptExtHtmlWebpackPlugin = require("script-ext-html-webpack-plugin");
+const HardSourceWebpackPlguin = require("hard-source-webpack-plugin");
 
 module.exports = {
   pages: {
@@ -25,6 +26,7 @@ module.exports = {
       new ScriptExtHtmlWebpackPlugin({
         defaultAttribute: "defer",
       }),
+      new HardSourceWebpackPlguin(),
     ],
   },
   chainWebpack: config => {
