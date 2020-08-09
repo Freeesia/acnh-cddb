@@ -54,5 +54,37 @@
     "title": "{welcome}\n{title}",
     "signinning": "Signing in...",
     "desc": "ACNH-CDDB🌳 is a service where ACNH's custom designs gathered."
+  },
+  "colors": {
+    "black": "Black",
+    "blue": "Blue",
+    "brown": "Brown",
+    "green": "Green",
+    "orange": "Orange",
+    "pink": "Pink",
+    "purple": "Purple",
+    "red": "Red",
+    "sky": "SkyBlue",
+    "transparent": "Transparent",
+    "white": "White",
+    "yellow": "Yellow"
+  },
+  "designTypes": {
+    "タンクトップ": "Tank top",
+    "はんそでTシャツ": "Short-sleeve tee",
+    "そでなしワンピース": "Sleeveless dress",
+    "コート": "Coat",
+    "パーカー": "Hoodle",
+    "セーター": "Sweater",
+    "ながそでYシャツ": "Long-sleeve dress shirt",
+    "はんそでワンピース": "Short-sleeve dress",
+    "ながそでドレス": "Long-sleeve dress",
+    "ローブ": "Robe",
+    "バルーンワンピース": "Balloom-hem dress",
+    "まるがたワンピース": "Round dress",
+    "つばつきハット": "Brimmed hat",
+    "ニットキャップ": "Knit cap",
+    "つばつきキャップ": "Brimmed cap",
+    "マイデザイン": "Custom desgin"
   }
 }
