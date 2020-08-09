@@ -8,6 +8,9 @@ module.exports = {
       title: process.env.VUE_APP_NAME,
     },
   },
+  css: {
+    extract: process.env.NODE_ENV === "production" ? { ignoreOrder: true } : false,
+  },
   pwa: {
     name: process.env.VUE_APP_NAME,
     themeColor: process.env.VUE_APP_PRIMARY_COLOR,
