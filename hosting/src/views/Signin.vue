@@ -25,8 +25,9 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { auth } from "firebase/app";
 import "firebase/auth";
-import firebaseui from "firebaseui-ja";
+// なぜか本家をimportするとjaでレイアウト崩れるけど、jaをimportしても本家は崩れない
 import "firebaseui-ja/dist/firebaseui.css";
+import { GeneralModule } from "../store";
 
 @Component({})
 export default class Signin extends Vue {
@@ -38,10 +39,11 @@ export default class Signin extends Vue {
     auth().useDeviceLanguage();
   }
 
-  private mounted() {
-    let ui = firebaseui.auth.AuthUI.getInstance();
+  private async mounted() {
+    const AuthUI = await this.getAuthUI();
+    let ui = AuthUI.getInstance();
     if (!ui) {
-      ui = new firebaseui.auth.AuthUI(auth());
+      ui = new AuthUI(auth());
     }
     if (ui.isPendingRedirect()) {
       this.loading = true;
@@ -58,6 +60,16 @@ export default class Signin extends Vue {
         this.$router.push("/privacy");
       },
     });
+  }
+
+  private async getAuthUI() {
+    if (GeneralModule.locale === "ja") {
+      const ui = await import("firebaseui-ja");
+      return ui.auth.AuthUI;
+    } else {
+      const ui = await import("firebaseui");
+      return ui.auth.AuthUI;
+    }
   }
 
   private signInSuccess() {
