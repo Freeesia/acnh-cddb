@@ -35,7 +35,21 @@ const routes: Array<RouteConfig> = [
   {
     path: "/privacy",
     name: "privacy",
-    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/Privacy.vue"),
+    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/Markdown.vue"),
+    props: {
+      md: "privacy",
+    },
+    meta: {
+      anonymous: true,
+    },
+  },
+  {
+    path: "/ja/privacy",
+    name: "privacyJa",
+    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/Markdown.vue"),
+    props: {
+      md: "privacyJa",
+    },
     meta: {
       anonymous: true,
     },
@@ -43,7 +57,21 @@ const routes: Array<RouteConfig> = [
   {
     path: "/tos",
     name: "tos",
-    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/ToS.vue"),
+    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/Markdown.vue"),
+    props: {
+      md: "tos",
+    },
+    meta: {
+      anonymous: true,
+    },
+  },
+  {
+    path: "/ja/tos",
+    name: "tosJa",
+    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/Markdown.vue"),
+    props: {
+      md: "tosJa",
+    },
     meta: {
       anonymous: true,
     },
