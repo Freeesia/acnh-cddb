@@ -242,8 +242,6 @@ export default class Account extends Vue {
       await this.$dialog.error({
         text: this.$t("deactive.faild").toString(),
       });
-      GeneralModule.setLoading(false);
-      this.$router.push("/signin");
     }
     GeneralModule.setLoading(false);
     this.$router.push("/signin");
