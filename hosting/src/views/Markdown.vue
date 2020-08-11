@@ -9,11 +9,10 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import { GeneralModule } from "../store";
-import i18n from "../plugins/i18n";
 const tos = () => importMd("tos");
 const privacy = () => importMd("privacy");
-const tosJa = () => import("../md/ja/tos.md");
-const privacyJa = () => import("../md/ja/privacy.md");
+const tosJa = async () => (await import(/* webpackChunkName: "md-ja" */ "../md/ja")).tos;
+const privacyJa = async () => (await import(/* webpackChunkName: "md-ja" */ "../md/ja")).privacy;
 
 @Component({ components: { tos, privacy, tosJa, privacyJa } })
 export default class Markdown extends Vue {
@@ -23,9 +22,15 @@ export default class Markdown extends Vue {
 
 async function importMd(md: string) {
   try {
-    return await import(`../md/${GeneralModule.locale}/${md}.md`);
+    const index = await import(/* webpackChunkName: "md-[request]" */ `../md/${GeneralModule.locale}/`);
+    return index[md];
   } catch (error) {
-    return await import(`../md/${i18n.fallbackLocale}/${md}.md`);
+    switch (md) {
+      case "privacy":
+        return await privacyJa();
+      case "tos":
+        return await tosJa();
+    }
   }
 }
 </script>
