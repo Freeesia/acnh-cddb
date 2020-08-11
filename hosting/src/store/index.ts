@@ -2,24 +2,30 @@ import Vue from "vue";
 import Vuex from "vuex";
 import { vuexfireMutations } from "vuexfire";
 import { getModule } from "vuex-module-decorators";
-import Auth from "./modules/auth";
-import Search from "./modules/search";
-import General from "./modules/general";
+import createPersistedState from "vuex-persistedstate";
+import auth from "./modules/auth";
+import search from "./modules/search";
+import general from "./modules/general";
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {
-    auth: Auth,
-    search: Search,
-    general: General,
+    auth,
+    search,
+    general,
   },
   mutations: {
     ...vuexfireMutations,
   },
+  plugins: [
+    createPersistedState({
+      paths: ["general._locale"],
+    }),
+  ],
 });
 
-export const AuthModule = getModule(Auth, store);
-export const SearchModule = getModule(Search, store);
-export const GeneralModule = getModule(General, store);
+export const AuthModule = getModule(auth, store);
+export const SearchModule = getModule(search, store);
+export const GeneralModule = getModule(general, store);
 export default store;

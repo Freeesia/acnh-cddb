@@ -3,10 +3,10 @@
     <v-app-bar app color="primary" dark>
       <v-toolbar-items>
         <v-btn class="px-1" text to="/">
-          <v-toolbar-title>{{ isDream ? "" : "あつまれ マイデザの" }}🌳</v-toolbar-title>
+          <v-toolbar-title>{{ isDream ? "🌳" : $t("title") }}</v-toolbar-title>
         </v-btn>
         <v-btn class="px-1" text to="/dream">
-          <v-toolbar-title>{{ isDream ? "あつまれ ゆめみの" : "" }}⛪️</v-toolbar-title>
+          <v-toolbar-title>{{ isDream ? $t("dream.title") : "⛪️" }}</v-toolbar-title>
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
@@ -33,12 +33,12 @@
     <v-footer app>
       <v-row no-gutters class="text-caption">
         <v-col class="text-no-wrap" cols="12" md="6">
-          当サイトは任天堂の非公式・非公認のファンサイトです。
+          {{ $t("unofficial") }}
         </v-col>
         <v-col class="text-center" md="3">
-          <router-link to="/privacy">プライバシーポリシー</router-link>
+          <router-link to="/privacy">{{ $t("privacy") }}</router-link>
           |
-          <router-link to="/tos">利用規約</router-link>
+          <router-link to="/tos">{{ $t("tos") }}</router-link>
         </v-col>
         <v-col class="text-right">
           <a href="https://github.com/Freeesia/acnh-cddb">

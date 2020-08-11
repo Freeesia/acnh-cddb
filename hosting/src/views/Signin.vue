@@ -1,14 +1,20 @@
 <template>
   <v-container>
     <h1>
-      <p class="text-center text-h4">あつまれ マイデザの🌳</p>
-      <p class="text-center text-h5">へ ようこそ</p>
+      <i18n path="signin.title">
+        <template #title>
+          <p class="text-center text-h4">{{ $t("title") }}</p>
+        </template>
+        <template #welcome>
+          <p class="text-center text-h5">{{ $t("signin.welcome") }}</p>
+        </template>
+      </i18n>
     </h1>
     <section class="pa-6">
-      <p class="text-center">あつまれ マイデザの🌳はあつ森のマイデザが集まっているサービスです</p>
+      <p class="text-center">{{ $t("signin.desc") }}</p>
     </section>
     <section class="pa-6">
-      <p v-if="loading" class="text-center">ログイン中...</p>
+      <p v-if="loading" class="text-center">{{ $t("signin.signinning") }}</p>
       <div id="auth-container"></div>
     </section>
   </v-container>
@@ -19,8 +25,9 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { auth } from "firebase/app";
 import "firebase/auth";
-import firebaseui from "firebaseui-ja";
+// なぜか本家をimportするとjaでレイアウト崩れるけど、jaをimportしても本家は崩れない
 import "firebaseui-ja/dist/firebaseui.css";
+import { GeneralModule } from "../store";
 
 @Component({})
 export default class Signin extends Vue {
@@ -32,10 +39,11 @@ export default class Signin extends Vue {
     auth().useDeviceLanguage();
   }
 
-  private mounted() {
-    let ui = firebaseui.auth.AuthUI.getInstance();
+  private async mounted() {
+    const AuthUI = await this.getAuthUI();
+    let ui = AuthUI.getInstance();
     if (!ui) {
-      ui = new firebaseui.auth.AuthUI(auth());
+      ui = new AuthUI(auth());
     }
     if (ui.isPendingRedirect()) {
       this.loading = true;
@@ -52,6 +60,16 @@ export default class Signin extends Vue {
         this.$router.push("/privacy");
       },
     });
+  }
+
+  private async getAuthUI() {
+    if (GeneralModule.locale === "ja") {
+      const ui = await import("firebaseui-ja");
+      return ui.auth.AuthUI;
+    } else {
+      const ui = await import("firebaseui");
+      return ui.auth.AuthUI;
+    }
   }
 
   private signInSuccess() {

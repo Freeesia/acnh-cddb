@@ -9,7 +9,7 @@
           filled
           clearable
           prepend-inner-icon="search"
-          label="検索"
+          :label="$t('search')"
         ></v-text-field>
       </v-col>
       <v-col cols="12" sm="6" md="3">
@@ -21,7 +21,7 @@
           prepend-icon="palette"
           :items="colors"
           multiple
-          label="カラー"
+          :label="$t('color')"
           clearable
         >
           <template v-slot:selection="{ item }">
@@ -38,15 +38,17 @@
       <v-col cols="12" sm="6" md="3">
         <v-select
           v-model="selectedTypes"
+          item-value="type"
+          item-text="name"
           hide-details
           prepend-icon="design_services"
           :items="types"
           multiple
-          label="カテゴリー"
+          :label="$t('category')"
           clearable
         >
           <template v-slot:selection="{ item, index }">
-            <span v-if="index === 0">{{ item }}</span>
+            <span v-if="index === 0">{{ item.name }}</span>
             <span v-if="index === 1" class="grey--text caption">(+{{ selectedTypes.length - 1 }})</span>
           </template>
         </v-select>
@@ -127,7 +129,7 @@ import { getColor } from "../modules/color";
 import { flatQuery } from "../modules/utility";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import { designsIndex } from "../../../core/src/algolia/lite";
-import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType, ColorNames } from "../../../core/src/models/types";
+import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType } from "../../../core/src/models/types";
 import ColRef = firestore.CollectionReference;
 import _ from "lodash";
 
@@ -141,11 +143,16 @@ export default class Home extends Vue {
   private getColor = getColor;
   private colors = ColorTypes.map(c => {
     return {
-      name: ColorNames[c],
+      name: this.$t("colors." + c),
       type: c,
     };
   });
-  private types = DesignTypes;
+  private types = DesignTypes.map(c => {
+    return {
+      name: this.$t("designTypes." + c),
+      type: c,
+    };
+  });
   private tags: { name: string; count: number }[] = [];
   private showTagCount = 10;
 

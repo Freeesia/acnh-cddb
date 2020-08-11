@@ -9,7 +9,7 @@
           filled
           clearable
           prepend-inner-icon="search"
-          label="検索"
+          :label="$t('search')"
         ></v-text-field>
       </v-col>
       <v-col cols="12">

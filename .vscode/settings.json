@@ -1,4 +1,10 @@
 {
-    "vetur.format.defaultFormatter.html": "prettier",
-    "vetur.validation.template": false
+  "vetur.format.defaultFormatter.html": "prettier",
+  "vetur.validation.template": false,
+  "i18n-ally.enabledFrameworks": [
+    "vue",
+  ],
+  "i18n-ally.localesPaths": "hosting/src/i18n",
+  "i18n-ally.sourceLanguage": "ja",
+  "i18n-ally.keystyle": "nested"
 }

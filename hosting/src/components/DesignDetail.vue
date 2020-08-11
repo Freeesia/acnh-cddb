@@ -25,7 +25,7 @@
     <v-card-actions>
       <v-btn color="pink" rounded dark depressed :icon="faved" :loading="faving" @click="fav">
         <v-icon left>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
-        {{ faved ? "" : "お気に入り" }}
+        {{ faved ? "" : $t("detail.fav") }}
       </v-btn>
     </v-card-actions>
     <Tweet v-if="platform === 'Twitter'" :id="info.post.postId" :options="options" class="d-flex justify-center ma-2">
@@ -37,7 +37,7 @@
     </Tweet>
     <instagram-embed v-if="platform === 'Instagram'" :url="instagramUrl" />
     <v-card v-if="postDesigns.length > 0" class="ma-2" outlined>
-      <v-card-title>一緒に投稿されているデザイン</v-card-title>
+      <v-card-title>{{ $t("detail.together") }}</v-card-title>
       <v-container>
         <v-row dense>
           <v-col v-for="design in postDesigns" :key="design.designId" cols="6" sm="4">
@@ -47,7 +47,7 @@
       </v-container>
     </v-card>
     <v-card v-if="userDesigns.length > 0" class="ma-2" outlined>
-      <v-card-title>同じユーザーが投稿したデザイン</v-card-title>
+      <v-card-title>{{ $t("detail.sameUser") }}</v-card-title>
       <v-container>
         <v-row dense>
           <v-col v-for="design in userDesigns" :key="design.designId" cols="6" sm="4">
@@ -66,7 +66,7 @@ import { Prop, Watch, Emit } from "vue-property-decorator";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import { DesignInfo } from "../../../core/src/models/types";
-import { AuthModule } from "../store";
+import { AuthModule, GeneralModule } from "../store";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Tweet } = require("vue-tweet-embed");
@@ -81,7 +81,7 @@ export default class DesignDetail extends Vue {
   private readonly designsRef = this.db.collection("designs");
   private readonly options = {
     conversation: "none",
-    lang: "ja",
+    lang: GeneralModule.locale,
   };
 
   @Prop()

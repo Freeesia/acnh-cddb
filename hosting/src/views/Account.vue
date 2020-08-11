@@ -18,10 +18,10 @@
       </v-col>
       <v-col md="8" cols="12">
         <v-tabs v-model="activeTab">
-          <v-tab>マイデザイン</v-tab>
-          <v-tab>夢番地</v-tab>
-          <v-tab>管理</v-tab>
-          <v-tab>アカウント</v-tab>
+          <v-tab>{{ $t("mydesign.header") }}</v-tab>
+          <v-tab>{{ $t("dreamaddress.header") }}</v-tab>
+          <v-tab>{{ $t("management") }}</v-tab>
+          <v-tab>{{ $t("account") }}</v-tab>
         </v-tabs>
         <v-tabs-items v-model="activeTab" class="fill-height">
           <v-tab-item>
@@ -30,8 +30,11 @@
                 <DesignCard :view-downloaded="true" :info="design" @click="select" />
               </v-col>
               <p v-if="designs.length === 0">
-                まだお気に入りのマイデザインが登録されていません😭<br />
-                <router-link to="/">こちら</router-link>のたくさんのマイデザインの中からお気に入りを探してみてください💖
+                <i18n path="mydesign.noFav">
+                  <template #here>
+                    <router-link to="/">{{ $t("mydesign.here") }}</router-link>
+                  </template>
+                </i18n>
               </p>
             </v-row>
           </v-tab-item>
@@ -41,14 +44,17 @@
                 <DreamCard :info="dream" />
               </v-col>
               <p v-if="dreams.length === 0">
-                まだお気に入りの夢番地が登録されていません😭<br />
-                <router-link to="/dream">こちら</router-link>のたくさんの夢の中からお気に入りを探してみてください💖
+                <i18n path="dreamaddress.noFav">
+                  <template #here>
+                    <router-link to="/">{{ $t("dreamaddress.here") }}</router-link>
+                  </template>
+                </i18n>
               </p>
             </v-row>
           </v-tab-item>
           <v-tab-item>
             <v-toolbar dense flat>
-              <v-toolbar-title>投稿した夢番地</v-toolbar-title>
+              <v-toolbar-title>{{ $t("myDream.header") }}</v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon @click="setDream">
                 <v-icon>add</v-icon>
@@ -59,7 +65,7 @@
             </v-toolbar>
             <DreamCard v-if="myDream" mine :info="myDream" />
             <v-toolbar dense flat>
-              <v-toolbar-title>投稿したマイデザ</v-toolbar-title>
+              <v-toolbar-title>{{ $t("myMyDesigns.header") }}</v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon @click="add">
                 <v-icon>add</v-icon>
@@ -91,27 +97,35 @@
           </v-tab-item>
           <v-tab-item>
             <section class="ma-2">
-              <header class="headline">ユーザー情報</header>
+              <header class="headline">{{ $t("userInfo") }}</header>
               <v-text-field
                 v-model="user.uid"
                 readonly
                 label="ID"
                 prepend-icon="perm_identity"
                 persistent-hint
-                hint="お問い合わせの際、こちらのIDをご連絡ください🙏"
+                :hint="$t('hintId')"
+              />
+              <v-select
+                v-model="locale"
+                :label="$t('language')"
+                :items="langs"
+                item-text="label"
+                item-value="value"
+                prepend-icon="language"
               />
             </section>
             <v-divider class="my-4" />
             <section class="ma-2">
-              <header class="headline">サインアウト</header>
-              <p>サインアウトし、サインイン画面に遷移します👋</p>
-              <v-btn color="info" @click="signOut">サインアウト</v-btn>
+              <header class="headline">{{ $t("signout.label") }}</header>
+              <p>{{ $t("signout.desc") }}</p>
+              <v-btn color="info" @click="signOut">{{ $t("signout.label") }}</v-btn>
             </section>
             <v-divider class="my-4" />
             <section class="ma-2">
-              <header class="headline">退会</header>
-              <p>アカウントを削除します🥺</p>
-              <v-btn color="error" @click="deleteMe">退会</v-btn>
+              <header class="headline">{{ $t("deactive.label") }}</header>
+              <p>{{ $t("deactive.desc") }}</p>
+              <v-btn color="error" @click="deleteMe">{{ $t("deactive.label") }}</v-btn>
             </section>
           </v-tab-item>
         </v-tabs-items>
@@ -119,6 +133,13 @@
     </v-row>
   </v-container>
 </template>
+
+<style lang="scss" scoped>
+p {
+  white-space: pre-wrap;
+}
+</style>
+
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -133,6 +154,7 @@ import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AddDesign from "../components/AddDesign.vue";
 import { unregisterDesignInfo, unregisterDreamInfo } from "../plugins/functions";
 import SetDream from "../components/SetDream.vue";
+import { setLocale } from "../plugins/i18n";
 
 @Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
@@ -144,11 +166,15 @@ export default class Account extends Vue {
   private myDreams: DreamInfo[] = [];
   private headers = [
     { text: "", value: "imageUrls", sortable: false, filterable: false },
-    { text: "タイトル", value: "title" },
-    { text: "タイプ", value: "designType" },
+    { text: this.$t("myMyDesigns.title"), value: "title" },
+    { text: this.$t("myMyDesigns.type"), value: "designType" },
   ];
   private selected: DesignInfo[] = [];
   private deleting = false;
+  private langs = [
+    { label: "日本語", value: "ja" },
+    { label: "English", value: "en" },
+  ];
 
   private get designs(): DesignInfo[] {
     return (
@@ -175,6 +201,16 @@ export default class Account extends Vue {
 
   private get canDelete() {
     return this.selected.length > 0;
+  }
+
+  private get locale() {
+    return GeneralModule.locale;
+  }
+
+  private set locale(val: string) {
+    GeneralModule.setLocale(val);
+    setLocale(val);
+    this.$vuetify.lang.current = val;
   }
 
   private created() {
@@ -204,9 +240,9 @@ export default class Account extends Vue {
       }
       await this.user.delete();
     } catch (error) {
-      alert("退会処理が正常に完了しませんでした。再度ログインして退会してください");
-      GeneralModule.setLoading(false);
-      this.$router.push("/signin");
+      await this.$dialog.error({
+        text: this.$t("deactive.faild").toString(),
+      });
     }
     GeneralModule.setLoading(false);
     this.$router.push("/signin");
@@ -236,8 +272,7 @@ export default class Account extends Vue {
   private async deleteDesigns() {
     const titles = this.selected.map(d => d.title);
     const res = await this.$dialog.confirm({
-      text: "以下のデザインを削除します<br/>" + titles.map(t => `<pre>${t}</pre><br/>`),
-      title: "確認",
+      text: this.$t("myMyDesigns.delete") + "<br/>" + titles.map(t => `<pre>${t}</pre><br/>`),
     });
     if (res) {
       this.deleting = true;
@@ -251,7 +286,7 @@ export default class Account extends Vue {
   private async setDream() {
     if (this.myDream) {
       const res = await this.$dialog.confirm({
-        text: "現在投稿されている夢番地を上書きしますが、よろしいですか？",
+        text: this.$t("myDream.overwrite").toString(),
       });
       if (!res) {
         return;
@@ -265,7 +300,7 @@ export default class Account extends Vue {
 
   private async deleteDream() {
     const res = await this.$dialog.confirm({
-      text: "投稿した夢番地を削除してよろしいですか？",
+      text: this.$t("myDream.delete").toString(),
     });
     if (res) {
       this.deleting = true;

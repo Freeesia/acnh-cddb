@@ -1,0 +1,93 @@
+{
+  "title": "ACNH-CDDB🌳",
+  "account": "account",
+  "category": "Category",
+  "color": "Color",
+  "unofficial": "This site is Nintendo's unofficial fan site.",
+  "privacy": "privacy policy",
+  "tos": "Terms of service",
+  "deactive": {
+    "desc": "Delete account 🥺",
+    "label": "Deactive",
+    "faild": "Deactive process did not complete successfully. \nPlease sign in again to deactive"
+  },
+  "dreamaddress": {
+    "here": "here",
+    "noFav": "My favorite dream address is not registered yet 😭\nFind your favorite among the many dreams {here}💖",
+    "header": "Dream Addresses"
+  },
+  "signout": {
+    "desc": "Sign out and move to the sign-in page 👋",
+    "label": "Sign out"
+  },
+  "userInfo": "User information",
+  "hintId": "Please contact us with this ID 🙏",
+  "management": "management",
+  "search": "Search",
+  "language": "Language",
+  "mydesign": {
+    "here": "here",
+    "header": "Custom Designs",
+    "noFav": "Your favorite design is not registered yet 😭\nFind your favorite among many custom designs {here}💖"
+  },
+  "myMyDesigns": {
+    "title": "Title",
+    "type": "Type",
+    "delete": "Remove the following designs",
+    "header": "My Custom Designs"
+  },
+  "myDream": {
+    "header": "My Dream Address",
+    "overwrite": "Overwrite the currently your dream address, is that okay?",
+    "delete": "Are you want to delete your dream address?"
+  },
+  "dream": {
+    "title": "ACNH-DADB⛪️"
+  },
+  "detail": {
+    "fav": "Favorite",
+    "sameUser": "Designs posted by the same user",
+    "together": "Designs posted together"
+  },
+  "signin": {
+    "welcome": "Welcome to",
+    "title": "{welcome}\n{title}",
+    "signinning": "Signing in...",
+    "desc": "ACNH-CDDB🌳 is a service where ACNH's custom designs gathered."
+  },
+  "colors": {
+    "black": "Black",
+    "blue": "Blue",
+    "brown": "Brown",
+    "green": "Green",
+    "orange": "Orange",
+    "pink": "Pink",
+    "purple": "Purple",
+    "red": "Red",
+    "sky": "SkyBlue",
+    "transparent": "Transparent",
+    "white": "White",
+    "yellow": "Yellow"
+  },
+  "designTypes": {
+    "タンクトップ": "Tank top",
+    "はんそでTシャツ": "Short-sleeve tee",
+    "そでなしワンピース": "Sleeveless dress",
+    "コート": "Coat",
+    "パーカー": "Hoodle",
+    "セーター": "Sweater",
+    "ながそでYシャツ": "Long-sleeve dress shirt",
+    "はんそでワンピース": "Short-sleeve dress",
+    "ながそでドレス": "Long-sleeve dress",
+    "ローブ": "Robe",
+    "バルーンワンピース": "Balloom-hem dress",
+    "まるがたワンピース": "Round dress",
+    "つばつきハット": "Brimmed hat",
+    "ニットキャップ": "Knit cap",
+    "つばつきキャップ": "Brimmed cap",
+    "マイデザイン": "Custom Desgin",
+    "フェイスペイント": "Face Paint",
+    "じめんゆか": "Ground or Floor",
+    "そのほか": "Other"
+  }
+}

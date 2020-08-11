@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import { AuthModule, GeneralModule } from "@/store";
+import Markdown from "@/views/Markdown.vue";
+import Signin from "@/views/Signin.vue";
 
 Vue.use(VueRouter);
 
@@ -13,7 +15,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/signin",
     name: "signin",
-    component: () => import(/* webpackChunkName: "signin", webpackPrefetch: true */ "@/views/Signin.vue"),
+    component: Signin,
     meta: {
       anonymous: true,
     },
@@ -35,7 +37,21 @@ const routes: Array<RouteConfig> = [
   {
     path: "/privacy",
     name: "privacy",
-    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/Privacy.vue"),
+    component: Markdown,
+    props: {
+      md: "privacy",
+    },
+    meta: {
+      anonymous: true,
+    },
+  },
+  {
+    path: "/ja/privacy",
+    name: "privacyJa",
+    component: Markdown,
+    props: {
+      md: "privacyJa",
+    },
     meta: {
       anonymous: true,
     },
@@ -43,7 +59,21 @@ const routes: Array<RouteConfig> = [
   {
     path: "/tos",
     name: "tos",
-    component: () => import(/* webpackChunkName: "misc", webpackPrefetch: true */ "@/views/ToS.vue"),
+    component: Markdown,
+    props: {
+      md: "tos",
+    },
+    meta: {
+      anonymous: true,
+    },
+  },
+  {
+    path: "/ja/tos",
+    name: "tosJa",
+    component: Markdown,
+    props: {
+      md: "tosJa",
+    },
     meta: {
       anonymous: true,
     },
@@ -51,7 +81,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/dream",
     name: "dream",
-    component: () => import(/* webpackChunkName: "dream", webpackPrefetch: true */ "@/views/Dreams.vue"),
+    component: () => import(/* webpackChunkName: "main", webpackPrefetch: true */ "@/views/Dreams.vue"),
     meta: {
       dream: true,
     },

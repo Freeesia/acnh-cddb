@@ -1,13 +1,16 @@
 import Vue from "vue";
 import Vuetify from "vuetify/lib";
 import ja from "vuetify/src/locale/ja";
+import en from "vuetify/src/locale/en";
+import { GeneralModule } from "@/store";
 
 Vue.use(Vuetify);
 
 export default new Vuetify({
   lang: {
-    locales: { ja },
-    current: "ja",
+    locales: { ja, en },
+    // 言語リソースを読み込んでいないときに英語になるけどまあいっか。
+    current: GeneralModule.locale,
   },
   theme: {
     themes: {
