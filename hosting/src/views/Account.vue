@@ -180,6 +180,7 @@ export default class Account extends Vue {
     { label: "日本語", value: "ja" },
     { label: "English", value: "en" },
     { label: "繁體中文", value: "zh" },
+    { label: "한국", value: "ko" },
   ];
 
   private get designs(): DesignInfo[] {
