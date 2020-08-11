@@ -66,7 +66,7 @@ import { Prop, Watch, Emit } from "vue-property-decorator";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import { DesignInfo } from "../../../core/src/models/types";
-import { AuthModule } from "../store";
+import { AuthModule, GeneralModule } from "../store";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Tweet } = require("vue-tweet-embed");
@@ -81,7 +81,7 @@ export default class DesignDetail extends Vue {
   private readonly designsRef = this.db.collection("designs");
   private readonly options = {
     conversation: "none",
-    lang: "ja",
+    lang: GeneralModule.locale,
   };
 
   @Prop()
