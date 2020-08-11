@@ -100,6 +100,7 @@
               <header class="headline">{{ $t("userInfo") }}</header>
               <v-text-field
                 v-model="user.uid"
+                class="px-2"
                 readonly
                 label="ID"
                 prepend-icon="perm_identity"
@@ -110,6 +111,7 @@
                 v-model="locale"
                 :label="$t('language')"
                 :items="langs"
+                class="px-2"
                 item-text="label"
                 item-value="value"
                 prepend-icon="language"
@@ -137,6 +139,9 @@
 <style lang="scss" scoped>
 p {
   white-space: pre-wrap;
+}
+.test {
+  background-color: rebeccapurple;
 }
 </style>
 
