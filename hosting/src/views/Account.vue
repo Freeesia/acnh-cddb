@@ -179,6 +179,7 @@ export default class Account extends Vue {
   private langs = [
     { label: "日本語", value: "ja" },
     { label: "English", value: "en" },
+    { label: "繁體中文", value: "zh" },
   ];
 
   private get designs(): DesignInfo[] {
