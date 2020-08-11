@@ -210,6 +210,7 @@ export default class Account extends Vue {
   private set locale(val: string) {
     GeneralModule.setLocale(val);
     setLocale(val);
+    this.$vuetify.lang.current = val;
   }
 
   private created() {
