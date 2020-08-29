@@ -31,6 +31,7 @@ Vue.use(firestorePlugin);
 Vue.use(VuetifyDialog, {
   context: {
     vuetify,
+    i18n,
   },
 });
 
