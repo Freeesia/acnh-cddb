@@ -6,7 +6,7 @@ import { getDesigns, getDreams } from "@core/algolia/get";
 import _ from "lodash";
 import { getTweets } from "./twitter";
 
-export async function deleteDeadDesignRef() {
+export async function deleteDeadDesignRef(force: boolean) {
   const designs = await getDesigns();
   const deleteIds: string[] = [];
   const group = _(designs)
@@ -24,7 +24,7 @@ export async function deleteDeadDesignRef() {
     console.log(`Not Found : ${id}`);
     deleteIds.push(id);
   }
-  if (deleteIds.length > 20) {
+  if (!force && deleteIds.length > 20) {
     console.log("数が多いので障害の懸念があるため見送ります");
     return;
   }
@@ -62,7 +62,7 @@ async function checkDeletedDesignIds(designs: DesignInfo[]) {
     .value();
 }
 
-export async function deleteDeadDreamRef() {
+export async function deleteDeadDreamRef(force: boolean) {
   const dreams = await getDreams();
   const deleteIds: string[] = [];
   const group = _(dreams)
@@ -73,7 +73,7 @@ export async function deleteDeadDreamRef() {
     console.log(`Not Found : ${id}`);
     deleteIds.push(id);
   }
-  if (deleteIds.length > 20) {
+  if (!force && deleteIds.length > 20) {
     console.log("数が多いので障害の懸念があるため見送ります");
     return;
   }
