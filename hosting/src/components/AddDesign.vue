@@ -98,9 +98,7 @@
     <v-card-actions>
       <v-btn outlined :disabled="step === 1 || posting" @click="back">戻る</v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="primary" :loading="posting" :disabled="step !== 3 || !valid" @click="post">
-        投稿
-      </v-btn>
+      <v-btn color="primary" :loading="posting" :disabled="step !== 3 || !valid" @click="post">投稿</v-btn>
       <v-btn text color="accent" :disabled="posting" @click="close">キャンセル</v-btn>
     </v-card-actions>
   </v-card>
