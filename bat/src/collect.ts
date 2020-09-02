@@ -20,8 +20,8 @@ async function collectDesigns() {
   console.log("デザイン収集");
   console.log("参照切れ削除");
   await deleteDeadDesignRef(false);
-  console.log("Instagram検索");
-  await searchPosts();
+  // console.log("Instagram検索");
+  // await searchPosts();
   console.log("Twitter検索");
   await searchTweets();
 }
