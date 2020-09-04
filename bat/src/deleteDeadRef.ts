@@ -24,7 +24,7 @@ export async function deleteDeadDesignRef(force: boolean) {
     console.log(`Not Found : ${id}`);
     deleteIds.push(id);
   }
-  if (!force && deleteIds.length > 20) {
+  if (!force && deleteIds.length > 30) {
     console.log("数が多いので障害の懸念があるため見送ります");
     return;
   }
@@ -73,7 +73,7 @@ export async function deleteDeadDreamRef(force: boolean) {
     console.log(`Not Found : ${id}`);
     deleteIds.push(id);
   }
-  if (!force && deleteIds.length > 20) {
+  if (!force && deleteIds.length > 30) {
     console.log("数が多いので障害の懸念があるため見送ります");
     return;
   }
