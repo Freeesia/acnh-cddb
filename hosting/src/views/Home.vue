@@ -124,7 +124,7 @@ import { firestore } from "firebase/app";
 import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
-import { SearchModule, GeneralModule } from "../store";
+import { GeneralModule } from "../store";
 import { getColor } from "../modules/color";
 import { flatQuery } from "../modules/utility";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
@@ -156,37 +156,10 @@ export default class Home extends Vue {
   private tags: { name: string; count: number }[] = [];
   private showTagCount = 10;
 
-  private get search() {
-    return SearchModule.text;
-  }
-
-  private set search(val: string) {
-    SearchModule.setText(val);
-  }
-
-  private get selectedColors(): ColorType[] {
-    return SearchModule.colors as ColorType[];
-  }
-
-  private set selectedColors(val: ColorType[]) {
-    SearchModule.setColors(val);
-  }
-
-  private get selectedTypes() {
-    return SearchModule.types as DesignType[];
-  }
-
-  private set selectedTypes(val: DesignType[]) {
-    SearchModule.setTypes(val);
-  }
-
-  private get selectedTags() {
-    return SearchModule.tags;
-  }
-
-  private set selectedTags(val: string[]) {
-    SearchModule.setTags(val);
-  }
+  private search = "";
+  private selectedColors: ColorType[] = [];
+  private selectedTypes: DesignType[] = [];
+  private selectedTags: string[] = [];
 
   private get selectableTags() {
     return _(this.tags)
@@ -197,18 +170,15 @@ export default class Home extends Vue {
 
   private created() {
     this.designsRef = this.db.collection("/designs") as ColRef<DesignInfo>;
+    const debounce = _.debounce(this.onSearchChanged);
+    this.$watch("search", debounce);
+    this.$watch("selectedColors", debounce);
+    this.$watch("selectedTypes", debounce);
+    this.$watch("selectedTags", debounce);
   }
 
   private mounted() {
     this.analyzeQuery();
-
-    this.$store.watch(
-      state => state.search,
-      () => {
-        this.refreshDesigns(true);
-      },
-      { deep: true }
-    );
   }
 
   private analyzeQuery() {
@@ -231,6 +201,24 @@ export default class Home extends Vue {
     this.selectedTags = _(flatQuery(this.$route.query.tag)).uniq().value();
   }
 
+  private onSearchChanged() {
+    const query = {
+      search: this.search ? this.search : undefined,
+      color: this.selectedColors,
+      type: this.selectedTypes,
+      tag: this.selectedTags,
+    };
+    if (_.isEqual(this.$route.query, query)) {
+      return;
+    }
+    this.$router.replace({
+      name: "home",
+      query,
+      replace: true,
+    });
+    this.refreshDesigns(true);
+  }
+
   private async refreshDesigns(init: boolean) {
     const facetFilters: string[][] = [];
     if (this.selectedTypes.length > 0) {
@@ -242,13 +230,14 @@ export default class Home extends Vue {
     if (this.selectedTags.length > 0) {
       facetFilters.push(...this.selectedTags.map(t => [`tags:${t}`]));
     }
+    const search = this.search ?? "";
     GeneralModule.setLoading(true);
     let page = init ? 0 : this.next ?? 0;
-    const res = await this.index.search<DesignInfo>(this.search, {
+    const res = await this.index.search<DesignInfo>(search, {
       facetFilters,
       page,
       facets: ["tags"],
-      optionalWords: this.search,
+      optionalWords: search,
     });
     this.next = ++page > res.nbPages ? null : page;
     if (init) {
@@ -263,12 +252,12 @@ export default class Home extends Vue {
 
   private addTag(tag: string) {
     this.showTagCount = 10;
-    SearchModule.addTag(tag);
+    this.selectedTags.push(tag);
   }
 
   private remTag(tag: string) {
     this.showTagCount = 10;
-    SearchModule.remTag(tag);
+    this.selectedTags = this.selectedTags.filter(t => t !== tag);
   }
 
   private async onIntersect(e: IntersectionObserverEntry[]) {
