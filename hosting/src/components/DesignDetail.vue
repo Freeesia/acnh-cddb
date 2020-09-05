@@ -27,6 +27,10 @@
         <v-icon left>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
         {{ faved ? "" : $t("detail.fav") }}
       </v-btn>
+      <v-btn color="accent" rounded depressed @click="sheet = true">
+        <v-icon left>playlist_add</v-icon>
+        {{ $t("detail.list") }}
+      </v-btn>
     </v-card-actions>
     <Tweet v-if="platform === 'Twitter'" :id="info.post.postId" :options="options" class="d-flex justify-center ma-2">
       <v-container fluid>
@@ -56,6 +60,27 @@
         </v-row>
       </v-container>
     </v-card>
+    <v-bottom-sheet v-model="sheet">
+      <v-list>
+        <v-subheader>追加先</v-subheader>
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>check_box_outline_blank</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Sound</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="addList">
+          <v-list-item-icon>
+            <v-icon>add</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>新しいリストを追加</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-bottom-sheet>
   </v-card>
 </template>
 <script lang="ts">
@@ -74,6 +99,7 @@ import DesignCard from "./DesignCard.vue";
 import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { favDesign } from "../modules/gtag";
+import AddList from "./AddList.vue";
 
 @Component({ components: { Tweet, InstagramEmbed, DesignCard } })
 export default class DesignDetail extends Vue {
@@ -91,6 +117,7 @@ export default class DesignDetail extends Vue {
   private userRef!: DocRef;
   private platform = "";
   private faving = false;
+  private sheet = false;
 
   private get src() {
     return this.info.imageUrls.large;
@@ -164,6 +191,14 @@ export default class DesignDetail extends Vue {
   @Emit()
   private selectTag(tag: string) {
     return tag;
+  }
+
+  private addList() {
+    this.sheet = false;
+    this.$dialog.show(AddList, {
+      showClose: false,
+      dream: this.info.designId,
+    });
   }
 }
 </script>
