@@ -9,6 +9,7 @@ export const users = db.collection("users");
 export const designs = db.collection("designs");
 export const dreams = db.collection("dreams");
 const contributors = db.collection("contributors");
+export const dreamLists = db.collection("dreamLists");
 
 export async function getOrCreateContributorRef(user: Contributor) {
   const contributorRef = contributors.doc(`${user.platform}:${user.id}`);

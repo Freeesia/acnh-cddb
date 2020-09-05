@@ -2,16 +2,23 @@ import { auth, https, config } from "firebase-functions";
 import { firestore } from "firebase-admin";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { TwitterUserCredential, Tweet } from "../../core/src/models/twitterTypes";
-import { UserMediaTweets, PostedMedia, DesignInfo, DreamInfo, PostedTweet } from "../../core/src/models/types";
+import {
+  UserMediaTweets,
+  PostedMedia,
+  DesignInfo,
+  DreamInfo,
+  PostedTweet,
+  DreamList,
+} from "../../core/src/models/types";
 import { assertIsDesignInfo, assertIsContributor, assertDreamInfo } from "../../core/src/models/assert";
-import { assertIsDefined, assertIsArray, assertIsString } from "../../core/src/utilities/assert";
+import { assertIsDefined, assertIsArray, assertIsString, assertIsBoolean } from "../../core/src/utilities/assert";
 import { getPlainText } from "../../core/src/twitter/utility";
 import { includePartRegex } from "../../core/src/utilities/systemUtility";
 import Twitter from "twitter-lite";
 import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDreamIndex } from "./algolia";
-import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags } from "./firestore";
+import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, dreamLists } from "./firestore";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -306,4 +313,31 @@ export const unregisterDreamInfo = https.onCall(async (data: string, context) =>
   }
   const dreamIndex = getDreamIndex();
   await Promise.all([dreamIndex.deleteObject(data), dreams.doc(data).delete()]);
+});
+
+export const createDreamList = https.onCall(async (data: any, context) => {
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "認証されていません");
+  }
+  try {
+    assertIsDefined(data);
+    assertIsString(data.name, "name");
+    assertIsBoolean(data.isPublic, "isPublic");
+    assertIsString(data.dream, "dream");
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new HttpsError("data-loss", e.message);
+    } else {
+      throw new HttpsError("unknown", e);
+    }
+  }
+  const list: DreamList = {
+    name: data.name,
+    isPublic: data.isPublic,
+    owner: context.auth.uid,
+    dreams: [dreams.doc(data.dream)],
+    createdAt: FieldValue.serverTimestamp(),
+  };
+  const res = await dreamLists.add(list);
+  return res.id;
 });

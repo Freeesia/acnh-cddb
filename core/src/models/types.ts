@@ -148,3 +148,11 @@ export interface DreamInfo {
 export const designIdPattern = /^MO(-[0-9A-HJ-NP-Y]{4}){3}$/;
 export const authorIdPattern = /^MA(-\d{4}){3}$/;
 export const dreamIdPattern = /^DA(-\d{4}){3}$/;
+
+export interface DreamList {
+  name: string;
+  owner: string;
+  isPublic: boolean;
+  dreams: (DocumentReference<DreamInfo> | string)[];
+  createdAt: Date | Timestamp | FieldValue;
+}
