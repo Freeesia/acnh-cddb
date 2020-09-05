@@ -335,7 +335,7 @@ export const createDesignList = https.onCall(async (data: any, context) => {
     name: data.name,
     isPublic: data.isPublic,
     owner: context.auth.uid,
-    designs: [dreams.doc(data.design)],
+    designs: [designs.doc(data.design)],
     createdAt: FieldValue.serverTimestamp(),
   };
   const res = await designLists.add(list);
