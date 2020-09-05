@@ -8,7 +8,7 @@ import {
   DesignInfo,
   DreamInfo,
   PostedTweet,
-  DreamList,
+  DesignList,
 } from "../../core/src/models/types";
 import { assertIsDesignInfo, assertIsContributor, assertDreamInfo } from "../../core/src/models/assert";
 import { assertIsDefined, assertIsArray, assertIsString, assertIsBoolean } from "../../core/src/utilities/assert";
@@ -18,7 +18,7 @@ import Twitter from "twitter-lite";
 import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDreamIndex } from "./algolia";
-import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, dreamLists } from "./firestore";
+import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, designLists } from "./firestore";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -315,7 +315,7 @@ export const unregisterDreamInfo = https.onCall(async (data: string, context) =>
   await Promise.all([dreamIndex.deleteObject(data), dreams.doc(data).delete()]);
 });
 
-export const createDreamList = https.onCall(async (data: any, context) => {
+export const createDesignList = https.onCall(async (data: any, context) => {
   if (!context.auth) {
     throw new HttpsError("unauthenticated", "認証されていません");
   }
@@ -323,7 +323,7 @@ export const createDreamList = https.onCall(async (data: any, context) => {
     assertIsDefined(data);
     assertIsString(data.name, "name");
     assertIsBoolean(data.isPublic, "isPublic");
-    assertIsString(data.dream, "dream");
+    assertIsString(data.design, "design");
   } catch (e) {
     if (e instanceof Error) {
       throw new HttpsError("data-loss", e.message);
@@ -331,13 +331,13 @@ export const createDreamList = https.onCall(async (data: any, context) => {
       throw new HttpsError("unknown", e);
     }
   }
-  const list: DreamList = {
+  const list: DesignList = {
     name: data.name,
     isPublic: data.isPublic,
     owner: context.auth.uid,
-    dreams: [dreams.doc(data.dream)],
+    designs: [dreams.doc(data.design)],
     createdAt: FieldValue.serverTimestamp(),
   };
-  const res = await dreamLists.add(list);
+  const res = await designLists.add(list);
   return res.id;
 });

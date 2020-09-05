@@ -15,12 +15,12 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Emit, Prop } from "vue-property-decorator";
-import { createDreamList } from "../plugins/functions";
+import { createDesignList } from "../plugins/functions";
 
 @Component
 export default class AddList extends Vue {
   @Prop({ required: true, type: String })
-  private dream!: string;
+  private design!: string;
   private valid = true;
   private name = "";
   private nameRules = [(v: any) => !!v || "必須"];
@@ -30,8 +30,9 @@ export default class AddList extends Vue {
   @Emit()
   private async submit() {
     this.creating = true;
-    await createDreamList(this.name, this.public, this.dream);
+    await createDesignList(this.name, this.public, this.design);
     this.creating = false;
+    this.$dialog.notify.success(`${this.name} に追加しました`);
   }
 }
 </script>

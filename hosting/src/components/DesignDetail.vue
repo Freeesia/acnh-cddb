@@ -63,12 +63,12 @@
     <v-bottom-sheet v-model="sheet">
       <v-list>
         <v-subheader>追加先</v-subheader>
-        <v-list-item>
+        <v-list-item v-for="list in lists" :key="list.id">
           <v-list-item-icon>
-            <v-icon>check_box_outline_blank</v-icon>
+            <v-icon>{{ containsList(list) ? "check_box" : "check_box_outline_blank" }}</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>Sound</v-list-item-title>
+            <v-list-item-title>{{ list.name }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item @click="addList">
@@ -90,7 +90,7 @@ import InstagramEmbed from "vue-instagram-embed";
 import { Prop, Watch, Emit } from "vue-property-decorator";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
-import { DesignInfo } from "../../../core/src/models/types";
+import { DesignInfo, DesignList } from "../../../core/src/models/types";
 import { AuthModule, GeneralModule } from "../store";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -143,6 +143,10 @@ export default class DesignDetail extends Vue {
     return `https://www.instagram.com/p/${this.info.post.postId}/`;
   }
 
+  private get lists(): DesignList[] {
+    return AuthModule.lists ?? [];
+  }
+
   private created() {
     const user = AuthModule.user;
     assertIsDefined(user);
@@ -193,11 +197,15 @@ export default class DesignDetail extends Vue {
     return tag;
   }
 
+  private containsList(list: DesignList) {
+    return list.designs.includes(this.path);
+  }
+
   private addList() {
     this.sheet = false;
     this.$dialog.show(AddList, {
       showClose: false,
-      dream: this.info.designId,
+      design: this.info.designId,
     });
   }
 }
