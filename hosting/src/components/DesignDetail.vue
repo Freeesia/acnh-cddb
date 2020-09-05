@@ -63,9 +63,10 @@
     <v-bottom-sheet v-model="sheet">
       <v-list>
         <v-subheader>追加先</v-subheader>
-        <v-list-item v-for="list in lists" :key="list.id">
+        <v-list-item v-for="list in lists" :key="list.id" @click="toggleList(list)">
           <v-list-item-icon>
-            <v-icon>{{ containsList(list) ? "check_box" : "check_box_outline_blank" }}</v-icon>
+            <v-progress-circular v-if="listing" size="24" width="3" indeterminate></v-progress-circular>
+            <v-icon v-else>{{ containsList(list) ? "check_box" : "check_box_outline_blank" }}</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>{{ list.name }}</v-list-item-title>
@@ -100,6 +101,7 @@ import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { favDesign } from "../modules/gtag";
 import AddList from "./AddList.vue";
+import { designListsRef } from "../plugins/firestore";
 
 @Component({ components: { Tweet, InstagramEmbed, DesignCard } })
 export default class DesignDetail extends Vue {
@@ -118,6 +120,7 @@ export default class DesignDetail extends Vue {
   private platform = "";
   private faving = false;
   private sheet = false;
+  private listing = false;
 
   private get src() {
     return this.info.imageUrls.large;
@@ -207,6 +210,14 @@ export default class DesignDetail extends Vue {
       showClose: false,
       design: this.info.designId,
     });
+  }
+  private async toggleList(list: DesignList & { id: string }) {
+    this.listing = true;
+    const func = list.designs.includes(this.path) ? FieldValue.arrayRemove : FieldValue.arrayUnion;
+    await designListsRef.doc(list.id).update({
+      designs: func(this.designsRef.doc(this.info.designId)),
+    });
+    this.listing = false;
   }
 }
 </script>
