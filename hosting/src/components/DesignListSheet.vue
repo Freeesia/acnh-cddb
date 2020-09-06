@@ -1,7 +1,7 @@
 <template>
   <v-bottom-sheet :value="value" @input="$emit('change', $event)">
     <v-list>
-      <v-subheader>追加先</v-subheader>
+      <v-subheader>{{ $t("designList.add") }}</v-subheader>
       <v-list-item v-for="list in lists" :key="list.id" @click="toggleList(list)">
         <v-list-item-icon>
           <v-progress-circular v-if="listing == list.id" size="24" width="3" indeterminate></v-progress-circular>
@@ -16,7 +16,7 @@
           <v-icon>add</v-icon>
         </v-list-item-icon>
         <v-list-item-content>
-          <v-list-item-title>新しいリストを追加</v-list-item-title>
+          <v-list-item-title>{{ $t("designList.new") }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list>
