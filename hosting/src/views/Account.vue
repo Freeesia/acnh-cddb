@@ -101,7 +101,7 @@
                 <v-icon>add</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card v-for="list in myDesignLists" :key="list.id" :to="'/list/' + list.id" outlined class="ma-2">
+            <v-card v-for="list in myDesignLists" :key="list.id" outlined class="ma-2" @click="selectList(list)">
               <div class="d-flex flex-no-wrap justify-space-between">
                 <v-card-title class="headline">
                   <div>{{ list.name }}</div>
@@ -109,7 +109,7 @@
                   <v-chip class="mx-2" small>{{ list.designs.length }}</v-chip>
                 </v-card-title>
                 <div class="ma-2">
-                  <v-btn icon :loading="listDeleting == list.id" @click="deleteList(list)">
+                  <v-btn icon :loading="listDeleting == list.id" @click.stop="deleteList(list)">
                     <v-icon>delete</v-icon>
                   </v-btn>
                 </div>
@@ -356,6 +356,15 @@ export default class Account extends Vue {
   private createList() {
     this.$dialog.show(CreateList, {
       showClose: false,
+    });
+  }
+
+  private selectList(list: DesignList & { id: string }) {
+    this.$router.push({
+      name: "list",
+      params: {
+        id: list.id,
+      },
     });
   }
 }
