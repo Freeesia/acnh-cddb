@@ -153,6 +153,6 @@ export interface DesignList {
   name: string;
   owner: string;
   isPublic: boolean;
-  designs: (DocumentReference<DesignInfo> | string)[];
+  designs: (DocumentReference<DesignInfo> | string | DesignInfo)[];
   createdAt: Date | Timestamp | FieldValue;
 }
