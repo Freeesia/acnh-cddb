@@ -1,6 +1,7 @@
 <template>
-  <v-container v-if="list" fluid>
-    <v-card flat>
+  <v-container fluid>
+    <v-alert v-if="error" type="warning">リストが公開されていないか、存在しません。</v-alert>
+    <v-card v-if="list" flat>
       <v-card-title>
         <div>{{ list.name }}</div>
         <v-icon class="mx-1" small>{{ list.isPublic ? "public" : "lock" }}</v-icon>
@@ -22,12 +23,14 @@ import { DesignInfo, DesignList } from "../../../core/src/models/types";
 import DesignDetail from "../components/DesignDetail.vue";
 import DesignCard from "../components/DesignCard.vue";
 import { designListsRef, designsRef } from "../plugins/firestore";
+import { GeneralModule } from "../store";
 
 @Component({ components: { DesignCard } })
 export default class List extends Vue {
   @Prop({ required: true, type: String })
   private readonly id!: string;
   private readonly list: DesignList | null = null;
+  private error = false;
 
   private get designs(): DesignInfo[] {
     return (
@@ -36,8 +39,14 @@ export default class List extends Vue {
     );
   }
 
-  private mounted() {
-    this.$bind("list", designListsRef.doc(this.id), { maxRefDepth: 2 });
+  private async mounted() {
+    GeneralModule.setLoading(true);
+    try {
+      await this.$bind("list", designListsRef.doc(this.id), { maxRefDepth: 2 });
+    } catch (error) {
+      this.error = true;
+    }
+    GeneralModule.setLoading(false);
   }
 
   private async select(info: DesignInfo) {
