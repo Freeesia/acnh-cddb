@@ -94,6 +94,36 @@
                 </v-img>
               </template>
             </v-data-table>
+            <v-toolbar dense flat>
+              <v-toolbar-title>{{ $t("myMyDesigns.header") }}</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="add">
+                <v-icon>add</v-icon>
+              </v-btn>
+              <v-btn icon :disabled="!canDelete" :loading="deleting" @click="deleteDesigns">
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-data-table
+              v-model="selected"
+              :headers="headers"
+              :items="myDesigns"
+              mobile-breakpoint="0"
+              show-select
+              hide-default-footer
+              fixed-header
+              :items-per-page="-1"
+            >
+              <template v-slot:item.imageUrls="{ item }">
+                <v-img width="40" aspect-ratio="1" class="secondary" :src="item.imageUrls.thumb1">
+                  <template v-slot:placeholder>
+                    <v-row class="fill-height ma-0" align="center" justify="center">
+                      <v-progress-circular indeterminate color="accent"></v-progress-circular>
+                    </v-row>
+                  </template>
+                </v-img>
+              </template>
+            </v-data-table>
           </v-tab-item>
           <v-tab-item>
             <section class="ma-2">
@@ -185,6 +215,7 @@ export default class Account extends Vue {
 
   private get designs(): DesignInfo[] {
     return (
+      // eslint-disable-next-line no-undef
       this.userInfo?.favs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string" && f !== null).reverse() ??
       []
     );
@@ -193,6 +224,7 @@ export default class Account extends Vue {
   private get dreams(): DreamInfo[] {
     return (
       this.userInfo?.dreamFavs
+        // eslint-disable-next-line no-undef
         ?.filter<DreamInfo>((f): f is DreamInfo => typeof f !== "string" && f !== null)
         .reverse() ?? []
     );
