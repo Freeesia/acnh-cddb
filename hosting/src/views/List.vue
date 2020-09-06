@@ -10,9 +10,22 @@
     </v-card>
     <v-row dense>
       <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2">
-        <DesignCard :info="design" @click="select" />
+        <DesignCard v-long-press="300" :info="design" @click="select" @long-press-start="onLongPressStart(design)" />
       </v-col>
     </v-row>
+    <v-bottom-sheet v-model="sheet">
+      <v-list>
+        <v-subheader>操作メニュー</v-subheader>
+        <v-list-item @click="deleteDesign">
+          <v-list-item-icon>
+            <v-icon>delete</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>削除</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-bottom-sheet>
   </v-container>
 </template>
 <script lang="ts">
@@ -23,20 +36,31 @@ import { DesignInfo, DesignList } from "../../../core/src/models/types";
 import DesignDetail from "../components/DesignDetail.vue";
 import DesignCard from "../components/DesignCard.vue";
 import { designListsRef, designsRef } from "../plugins/firestore";
-import { GeneralModule } from "../store";
+import { AuthModule, GeneralModule } from "../store";
+import assert from "assert";
+import { firestore } from "firebase/app";
+import "firebase/firestore";
+import FieldValue = firestore.FieldValue;
+import LongPress from "vue-directive-long-press";
 
-@Component({ components: { DesignCard } })
+@Component({ components: { DesignCard }, directives: { LongPress } })
 export default class List extends Vue {
   @Prop({ required: true, type: String })
   private readonly id!: string;
   private readonly list: DesignList | null = null;
   private error = false;
+  private sheet = false;
+  private selecting: DesignInfo | null = null;
 
   private get designs(): DesignInfo[] {
     return (
       // eslint-disable-next-line no-undef
       this.list?.designs.filter<DesignInfo>((f): f is DesignInfo => typeof f !== "string" && f !== null).reverse() ?? []
     );
+  }
+
+  private get isOwner() {
+    return AuthModule.user && this.list && AuthModule.user.uid === this.list.owner;
   }
 
   private async mounted() {
@@ -49,7 +73,32 @@ export default class List extends Vue {
     GeneralModule.setLoading(false);
   }
 
+  private onLongPressStart(info: DesignInfo) {
+    if (!this.isOwner) {
+      return;
+    }
+    this.selecting = info;
+    this.sheet = true;
+  }
+  private async deleteDesign() {
+    assert(this.isOwner);
+    assert(this.selecting);
+    this.sheet = false;
+    GeneralModule.setLoading(true);
+    try {
+      await designListsRef.doc(this.id).update({
+        designs: FieldValue.arrayRemove(designsRef.doc(this.selecting.designId)),
+      });
+    } catch (error) {
+      this.$dialog.notify.error("リストから削除出来ませんでした");
+    }
+    GeneralModule.setLoading(false);
+  }
+
   private async select(info: DesignInfo) {
+    if (this.sheet) {
+      return;
+    }
     this.$gtag.event("select_item", {
       items: [
         {
