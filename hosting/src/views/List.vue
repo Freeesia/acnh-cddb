@@ -6,6 +6,9 @@
         <div>{{ list.name }}</div>
         <v-icon class="mx-1" small>{{ list.isPublic ? "public" : "lock" }}</v-icon>
         <v-chip class="mx-2" small>{{ list.designs.length }}</v-chip>
+        <v-btn v-if="sharable && list.isPublic" icon @click="share">
+          <v-icon>share</v-icon>
+        </v-btn>
       </v-card-title>
     </v-card>
     <v-row dense>
@@ -42,12 +45,14 @@ import { firestore } from "firebase/app";
 import "firebase/firestore";
 import FieldValue = firestore.FieldValue;
 import LongPress from "vue-directive-long-press";
+import { assertIsDefined } from "../../../core/src/utilities/assert";
 
 @Component({ components: { DesignCard }, directives: { LongPress } })
 export default class List extends Vue {
   @Prop({ required: true, type: String })
   private readonly id!: string;
   private readonly list: DesignList | null = null;
+  private readonly sharable = navigator.share !== undefined;
   private error = false;
   private sheet = false;
   private selecting: DesignInfo | null = null;
@@ -123,6 +128,18 @@ export default class List extends Vue {
           id: info.designId,
         },
       });
+    }
+  }
+  private async share() {
+    assertIsDefined(this.list);
+    try {
+      await navigator.share({
+        title: this.list.name,
+        text: `#あつまれマイデザの🌳#マイデザ #ACNH #あつ森 #あつまれどうぶつの森`,
+        url: `${process.env.VUE_APP_DOMAIN}list/${this.id}`,
+      });
+    } catch (error) {
+      // 特に何もしない
     }
   }
 }
