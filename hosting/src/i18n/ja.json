@@ -94,5 +94,8 @@
   "designList": {
     "add": "リストへの追加",
     "new": "新しいリストを作成"
+  },
+  "myDesignList": {
+    "header": "作成したリスト"
   }
 }

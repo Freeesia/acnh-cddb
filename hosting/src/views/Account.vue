@@ -95,35 +95,26 @@
               </template>
             </v-data-table>
             <v-toolbar dense flat>
-              <v-toolbar-title>{{ $t("myMyDesigns.header") }}</v-toolbar-title>
+              <v-toolbar-title>{{ $t("myDesignList.header") }}</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon @click="add">
+              <v-btn icon @click="createList">
                 <v-icon>add</v-icon>
               </v-btn>
-              <v-btn icon :disabled="!canDelete" :loading="deleting" @click="deleteDesigns">
-                <v-icon>delete</v-icon>
-              </v-btn>
             </v-toolbar>
-            <v-data-table
-              v-model="selected"
-              :headers="headers"
-              :items="myDesigns"
-              mobile-breakpoint="0"
-              show-select
-              hide-default-footer
-              fixed-header
-              :items-per-page="-1"
-            >
-              <template v-slot:item.imageUrls="{ item }">
-                <v-img width="40" aspect-ratio="1" class="secondary" :src="item.imageUrls.thumb1">
-                  <template v-slot:placeholder>
-                    <v-row class="fill-height ma-0" align="center" justify="center">
-                      <v-progress-circular indeterminate color="accent"></v-progress-circular>
-                    </v-row>
-                  </template>
-                </v-img>
-              </template>
-            </v-data-table>
+            <v-card v-for="list in myDesignLists" :key="list.id" :to="'/list/' + list.id" outlined class="ma-2">
+              <div class="d-flex flex-no-wrap justify-space-between">
+                <v-card-title class="headline">
+                  <div>{{ list.name }}</div>
+                  <v-icon class="mx-1" small>{{ list.isPublic ? "public" : "lock" }}</v-icon>
+                  <v-chip class="mx-2" small>{{ list.designs.length }}</v-chip>
+                </v-card-title>
+                <div class="ma-2">
+                  <v-btn icon :loading="listDeleting == list.id" @click="deleteList(list)">
+                    <v-icon>delete</v-icon>
+                  </v-btn>
+                </div>
+              </div>
+            </v-card>
           </v-tab-item>
           <v-tab-item>
             <section class="ma-2">
@@ -184,12 +175,14 @@ import DreamCard from "../components/DreamCard.vue";
 import { AuthModule, GeneralModule } from "../store";
 import { User, firestore } from "firebase/app";
 import "firebase/firestore";
-import { UserInfo, DesignInfo, DreamInfo } from "../../../core/src/models/types";
+import { UserInfo, DesignInfo, DreamInfo, DesignList } from "../../../core/src/models/types";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AddDesign from "../components/AddDesign.vue";
 import { unregisterDesignInfo, unregisterDreamInfo } from "../plugins/functions";
 import SetDream from "../components/SetDream.vue";
 import { setLocale } from "../plugins/i18n";
+import { designListsRef } from "../plugins/firestore";
+import AddList from "../components/AddList.vue";
 
 @Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
@@ -206,6 +199,7 @@ export default class Account extends Vue {
   ];
   private selected: DesignInfo[] = [];
   private deleting = false;
+  private listDeleting = "";
   private langs = [
     { label: "日本語", value: "ja" },
     { label: "English", value: "en" },
@@ -232,6 +226,10 @@ export default class Account extends Vue {
 
   private get myDream() {
     return this.myDreams.length > 0 ? this.myDreams[0] : null;
+  }
+
+  private get myDesignLists(): DesignList[] {
+    return AuthModule.lists ?? [];
   }
 
   private get profileUrl() {
@@ -347,6 +345,18 @@ export default class Account extends Vue {
       await unregisterDreamInfo(this.myDream.dreamId);
       this.deleting = false;
     }
+  }
+
+  private async deleteList(list: DesignList & { id: string }) {
+    this.listDeleting = list.id;
+    await designListsRef.doc(list.id).delete();
+    this.listDeleting = "";
+  }
+
+  private createList() {
+    this.$dialog.show(AddList, {
+      showClose: false,
+    });
   }
 }
 </script>
