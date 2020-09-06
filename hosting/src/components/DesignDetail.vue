@@ -60,28 +60,7 @@
         </v-row>
       </v-container>
     </v-card>
-    <v-bottom-sheet v-model="sheet">
-      <v-list>
-        <v-subheader>追加先</v-subheader>
-        <v-list-item v-for="list in lists" :key="list.id" @click="toggleList(list)">
-          <v-list-item-icon>
-            <v-progress-circular v-if="listing" size="24" width="3" indeterminate></v-progress-circular>
-            <v-icon v-else>{{ containsList(list) ? "check_box" : "check_box_outline_blank" }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>{{ list.name }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item @click="addList">
-          <v-list-item-icon>
-            <v-icon>add</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>新しいリストを追加</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-bottom-sheet>
+    <DesignListSheet v-model="sheet" :info="info" />
   </v-card>
 </template>
 <script lang="ts">
@@ -91,19 +70,18 @@ import InstagramEmbed from "vue-instagram-embed";
 import { Prop, Watch, Emit } from "vue-property-decorator";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
-import { DesignInfo, DesignList } from "../../../core/src/models/types";
+import { DesignInfo } from "../../../core/src/models/types";
 import { AuthModule, GeneralModule } from "../store";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Tweet } = require("vue-tweet-embed");
 import DesignCard from "./DesignCard.vue";
+import DesignListSheet from "./DesignListSheet.vue";
 import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { favDesign } from "../modules/gtag";
-import AddList from "./AddList.vue";
-import { designListsRef } from "../plugins/firestore";
 
-@Component({ components: { Tweet, InstagramEmbed, DesignCard } })
+@Component({ components: { Tweet, InstagramEmbed, DesignCard, DesignListSheet } })
 export default class DesignDetail extends Vue {
   private readonly db = firestore();
   private readonly designsRef = this.db.collection("designs");
@@ -120,7 +98,6 @@ export default class DesignDetail extends Vue {
   private platform = "";
   private faving = false;
   private sheet = false;
-  private listing = false;
 
   private get src() {
     return this.info.imageUrls.large;
@@ -144,10 +121,6 @@ export default class DesignDetail extends Vue {
 
   private get instagramUrl() {
     return `https://www.instagram.com/p/${this.info.post.postId}/`;
-  }
-
-  private get lists(): DesignList[] {
-    return AuthModule.lists ?? [];
   }
 
   private created() {
@@ -198,26 +171,6 @@ export default class DesignDetail extends Vue {
   @Emit()
   private selectTag(tag: string) {
     return tag;
-  }
-
-  private containsList(list: DesignList) {
-    return list.designs.includes(this.path);
-  }
-
-  private addList() {
-    this.sheet = false;
-    this.$dialog.show(AddList, {
-      showClose: false,
-      design: this.info.designId,
-    });
-  }
-  private async toggleList(list: DesignList & { id: string }) {
-    this.listing = true;
-    const func = list.designs.includes(this.path) ? FieldValue.arrayRemove : FieldValue.arrayUnion;
-    await designListsRef.doc(list.id).update({
-      designs: func(this.designsRef.doc(this.info.designId)),
-    });
-    this.listing = false;
   }
 }
 </script>
