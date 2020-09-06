@@ -29,7 +29,7 @@ import { Model, Prop } from "vue-property-decorator";
 import { DesignInfo, DesignList } from "../../../core/src/models/types";
 import { designListsRef, designsRef } from "../plugins/firestore";
 import { AuthModule } from "../store";
-import AddList from "./AddList.vue";
+import CreateList from "./CreateList.vue";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import FieldValue = firestore.FieldValue;
@@ -62,7 +62,7 @@ export default class DesignListSheet extends Vue {
 
   private addList() {
     this.$emit("change", false);
-    this.$dialog.show(AddList, {
+    this.$dialog.show(CreateList, {
       showClose: false,
       design: this.info.designId,
     });

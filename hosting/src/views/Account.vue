@@ -182,7 +182,7 @@ import { unregisterDesignInfo, unregisterDreamInfo } from "../plugins/functions"
 import SetDream from "../components/SetDream.vue";
 import { setLocale } from "../plugins/i18n";
 import { designListsRef } from "../plugins/firestore";
-import AddList from "../components/AddList.vue";
+import CreateList from "../components/CreateList.vue";
 
 @Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
@@ -354,7 +354,7 @@ export default class Account extends Vue {
   }
 
   private createList() {
-    this.$dialog.show(AddList, {
+    this.$dialog.show(CreateList, {
       showClose: false,
     });
   }

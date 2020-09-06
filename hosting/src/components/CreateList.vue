@@ -18,7 +18,7 @@ import { Emit, Prop } from "vue-property-decorator";
 import { createDesignList } from "../plugins/functions";
 
 @Component
-export default class AddList extends Vue {
+export default class CreateList extends Vue {
   @Prop({ type: String })
   private design!: string;
   private valid = true;

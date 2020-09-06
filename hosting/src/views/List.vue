@@ -87,7 +87,6 @@ import DesignDetail from "../components/DesignDetail.vue";
 import DesignCard from "../components/DesignCard.vue";
 import { designListsRef, designsRef } from "../plugins/firestore";
 import { AuthModule, GeneralModule } from "../store";
-import assert from "assert";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import FieldValue = firestore.FieldValue;
@@ -147,8 +146,10 @@ export default class List extends Vue {
     this.sheet = true;
   }
   private async deleteDesign() {
-    assert(this.isOwner);
-    assert(this.selecting);
+    if (!this.isOwner) {
+      return;
+    }
+    assertIsDefined(this.selecting);
     this.sheet = false;
     GeneralModule.setLoading(true);
     try {
