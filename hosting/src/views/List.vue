@@ -10,6 +10,20 @@
           <v-icon>share</v-icon>
         </v-btn>
       </v-card-title>
+      <v-card-actions class="share-network-list">
+        <ShareNetwork
+          v-for="network in networks"
+          :key="network.network"
+          :network="network.network"
+          :style="{ backgroundColor: network.color }"
+          :url="url"
+          :title="list.name"
+          :hashtags="tags.join(',')"
+        >
+          <v-fa :icon="network.icon" fixed-width class="fah pa-1" size="lg" />
+          <span class="mx-1">{{ network.name }}</span>
+        </ShareNetwork>
+      </v-card-actions>
     </v-card>
     <v-row dense>
       <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2">
@@ -31,6 +45,39 @@
     </v-bottom-sheet>
   </v-container>
 </template>
+<style lang="scss">
+.share-network-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1000px;
+  margin: auto;
+}
+a[class^="share-network-"] {
+  flex: none;
+  color: #ffffff;
+  background-color: #333;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 0 4px 4px 0;
+}
+
+a[class^="share-network-"] .fah {
+  background-color: rgba(0, 0, 0, 0.2);
+  flex: 0 1 auto;
+}
+
+a[class^="share-network-"] span {
+  flex: 1 1 0%;
+  font-weight: 500;
+}
+</style>
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -56,6 +103,20 @@ export default class List extends Vue {
   private error = false;
   private sheet = false;
   private selecting: DesignInfo | null = null;
+  private networks = [
+    { network: "twitter", name: "Twitter", icon: ["fab", "twitter"], color: "#1da1f2" },
+    { network: "facebook", name: "Facebook", icon: ["fab", "facebook-f"], color: "#1877f2" },
+    { network: "line", name: "Line", icon: ["fab", "line"], color: "#00c300" },
+    { network: "reddit", name: "Reddit", icon: ["fab", "reddit"], color: "#ff4500" },
+    { network: "tumblr", name: "Tumblr", icon: ["fab", "tumblr"], color: "#35465c" },
+    { network: "weibo", name: "Weibo", icon: ["fab", "weibo"], color: "#e9152d" },
+    { network: "whatsapp", name: "Whatsapp", icon: ["fab", "whatsapp"], color: "#25d366" },
+  ];
+  private readonly tags = ["あつまれマイデザの🌳", "マイデザ", "ACNH", "あつ森", "あつまれどうぶつの森"];
+
+  private get url() {
+    return `${process.env.VUE_APP_DOMAIN}list/${this.id}`;
+  }
 
   private get designs(): DesignInfo[] {
     return (
@@ -135,8 +196,8 @@ export default class List extends Vue {
     try {
       await navigator.share({
         title: this.list.name,
-        text: `#あつまれマイデザの🌳#マイデザ #ACNH #あつ森 #あつまれどうぶつの森`,
-        url: `${process.env.VUE_APP_DOMAIN}list/${this.id}`,
+        text: this.tags.map(t => "#" + t).join(" "),
+        url: this.url,
       });
     } catch (error) {
       // 特に何もしない
