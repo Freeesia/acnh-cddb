@@ -322,6 +322,7 @@ export const createDesignList = https.onCall(async (data: any, context) => {
   try {
     assertIsDefined(data);
     assertIsString(data.name, "name");
+    assertIsString(data.description, "description");
     assertIsBoolean(data.isPublic, "isPublic");
   } catch (e) {
     if (e instanceof Error) {
@@ -332,6 +333,7 @@ export const createDesignList = https.onCall(async (data: any, context) => {
   }
   const list: DesignList = {
     name: data.name,
+    description: data.description,
     isPublic: data.isPublic,
     owner: context.auth.uid,
     designs: [],

@@ -3,6 +3,7 @@
     <v-card-subtitle>リスト名を入力してください</v-card-subtitle>
     <v-form v-model="valid" class="mx-4">
       <v-text-field v-model="name" :rules="nameRules" label="名前" required></v-text-field>
+      <v-textarea v-model="description" label="説明"></v-textarea>
       <v-checkbox v-model="public" label="他のユーザーに公開する"></v-checkbox>
     </v-form>
     <v-card-actions>
@@ -23,6 +24,7 @@ export default class CreateList extends Vue {
   private design!: string;
   private valid = true;
   private name = "";
+  private description = "";
   private nameRules = [(v: any) => !!v || "必須"];
   private public = true;
   private creating = false;
@@ -30,7 +32,7 @@ export default class CreateList extends Vue {
   @Emit()
   private async submit() {
     this.creating = true;
-    await createDesignList(this.name, this.public, this.design);
+    await createDesignList(this.name, this.description ?? "", this.public, this.design);
     this.creating = false;
     if (this.design) {
       this.$dialog.notify.success(`${this.name} に追加しました`);

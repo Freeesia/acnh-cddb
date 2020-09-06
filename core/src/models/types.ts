@@ -151,6 +151,7 @@ export const dreamIdPattern = /^DA(-\d{4}){3}$/;
 
 export interface DesignList {
   name: string;
+  description: string;
   owner: string;
   isPublic: boolean;
   designs: (DocumentReference<DesignInfo> | string | DesignInfo)[];

@@ -10,6 +10,9 @@
           <v-icon>share</v-icon>
         </v-btn>
       </v-card-title>
+      <v-card-text>
+        {{ list.description }}
+      </v-card-text>
       <v-card-actions class="share-network-list">
         <ShareNetwork
           v-for="network in networks"

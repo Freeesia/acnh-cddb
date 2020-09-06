@@ -41,7 +41,7 @@ export async function registerDreamInfo(dream: DreamInfo) {
 export async function unregisterDreamInfo(id: string) {
   await _unregisterDreamInfo(id);
 }
-export async function createDesignList(name: string, isPublic: boolean, design: string) {
-  const res = await _createDesignList({ name, isPublic, design });
+export async function createDesignList(name: string, description: string, isPublic: boolean, design: string) {
+  const res = await _createDesignList({ name, description, isPublic, design });
   return res.data as string;
 }
