@@ -323,7 +323,6 @@ export const createDesignList = https.onCall(async (data: any, context) => {
     assertIsDefined(data);
     assertIsString(data.name, "name");
     assertIsBoolean(data.isPublic, "isPublic");
-    assertIsString(data.design, "design");
   } catch (e) {
     if (e instanceof Error) {
       throw new HttpsError("data-loss", e.message);
@@ -335,9 +334,12 @@ export const createDesignList = https.onCall(async (data: any, context) => {
     name: data.name,
     isPublic: data.isPublic,
     owner: context.auth.uid,
-    designs: [designs.doc(data.design)],
+    designs: [],
     createdAt: FieldValue.serverTimestamp(),
   };
+  if (typeof data.design === "string") {
+    list.designs.push(designs.doc(data.design));
+  }
   const res = await designLists.add(list);
   return res.id;
 });

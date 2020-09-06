@@ -19,7 +19,7 @@ import { createDesignList } from "../plugins/functions";
 
 @Component
 export default class AddList extends Vue {
-  @Prop({ required: true, type: String })
+  @Prop({ type: String })
   private design!: string;
   private valid = true;
   private name = "";
@@ -32,7 +32,9 @@ export default class AddList extends Vue {
     this.creating = true;
     await createDesignList(this.name, this.public, this.design);
     this.creating = false;
-    this.$dialog.notify.success(`${this.name} に追加しました`);
+    if (this.design) {
+      this.$dialog.notify.success(`${this.name} に追加しました`);
+    }
   }
 }
 </script>
