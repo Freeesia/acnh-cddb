@@ -30,10 +30,10 @@
     </v-card>
     <v-row dense>
       <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2">
-        <DesignCard v-long-press="300" :info="design" @click="select" @long-press-start="onLongPressStart(design)" />
+        <DesignCard v-alt-action="300" :info="design" @click="select" @alt-action="raiseMenu($event, design)" />
       </v-col>
     </v-row>
-    <v-bottom-sheet v-model="sheet">
+    <component :is="menuStyle" v-model="menu" absolute :position-x="menuX" :position-y="menuY">
       <v-list>
         <v-subheader>操作メニュー</v-subheader>
         <v-list-item @click="deleteDesign">
@@ -45,7 +45,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-    </v-bottom-sheet>
+    </component>
   </v-container>
 </template>
 <style lang="scss">
@@ -93,17 +93,20 @@ import { AuthModule, GeneralModule } from "../store";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import FieldValue = firestore.FieldValue;
-import LongPress from "vue-directive-long-press";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
+import AltAction from "../directives/altActionDirective";
+import { VBottomSheet, VMenu } from "vuetify/lib";
 
-@Component({ components: { DesignCard }, directives: { LongPress } })
+@Component({ components: { DesignCard, VBottomSheet, VMenu }, directives: { AltAction } })
 export default class List extends Vue {
   @Prop({ required: true, type: String })
   private readonly id!: string;
   private readonly list: DesignList | null = null;
   private readonly sharable = navigator.share !== undefined;
   private error = false;
-  private sheet = false;
+  private menu = false;
+  private menuX = 0;
+  private menuY = 0;
   private selecting: DesignInfo | null = null;
   private networks = [
     { network: "twitter", name: "Twitter", icon: ["fab", "twitter"], color: "#1da1f2" },
@@ -131,6 +134,10 @@ export default class List extends Vue {
     return AuthModule.user && this.list && AuthModule.user.uid === this.list.owner;
   }
 
+  private get menuStyle() {
+    return this.$vuetify.breakpoint.smAndUp ? "v-menu" : "v-bottom-sheet";
+  }
+
   private async mounted() {
     GeneralModule.setLoading(true);
     try {
@@ -141,19 +148,21 @@ export default class List extends Vue {
     GeneralModule.setLoading(false);
   }
 
-  private onLongPressStart(info: DesignInfo) {
+  private raiseMenu(ev: MouseEvent, info: DesignInfo) {
     if (!this.isOwner) {
       return;
     }
+    this.menuX = ev.clientX;
+    this.menuY = ev.clientY;
     this.selecting = info;
-    this.sheet = true;
+    this.menu = true;
   }
   private async deleteDesign() {
     if (!this.isOwner) {
       return;
     }
     assertIsDefined(this.selecting);
-    this.sheet = false;
+    this.menu = false;
     GeneralModule.setLoading(true);
     try {
       await designListsRef.doc(this.id).update({
@@ -166,7 +175,7 @@ export default class List extends Vue {
   }
 
   private async select(info: DesignInfo) {
-    if (this.sheet) {
+    if (this.menu) {
       return;
     }
     this.$gtag.event("select_item", {
