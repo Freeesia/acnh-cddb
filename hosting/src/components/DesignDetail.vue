@@ -27,7 +27,7 @@
         <v-icon left>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
         {{ faved ? "" : $t("detail.fav") }}
       </v-btn>
-      <v-btn color="accent" rounded depressed @click="sheet = true">
+      <v-btn color="accent" rounded depressed @click="addList">
         <v-icon left>playlist_add</v-icon>
         {{ $t("detail.list") }}
       </v-btn>
@@ -60,7 +60,7 @@
         </v-row>
       </v-container>
     </v-card>
-    <DesignListSheet v-model="sheet" :info="info" />
+    <DesignListSheet v-model="sheet" :info="info" :x="x" :y="y" />
   </v-card>
 </template>
 <script lang="ts">
@@ -98,6 +98,9 @@ export default class DesignDetail extends Vue {
   private platform = "";
   private faving = false;
   private sheet = false;
+
+  private x = 0;
+  private y = 0;
 
   private get src() {
     return this.info.imageUrls.large;
@@ -171,6 +174,12 @@ export default class DesignDetail extends Vue {
   @Emit()
   private selectTag(tag: string) {
     return tag;
+  }
+
+  private addList(ev: MouseEvent) {
+    this.x = ev.clientX;
+    this.y = ev.clientY;
+    this.sheet = true;
   }
 }
 </script>

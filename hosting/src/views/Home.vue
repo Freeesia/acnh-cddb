@@ -88,13 +88,13 @@
     </v-row>
     <v-row dense>
       <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2">
-        <DesignCard v-long-press="300" :info="design" @click="select" @long-press-start="onLongPressStart(design)" />
+        <DesignCard v-alt-action="300" :info="design" @click="select" @alt-action="raiseMenu($event, design)" />
       </v-col>
     </v-row>
     <v-row v-if="next !== null" align="center" justify="center">
       <v-progress-circular v-intersect="onIntersect" indeterminate color="secondary" size="60"></v-progress-circular>
     </v-row>
-    <DesignListSheet v-if="selecting" v-model="sheet" :info="selecting" />
+    <DesignListSheet v-if="sheet" v-model="sheet" :info="selecting" :x="x" :y="y" />
   </v-container>
 </template>
 <style lang="scss" scoped>
@@ -134,9 +134,9 @@ import { designsIndex } from "../../../core/src/algolia/lite";
 import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType } from "../../../core/src/models/types";
 import ColRef = firestore.CollectionReference;
 import _ from "lodash";
-import LongPress from "vue-directive-long-press";
+import AltAction from "../directives/altActionDirective";
 
-@Component({ components: { DesignCard, DesignListSheet }, directives: { LongPress } })
+@Component({ components: { DesignCard, DesignListSheet }, directives: { AltAction } })
 export default class Home extends Vue {
   private readonly db = firestore();
   private readonly index = designsIndex;
@@ -165,6 +165,9 @@ export default class Home extends Vue {
   private selectedTags: string[] = [];
   private sheet = false;
   private selecting: DesignInfo | null = null;
+
+  private x = 0;
+  private y = 0;
 
   private get selectableTags() {
     return _(this.tags)
@@ -303,7 +306,9 @@ export default class Home extends Vue {
     }
   }
 
-  private onLongPressStart(info: DesignInfo) {
+  private raiseMenu(ev: MouseEvent, info: DesignInfo) {
+    this.x = ev.clientX;
+    this.y = ev.clientY;
     this.selecting = info;
     this.sheet = true;
   }
