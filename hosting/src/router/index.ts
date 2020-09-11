@@ -86,6 +86,12 @@ const routes: Array<RouteConfig> = [
       dream: true,
     },
   },
+  {
+    path: "/list/:id",
+    name: "list",
+    component: () => import(/* webpackChunkName: "main", webpackPrefetch: true */ "@/views/List.vue"),
+    props: true,
+  },
 ];
 
 const router = new VueRouter({

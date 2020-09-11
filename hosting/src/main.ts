@@ -13,12 +13,22 @@ import i18n from "./plugins/i18n";
 import { firestorePlugin } from "vuefire";
 import InputFacade from "vue-input-facade";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import {
+  faGithub,
+  faTwitter,
+  faLine,
+  faTumblr,
+  faFacebookF,
+  faReddit,
+  faWeibo,
+  faWhatsapp,
+} from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VueGtag from "vue-gtag";
 import { firebaseConfig } from "./plugins/firebase";
+import VueSocialSharing from "vue-social-sharing";
 
-library.add(faGithub, faTwitter);
+library.add(faGithub, faTwitter, faLine, faTumblr, faFacebookF, faReddit, faWeibo, faWhatsapp);
 Vue.component("v-fa", FontAwesomeIcon);
 
 Vue.use(InputFacade, {
@@ -45,6 +55,7 @@ Vue.use(
   },
   router
 );
+Vue.use(VueSocialSharing);
 
 Vue.config.productionTip = false;
 

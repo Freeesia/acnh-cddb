@@ -27,6 +27,10 @@
         <v-icon left>{{ faved ? "favorite" : "favorite_border" }}</v-icon>
         {{ faved ? "" : $t("detail.fav") }}
       </v-btn>
+      <v-btn color="accent" rounded depressed @click="addList">
+        <v-icon left>playlist_add</v-icon>
+        {{ $t("detail.list") }}
+      </v-btn>
     </v-card-actions>
     <Tweet v-if="platform === 'Twitter'" :id="info.post.postId" :options="options" class="d-flex justify-center ma-2">
       <v-container fluid>
@@ -56,6 +60,7 @@
         </v-row>
       </v-container>
     </v-card>
+    <DesignListSheet v-model="sheet" :info="info" :x="x" :y="y" />
   </v-card>
 </template>
 <script lang="ts">
@@ -71,11 +76,12 @@ import { assertIsDefined } from "../../../core/src/utilities/assert";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Tweet } = require("vue-tweet-embed");
 import DesignCard from "./DesignCard.vue";
+import DesignListSheet from "./DesignListSheet.vue";
 import DocRef = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { favDesign } from "../modules/gtag";
 
-@Component({ components: { Tweet, InstagramEmbed, DesignCard } })
+@Component({ components: { Tweet, InstagramEmbed, DesignCard, DesignListSheet } })
 export default class DesignDetail extends Vue {
   private readonly db = firestore();
   private readonly designsRef = this.db.collection("designs");
@@ -91,6 +97,10 @@ export default class DesignDetail extends Vue {
   private userRef!: DocRef;
   private platform = "";
   private faving = false;
+  private sheet = false;
+
+  private x = 0;
+  private y = 0;
 
   private get src() {
     return this.info.imageUrls.large;
@@ -164,6 +174,12 @@ export default class DesignDetail extends Vue {
   @Emit()
   private selectTag(tag: string) {
     return tag;
+  }
+
+  private addList(ev: MouseEvent) {
+    this.x = ev.clientX;
+    this.y = ev.clientY;
+    this.sheet = true;
   }
 }
 </script>

@@ -13,5 +13,9 @@ service cloud.firestore {
     match /users/{userId}/{document=**} {
       allow read, update: if request.auth.uid == userId;
     }
+    match /designLists/{document=**} {
+      allow read: if request.auth.uid == resource.data.owner || resource.data.isPublic;
+      allow delete, update: if request.auth.uid == resource.data.owner;
+    }
   }
 }

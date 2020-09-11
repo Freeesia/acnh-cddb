@@ -2,16 +2,23 @@ import { auth, https, config } from "firebase-functions";
 import { firestore } from "firebase-admin";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { TwitterUserCredential, Tweet } from "../../core/src/models/twitterTypes";
-import { UserMediaTweets, PostedMedia, DesignInfo, DreamInfo, PostedTweet } from "../../core/src/models/types";
+import {
+  UserMediaTweets,
+  PostedMedia,
+  DesignInfo,
+  DreamInfo,
+  PostedTweet,
+  DesignList,
+} from "../../core/src/models/types";
 import { assertIsDesignInfo, assertIsContributor, assertDreamInfo } from "../../core/src/models/assert";
-import { assertIsDefined, assertIsArray, assertIsString } from "../../core/src/utilities/assert";
+import { assertIsDefined, assertIsArray, assertIsString, assertIsBoolean } from "../../core/src/utilities/assert";
 import { getPlainText } from "../../core/src/twitter/utility";
 import { includePartRegex } from "../../core/src/utilities/systemUtility";
 import Twitter from "twitter-lite";
 import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDreamIndex } from "./algolia";
-import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags } from "./firestore";
+import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, designLists } from "./firestore";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -306,4 +313,35 @@ export const unregisterDreamInfo = https.onCall(async (data: string, context) =>
   }
   const dreamIndex = getDreamIndex();
   await Promise.all([dreamIndex.deleteObject(data), dreams.doc(data).delete()]);
+});
+
+export const createDesignList = https.onCall(async (data: any, context) => {
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "認証されていません");
+  }
+  try {
+    assertIsDefined(data);
+    assertIsString(data.name, "name");
+    assertIsString(data.description, "description");
+    assertIsBoolean(data.isPublic, "isPublic");
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new HttpsError("data-loss", e.message);
+    } else {
+      throw new HttpsError("unknown", e);
+    }
+  }
+  const list: DesignList = {
+    name: data.name,
+    description: data.description,
+    isPublic: data.isPublic,
+    owner: context.auth.uid,
+    designs: [],
+    createdAt: FieldValue.serverTimestamp(),
+  };
+  if (typeof data.design === "string") {
+    list.designs.push(designs.doc(data.design));
+  }
+  const res = await designLists.add(list);
+  return res.id;
 });

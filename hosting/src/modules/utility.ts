@@ -7,3 +7,5 @@ export function flatQuery(value: string | (string | null)[]): string[] {
     return [];
   }
 }
+
+export const delay = (timeout: number): Promise<void> => new Promise(res => setTimeout(res, timeout));

@@ -1,8 +1,10 @@
 import { VuexModule, Module, Mutation, Action } from "vuex-module-decorators";
-import { auth, User, firestore } from "firebase/app";
+import { auth, User } from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import FirestoreAction, { FirestoreActionContext } from "@/modules/vuexfire-decorator";
+import { DesignList } from "@core/models/types";
+import { usersRef, designListsRef } from "@/plugins/firestore";
 
 interface UserInfo {
   favs: string[];
@@ -14,6 +16,7 @@ interface UserInfo {
 export default class Auth extends VuexModule {
   user: User | null = null;
   info: UserInfo | null = null;
+  lists: DesignList[] = [];
 
   @Mutation
   private setUser(user: User | null) {
@@ -33,7 +36,10 @@ export default class Auth extends VuexModule {
     const { bindFirestoreRef, unbindFirestoreRef } = this.context as FirestoreActionContext<any, any>;
 
     if (user) {
-      return bindFirestoreRef("info", firestore().doc(`users/${user.uid}`), { maxRefDepth: 0 });
+      return Promise.all([
+        bindFirestoreRef("info", usersRef.doc(user.uid), { maxRefDepth: 0 }),
+        bindFirestoreRef("lists", designListsRef.where("owner", "==", user.uid), { maxRefDepth: 0 }),
+      ]);
     } else {
       return unbindFirestoreRef("info");
     }

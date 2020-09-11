@@ -88,12 +88,13 @@
     </v-row>
     <v-row dense>
       <v-col v-for="design in designs" :key="design.id" cols="6" sm="3" md="2">
-        <DesignCard :info="design" @click="select" />
+        <DesignCard v-alt-action="300" :info="design" @click="select" @alt-action="raiseMenu($event, design)" />
       </v-col>
     </v-row>
     <v-row v-if="next !== null" align="center" justify="center">
       <v-progress-circular v-intersect="onIntersect" indeterminate color="secondary" size="60"></v-progress-circular>
     </v-row>
+    <DesignListSheet v-if="sheet" v-model="sheet" :info="selecting" :x="x" :y="y" />
   </v-container>
 </template>
 <style lang="scss" scoped>
@@ -124,6 +125,7 @@ import { firestore } from "firebase/app";
 import "firebase/firestore";
 import DesignCard from "../components/DesignCard.vue";
 import DesignDetail from "../components/DesignDetail.vue";
+import DesignListSheet from "../components/DesignListSheet.vue";
 import { GeneralModule } from "../store";
 import { getColor } from "../modules/color";
 import { flatQuery } from "../modules/utility";
@@ -132,8 +134,9 @@ import { designsIndex } from "../../../core/src/algolia/lite";
 import { DesignInfo, ColorTypes, DesignTypes, ColorType, DesignType } from "../../../core/src/models/types";
 import ColRef = firestore.CollectionReference;
 import _ from "lodash";
+import AltAction from "../directives/altActionDirective";
 
-@Component({ components: { DesignCard } })
+@Component({ components: { DesignCard, DesignListSheet }, directives: { AltAction } })
 export default class Home extends Vue {
   private readonly db = firestore();
   private readonly index = designsIndex;
@@ -160,6 +163,11 @@ export default class Home extends Vue {
   private selectedColors: ColorType[] = [];
   private selectedTypes: DesignType[] = [];
   private selectedTags: string[] = [];
+  private sheet = false;
+  private selecting: DesignInfo | null = null;
+
+  private x = 0;
+  private y = 0;
 
   private get selectableTags() {
     return _(this.tags)
@@ -267,6 +275,9 @@ export default class Home extends Vue {
   }
 
   private async select(info: DesignInfo) {
+    if (this.sheet) {
+      return;
+    }
     this.$gtag.event("select_item", {
       items: [
         {
@@ -293,6 +304,13 @@ export default class Home extends Vue {
         },
       });
     }
+  }
+
+  private raiseMenu(ev: MouseEvent, info: DesignInfo) {
+    this.x = ev.clientX;
+    this.y = ev.clientY;
+    this.selecting = info;
+    this.sheet = true;
   }
 }
 </script>
