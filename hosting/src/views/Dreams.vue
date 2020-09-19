@@ -101,7 +101,7 @@ export default class Dreams extends Vue {
     if (this.selectedTags.length > 0) {
       facetFilters.push(...this.selectedTags.map(t => [`tags:${t}`]));
     }
-    GeneralModule.setLoading(true);
+    GeneralModule.loading = true;
     let page = init ? 0 : this.next ?? 0;
     const res = await this.index.search<DreamInfo>(this.search, {
       facetFilters,
@@ -117,7 +117,7 @@ export default class Dreams extends Vue {
       .map((v, k) => ({ name: k, count: v }))
       .value();
     this.dreams.push(...res.hits);
-    GeneralModule.setLoading(false);
+    GeneralModule.loading = false;
   }
 
   private addTag(tag: string) {

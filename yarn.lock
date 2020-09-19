@@ -9820,6 +9820,14 @@ vuetify@^2.2.11:
   resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.3.10.tgz#c8cbc77ee1224b5a132f501a3762dee6d8c95a06"
   integrity sha512-KzL/MhZ7ajubm9kwbdCoA/cRV50RX+a5Hcqiwt7Am1Fni2crDtl2no05UNwKroTfscrYYf07gq3WIFSurPsnCA==
 
+vuex-class-component@^2.3.5:
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/vuex-class-component/-/vuex-class-component-2.3.5.tgz#90d3fd777815fd1beaefe47b46402cb41545cc97"
+  integrity sha512-e7BhLrh5jZNHoeUajfQ5NFwA9gnVj69HKxBGRiw6FRZVpXTGewPo23S1//lb5Ed1RucIfQlqfwVpC/2mtej6bw==
+  dependencies:
+    object.getownpropertydescriptors "^2.0.3"
+    rimraf "^2.6.3"
+
 vuex-module-decorators@^0.17.0:
   version "0.17.0"
   resolved "https://registry.yarnpkg.com/vuex-module-decorators/-/vuex-module-decorators-0.17.0.tgz#b170006f55f579f95415d7181fe5854830473d87"

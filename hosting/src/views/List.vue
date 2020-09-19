@@ -139,13 +139,13 @@ export default class List extends Vue {
   }
 
   private async mounted() {
-    GeneralModule.setLoading(true);
+    GeneralModule.loading = true;
     try {
       await this.$bind("list", designListsRef.doc(this.id), { maxRefDepth: 2 });
     } catch (error) {
       this.error = true;
     }
-    GeneralModule.setLoading(false);
+    GeneralModule.loading = false;
   }
 
   private raiseMenu(ev: MouseEvent, info: DesignInfo) {
@@ -163,7 +163,7 @@ export default class List extends Vue {
     }
     assertIsDefined(this.selecting);
     this.menu = false;
-    GeneralModule.setLoading(true);
+    GeneralModule.loading = true;
     try {
       await designListsRef.doc(this.id).update({
         designs: FieldValue.arrayRemove(designsRef.doc(this.selecting.designId)),
@@ -171,7 +171,7 @@ export default class List extends Vue {
     } catch (error) {
       this.$dialog.notify.error("リストから削除出来ませんでした");
     }
-    GeneralModule.setLoading(false);
+    GeneralModule.loading = false;
   }
 
   private async select(info: DesignInfo) {

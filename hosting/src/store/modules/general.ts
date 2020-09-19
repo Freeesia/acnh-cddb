@@ -1,24 +1,17 @@
-import { VuexModule, Mutation, Module } from "vuex-module-decorators";
+import { createModule } from "vuex-class-component";
 
-@Module({ namespaced: true, name: "general" })
+const VuexModule = createModule({
+  namespaced: "general",
+  strict: false,
+});
+
 export default class General extends VuexModule {
   loading = false;
   swUpdated = false;
-  _locale: string | null = null;
+  private _locale: string | null = null;
 
-  @Mutation
-  setLoading(value: boolean) {
-    this.loading = value;
-  }
-
-  @Mutation
-  setSwUpdated(value: boolean) {
-    this.swUpdated = value;
-  }
-
-  @Mutation
-  setLocale(val: string) {
-    this._locale = val;
+  set locale(v: string) {
+    this._locale = v;
   }
 
   get locale() {
