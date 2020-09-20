@@ -239,7 +239,7 @@ export default class Home extends Vue {
       facetFilters.push(...this.selectedTags.map(t => [`tags:${t}`]));
     }
     const search = this.search ?? "";
-    GeneralModule.setLoading(true);
+    GeneralModule.loading = true;
     let page = init ? 0 : this.next ?? 0;
     const res = await this.index.search<DesignInfo>(search, {
       facetFilters,
@@ -255,7 +255,7 @@ export default class Home extends Vue {
       .map((v, k) => ({ name: k, count: v }))
       .value();
     this.designs.push(...res.hits);
-    GeneralModule.setLoading(false);
+    GeneralModule.loading = false;
   }
 
   private addTag(tag: string) {

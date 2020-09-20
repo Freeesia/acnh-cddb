@@ -245,7 +245,7 @@ export default class Account extends Vue {
   }
 
   private set locale(val: string) {
-    GeneralModule.setLocale(val);
+    GeneralModule.locale = val;
     setLocale(val);
     this.$vuetify.lang.current = val;
   }
@@ -263,14 +263,14 @@ export default class Account extends Vue {
   }
 
   private async signOut() {
-    GeneralModule.setLoading(true);
+    GeneralModule.loading = true;
     await AuthModule.signOut();
-    GeneralModule.setLoading(false);
+    GeneralModule.loading = false;
     this.$router.push("/signin");
   }
 
   private async deleteMe() {
-    GeneralModule.setLoading(true);
+    GeneralModule.loading = true;
     try {
       if (!this.user) {
         throw new Error("ログインしていません");
@@ -281,7 +281,7 @@ export default class Account extends Vue {
         text: this.$t("deactive.faild").toString(),
       });
     }
-    GeneralModule.setLoading(false);
+    GeneralModule.loading = false;
     this.$router.push("/signin");
   }
 

@@ -21,14 +21,10 @@ const FirestoreAction = () => {
   return function (_target: any, _key: string, descriptor: PropertyDescriptor) {
     const delegate = descriptor.value;
     descriptor.value = function (payload: any) {
-      const action = firestoreAction(context => {
-        const thisObj = { context };
-        return delegate.call(thisObj, payload);
-      });
-
+      const action = firestoreAction(context => delegate.call(context, payload));
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      return action(this.context);
+      return action(this);
     };
   };
 };

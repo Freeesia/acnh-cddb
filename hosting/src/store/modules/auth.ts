@@ -1,10 +1,15 @@
-import { VuexModule, Module, Mutation, Action } from "vuex-module-decorators";
 import { auth, User } from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import FirestoreAction, { FirestoreActionContext } from "@/modules/vuexfire-decorator";
 import { DesignList } from "@core/models/types";
 import { usersRef, designListsRef } from "@/plugins/firestore";
+import { action, createModule, getRawActionContext } from "vuex-class-component";
+
+const VuexModule = createModule({
+  namespaced: "auth",
+  strict: false,
+});
 
 interface UserInfo {
   favs: string[];
@@ -12,40 +17,45 @@ interface UserInfo {
   dreamFavs: string[];
 }
 
-@Module({ namespaced: true, name: "auth" })
 export default class Auth extends VuexModule {
   user: User | null = null;
-  info: UserInfo | null = null;
-  lists: DesignList[] = [];
+  _info: UserInfo | null = null;
+  _lists: DesignList[] = [];
 
-  @Mutation
-  private setUser(user: User | null) {
-    this.user = user;
+  get info() {
+    return this._info;
   }
 
-  @Action
+  get lists() {
+    return this._lists;
+  }
+
+  @action
   async signOut() {
     await auth().signOut();
-    this.context.commit("setUser", null);
+    this.user = null;
+    this.init();
   }
 
-  @Action
+  @action({ mode: "raw" })
   @FirestoreAction()
-  init(user: User | null) {
-    // Refactor: this line is kind of danger, so it should be refactored
-    const { bindFirestoreRef, unbindFirestoreRef } = this.context as FirestoreActionContext<any, any>;
-
+  init() {
+    const context = getRawActionContext<Auth, unknown>(this);
+    const { bindFirestoreRef, unbindFirestoreRef } = context as FirestoreActionContext<Auth, unknown>;
+    const user = context.state.user;
     if (user) {
       return Promise.all([
-        bindFirestoreRef("info", usersRef.doc(user.uid), { maxRefDepth: 0 }),
-        bindFirestoreRef("lists", designListsRef.where("owner", "==", user.uid), { maxRefDepth: 0 }),
+        bindFirestoreRef("_info", usersRef.doc(user.uid), { maxRefDepth: 0 }),
+        bindFirestoreRef("_lists", designListsRef.where("owner", "==", user.uid), { maxRefDepth: 0 }),
       ]);
     } else {
-      return unbindFirestoreRef("info");
+      unbindFirestoreRef("_info");
+      unbindFirestoreRef("_lists");
+      return Promise.resolve();
     }
   }
 
-  @Action
+  @action
   async isSignedIn() {
     let user = this.user;
     if (!user) {
@@ -55,8 +65,8 @@ export default class Auth extends VuexModule {
       if (!user) {
         auth().signOut();
       }
-      this.context.commit("setUser", user);
-      this.context.dispatch("init", user);
+      this.user = user;
+      this.init();
     }
     return user ? true : false;
   }
