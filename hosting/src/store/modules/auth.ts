@@ -34,22 +34,23 @@ export default class Auth extends VuexModule {
   async signOut() {
     await auth().signOut();
     this.user = null;
+    this.init();
   }
 
   @action({ mode: "raw" })
   @FirestoreAction()
   init() {
-    const context = getRawActionContext(this);
-    // Refactor: this line is kind of danger, so it should be refactored
-    const { bindFirestoreRef, unbindFirestoreRef } = context as FirestoreActionContext<any, any>;
-    const user = this.user;
+    const context = getRawActionContext<Auth, unknown>(this);
+    const { bindFirestoreRef, unbindFirestoreRef } = context as FirestoreActionContext<Auth, unknown>;
+    const user = context.state.user;
     if (user) {
       return Promise.all([
-        bindFirestoreRef("info", usersRef.doc(user.uid), { maxRefDepth: 0 }),
-        bindFirestoreRef("lists", designListsRef.where("owner", "==", user.uid), { maxRefDepth: 0 }),
+        bindFirestoreRef("_info", usersRef.doc(user.uid), { maxRefDepth: 0 }),
+        bindFirestoreRef("_lists", designListsRef.where("owner", "==", user.uid), { maxRefDepth: 0 }),
       ]);
     } else {
-      unbindFirestoreRef("info");
+      unbindFirestoreRef("_info");
+      unbindFirestoreRef("_lists");
       return Promise.resolve();
     }
   }
