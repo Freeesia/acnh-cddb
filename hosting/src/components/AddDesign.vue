@@ -34,64 +34,20 @@
             </v-col>
           </v-row>
         </v-stepper-content>
-
         <v-stepper-content step="3">
-          <v-row align="center" justify="center">
-            <v-img
-              v-if="selected"
-              height="200"
-              contain
-              :src="selected.imageUrls.large"
-              :lazy-src="selected.imageUrls.thumb2"
-              class="secondary"
-            >
-              <template v-slot:placeholder>
-                <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular indeterminate color="accent"></v-progress-circular>
-                </v-row>
-              </template>
-            </v-img>
-          </v-row>
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <v-text-field v-model="title" :rules="[required]" required label="タイトル" />
-            <v-select v-model="designType" :items="designTypes" required label="デザインタイプ" />
-            <v-text-field
-              v-model="designId"
-              v-facade="designIdMask"
-              :rules="[required, countId]"
-              prefix="MO-"
-              required
-              label="デザインID"
-            />
-            <v-select
-              v-model="dominantColorTypes"
-              :items="colors"
-              :rules="[limitColorTypes]"
-              deletable-chips
-              chips
-              dense
-              multiple
-              required
-              label="テーマカラー"
-            />
-            <v-text-field v-model="author" :error="authorError" :error-messages="authorErrorMessage" label="作者名" />
-            <v-text-field
-              v-model="island"
-              :error="authorError"
-              :error-messages="authorErrorMessage"
-              suffix="島"
-              label="島名"
-            />
-            <v-text-field
-              v-model="authorId"
-              v-facade="authorIdMask"
-              :error="authorError"
-              :error-messages="authorErrorMessage"
-              :rules="[countId]"
-              prefix="MA-"
-              label="作者ID"
-            />
-          </v-form>
+          <FormDesign
+            v-if="selected"
+            ref="form"
+            v-model="valid"
+            :target="selected"
+            :title.sync="title"
+            :design-id.sync="designId"
+            :design-type.sync="designType"
+            :dominant-color-types.sync="dominantColorTypes"
+            :author.sync="author"
+            :author-id.sync="authorId"
+            :island.sync="island"
+          />
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
@@ -107,33 +63,22 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Emit, Watch } from "vue-property-decorator";
+import { Emit } from "vue-property-decorator";
 import { auth } from "firebase/app";
 import "firebase/auth";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import { getTweetImages, registerDesignInfo } from "../plugins/functions";
-import {
-  UserMediaTweets,
-  PostedMedia,
-  DesignInfo,
-  DesignType,
-  DesignTypes,
-  ColorType,
-  ColorTypes,
-} from "../../../core/src/models/types";
+import { UserMediaTweets, PostedMedia, DesignInfo, DesignType, ColorType } from "../../../core/src/models/types";
 import { TweetUser } from "../../../core/src/models/twitterTypes";
+import FormDesign from "./FormDesign.vue";
 
-@Component({})
+@Component({ components: { FormDesign } })
 export default class AddDesign extends Vue {
   private step = 1;
   private posts: PostedMedia[] = [];
   private getting = false;
   private selected: PostedMedia | null = null;
   private posting = false;
-  private designTypes = DesignTypes;
-  private designIdMask = "DDDD-DDDD-DDDD";
-  private colors = ColorTypes;
-  private authorIdMask = "####-####-####";
 
   private title = "";
   private designId = "";
@@ -143,8 +88,6 @@ export default class AddDesign extends Vue {
   private author = "";
   private authorId = "";
   private valid = false;
-  private authorError = false;
-  private authorErrorMessage = "";
   private contoributor?: TweetUser;
 
   private created() {
@@ -187,35 +130,10 @@ export default class AddDesign extends Vue {
     this.selected = media;
   }
 
-  private required(v?: string) {
-    return !!v || "入力してください";
-  }
-
-  private countId(v?: string) {
-    return !v || v.length === 14 || "IDに必要な文字数を満たしていません";
-  }
-
-  private limitColorTypes(v: ColorType[]) {
-    return v.length <= 2 || "選択できるカラーは2つまでです";
-  }
-
-  @Watch("island")
-  @Watch("author")
-  @Watch("authorId")
-  private checkAllAuthorInfo() {
-    const authors = [this.island, this.author, this.authorId];
-    this.authorError = !(authors.every(v => v) || authors.every(v => !v));
-    if (this.authorError) {
-      this.authorErrorMessage = "作者情報はオプションです。入力する場合は全て埋めてください。";
-    } else {
-      this.authorErrorMessage = "";
-    }
-  }
-
   private async post() {
     assertIsDefined(this.selected);
     assertIsDefined(this.contoributor);
-    const form = this.$refs.form as any;
+    const form = this.$refs.form as FormDesign;
     if (!form.validate()) {
       return;
     }
