@@ -2,7 +2,7 @@
   <v-card flat>
     <v-stepper v-model="step">
       <v-stepper-header>
-        <v-stepper-step :complete="step > 1" step="1">SNSの選択</v-stepper-step>
+        <v-stepper-step :complete="step > 1" step="1">画像元の選択</v-stepper-step>
         <v-divider></v-divider>
         <v-stepper-step :complete="step > 2" step="2">画像の選択</v-stepper-step>
         <v-divider></v-divider>
@@ -11,28 +11,18 @@
 
       <v-stepper-items>
         <v-stepper-content step="1">
-          <v-btn color="success" :loading="getting" @click="login">Twitterから登録</v-btn>
+          <v-row dense>
+            <v-col cols="12">
+              <v-btn color="success" :loading="getting" @click="login">Twitterから登録</v-btn>
+            </v-col>
+            <v-col cols="12">
+              <v-btn color="success" :loading="getting" @click="login">画像のアップロード</v-btn>
+            </v-col>
+          </v-row>
         </v-stepper-content>
 
         <v-stepper-content step="2">
-          <v-row dense>
-            <v-col v-for="media in posts" :key="media.post.postId" cols="4">
-              <v-card flat tile @click="select(media)">
-                <v-img
-                  :src="media.imageUrls.thumb2"
-                  :lazy-src="media.imageUrls.thumb1"
-                  aspect-ratio="1"
-                  class="secondary"
-                >
-                  <template v-slot:placeholder>
-                    <v-row class="fill-height ma-0" align="center" justify="center">
-                      <v-progress-circular indeterminate color="accent"></v-progress-circular>
-                    </v-row>
-                  </template>
-                </v-img>
-              </v-card>
-            </v-col>
-          </v-row>
+          <SelectTweetImage ref="imgs" @select="select" />
         </v-stepper-content>
         <v-stepper-content step="3">
           <FormDesign
@@ -67,15 +57,15 @@ import { Emit } from "vue-property-decorator";
 import { auth } from "firebase/app";
 import "firebase/auth";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
-import { getTweetImages, registerDesignInfo } from "../plugins/functions";
-import { UserMediaTweets, PostedMedia, DesignInfo, DesignType, ColorType } from "../../../core/src/models/types";
+import { registerDesignInfo } from "../plugins/functions";
+import { PostedMedia, DesignInfo, DesignType, ColorType } from "../../../core/src/models/types";
 import { TweetUser } from "../../../core/src/models/twitterTypes";
 import FormDesign from "./FormDesign.vue";
+import SelectTweetImage from "./SelectTweetImage.vue";
 
-@Component({ components: { FormDesign } })
+@Component({ components: { FormDesign, SelectTweetImage } })
 export default class AddDesign extends Vue {
   private step = 1;
-  private posts: PostedMedia[] = [];
   private getting = false;
   private selected: PostedMedia | null = null;
   private posting = false;
@@ -115,14 +105,10 @@ export default class AddDesign extends Vue {
     assertIsDefined(cred);
     assertIsDefined(cred.accessToken);
     assertIsDefined(cred.secret);
-    this.getImages(cred.accessToken, cred.secret);
-  }
-
-  private async getImages(token: string, secret: string) {
-    const res = (await getTweetImages({ token, secret })) as UserMediaTweets;
+    const imgs = this.$refs.imgs as SelectTweetImage;
+    await imgs.getImages(cred.accessToken, cred.secret);
     this.getting = false;
     this.step++;
-    this.posts = res.posts;
   }
 
   private select(media: PostedMedia) {
