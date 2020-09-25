@@ -49,7 +49,7 @@ export const DesignTypes = [
 
 export type DesignType = typeof DesignTypes[number];
 
-export const Platforms = ["Instagram", "Twitter"] as const;
+export const Platforms = ["Instagram", "Twitter", "Hosted"] as const;
 
 export type Platform = typeof Platforms[number];
 
@@ -63,8 +63,8 @@ export interface AnalyzedDesignInfo {
 }
 
 export interface ImageUrls {
-  thumb1: string;
-  thumb2: string;
+  thumb1?: string;
+  thumb2?: string;
   large: string;
 }
 

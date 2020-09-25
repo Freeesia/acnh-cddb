@@ -16,13 +16,13 @@
               <v-btn color="success" :loading="getting" @click="login">Twitterから登録</v-btn>
             </v-col>
             <v-col cols="12">
-              <v-btn color="success" :loading="getting" @click="login">画像のアップロード</v-btn>
+              <v-btn color="success" @click="upload">画像のアップロード</v-btn>
             </v-col>
           </v-row>
         </v-stepper-content>
 
         <v-stepper-content step="2">
-          <SelectTweetImage ref="imgs" @select="select" />
+          <component :is="imageType" ref="imgs" @select="select" />
         </v-stepper-content>
         <v-stepper-content step="3">
           <FormDesign
@@ -62,10 +62,12 @@ import { PostedMedia, DesignInfo, DesignType, ColorType } from "../../../core/sr
 import { TweetUser } from "../../../core/src/models/twitterTypes";
 import FormDesign from "./FormDesign.vue";
 import SelectTweetImage from "./SelectTweetImage.vue";
+import UploadImage from "./UploadImage.vue";
 
-@Component({ components: { FormDesign, SelectTweetImage } })
+@Component({ components: { FormDesign, SelectTweetImage, UploadImage } })
 export default class AddDesign extends Vue {
   private step = 1;
+  private imageType: string | null = null;
   private getting = false;
   private selected: PostedMedia | null = null;
   private posting = false;
@@ -90,6 +92,7 @@ export default class AddDesign extends Vue {
 
   private async login() {
     this.getting = true;
+    this.imageType = "SelectTweetImage";
     const res = await auth().signInWithPopup(new auth.TwitterAuthProvider());
     const info = res.additionalUserInfo;
     assertIsDefined(info);
@@ -108,6 +111,11 @@ export default class AddDesign extends Vue {
     const imgs = this.$refs.imgs as SelectTweetImage;
     await imgs.getImages(cred.accessToken, cred.secret);
     this.getting = false;
+    this.step++;
+  }
+
+  private upload() {
+    this.imageType = "UploadImage";
     this.step++;
   }
 
