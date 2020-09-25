@@ -1,6 +1,7 @@
 name: collect
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: 12 0 * * *
   repository_dispatch:
