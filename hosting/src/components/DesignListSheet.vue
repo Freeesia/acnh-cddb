@@ -37,11 +37,11 @@ import { Model, Prop } from "vue-property-decorator";
 import { DesignInfo, DesignList } from "../../../core/src/models/types";
 import { designListsRef, designsRef } from "../plugins/firestore";
 import { AuthModule } from "../store";
-import CreateList from "./CreateList.vue";
 import { firestore } from "firebase/app";
 import "firebase/firestore";
 import FieldValue = firestore.FieldValue;
 import { VBottomSheet, VMenu } from "vuetify/lib";
+import EditList from "./EditList.vue";
 
 @Component({ components: { VBottomSheet, VMenu } })
 export default class DesignListSheet extends Vue {
@@ -77,7 +77,7 @@ export default class DesignListSheet extends Vue {
 
   private addList() {
     this.$emit("change", false);
-    this.$dialog.show(CreateList, {
+    this.$dialog.show(EditList, {
       showClose: false,
       design: this.info.designId,
     });

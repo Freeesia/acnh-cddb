@@ -109,6 +109,9 @@
                   <v-chip class="mx-2" small>{{ list.designs.length }}</v-chip>
                 </v-card-title>
                 <div class="ma-2">
+                  <v-btn icon @click.stop="editList(list)">
+                    <v-icon>edit</v-icon>
+                  </v-btn>
                   <v-btn icon :loading="listDeleting == list.id" @click.stop="deleteList(list)">
                     <v-icon>delete</v-icon>
                   </v-btn>
@@ -182,7 +185,7 @@ import { unregisterDesignInfo, unregisterDreamInfo } from "../plugins/functions"
 import SetDream from "../components/SetDream.vue";
 import { setLocale } from "../plugins/i18n";
 import { designListsRef } from "../plugins/firestore";
-import CreateList from "../components/CreateList.vue";
+import EditList from "../components/EditList.vue";
 
 @Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
@@ -352,16 +355,26 @@ export default class Account extends Vue {
     }
   }
 
+  private createList() {
+    this.$dialog.show(EditList, {
+      showClose: false,
+    });
+  }
+
+  private editList(list: DesignList & { id: string }) {
+    this.$dialog.show(EditList, {
+      showClose: false,
+      id: list.id,
+      public: list.isPublic,
+      name: list.name,
+      description: list.description,
+    });
+  }
+
   private async deleteList(list: DesignList & { id: string }) {
     this.listDeleting = list.id;
     await designListsRef.doc(list.id).delete();
     this.listDeleting = "";
-  }
-
-  private createList() {
-    this.$dialog.show(CreateList, {
-      showClose: false,
-    });
   }
 
   private selectList(list: DesignList & { id: string }) {
