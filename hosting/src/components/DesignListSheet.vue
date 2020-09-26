@@ -1,13 +1,5 @@
 <template>
-  <component
-    :is="style"
-    :close-on-content-click="false"
-    absolute
-    :position-x="x"
-    :position-y="y"
-    :value="value"
-    @input="$emit('change', $event)"
-  >
+  <component :is="style" :close-on-content-click="false" absolute :position-x="x" :position-y="y" :value="value">
     <v-list>
       <v-subheader>{{ $t("designList.add") }}</v-subheader>
       <v-list-item v-for="list in lists" :key="list.id" @click="toggleList(list)">
@@ -69,10 +61,6 @@ export default class DesignListSheet extends Vue {
 
   private get style() {
     return this.$vuetify.breakpoint.smAndUp ? "v-menu" : "v-bottom-sheet";
-  }
-
-  private input(ev: Event) {
-    console.log(ev);
   }
 
   private containsList(list: DesignList) {
