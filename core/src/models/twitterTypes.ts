@@ -28,7 +28,6 @@ export interface Tweet {
 
 export interface TweetUser extends Contributor {
   name: string;
-  screenName: string;
 }
 
 export interface Media {

@@ -16,9 +16,16 @@
       }
     ]
   },
-  "storage": {
-    "rules": "storage.rules"
-  },
+  "storage": [
+    {
+      "rules": "storages/appspot.rules",
+      "bucket": "acnh-cddb.appspot.com"
+    },
+    {
+      "rules": "storages/backup.rules",
+      "bucket": "acnh-cddb-backup"
+    }
+  ],
   "emulators": {
     "functions": {
       "port": 5001

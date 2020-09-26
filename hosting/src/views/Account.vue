@@ -257,9 +257,13 @@ export default class Account extends Vue {
     this.$bind("userInfo", this.db.doc(`/users/${this.user.uid}`));
     const provData = this.user.providerData.find(p => p && p.providerId == "twitter.com");
     assertIsDefined(provData);
-    const conRef = this.db.doc(`contributors/Twitter:${provData.uid}`);
-    this.$bind("myDesigns", this.db.collection("designs").where("post.contributor", "==", conRef));
-    this.$bind("myDreams", this.db.collection("dreams").where("post.contributor", "==", conRef).limit(1));
+    const conTwitterRef = this.db.doc(`contributors/Twitter:${provData.uid}`);
+    const conHostedRef = this.db.doc(`contributors/Hosted:${this.user.uid}`);
+    this.$bind(
+      "myDesigns",
+      this.db.collection("designs").where("post.contributor", "in", [conTwitterRef, conHostedRef])
+    );
+    this.$bind("myDreams", this.db.collection("dreams").where("post.contributor", "==", conTwitterRef).limit(1));
   }
 
   private async signOut() {

@@ -27,6 +27,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VueGtag from "vue-gtag";
 import { firebaseConfig } from "./plugins/firebase";
 import VueSocialSharing from "vue-social-sharing";
+import VueFileAgent from "vue-file-agent";
+import "vue-file-agent/dist/vue-file-agent.css";
 
 library.add(faGithub, faTwitter, faLine, faTumblr, faFacebookF, faReddit, faWeibo, faWhatsapp);
 Vue.component("v-fa", FontAwesomeIcon);
@@ -56,6 +58,7 @@ Vue.use(
   router
 );
 Vue.use(VueSocialSharing);
+Vue.use(VueFileAgent);
 
 Vue.config.productionTip = false;
 

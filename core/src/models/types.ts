@@ -49,7 +49,7 @@ export const DesignTypes = [
 
 export type DesignType = typeof DesignTypes[number];
 
-export const Platforms = ["Instagram", "Twitter"] as const;
+export const Platforms = ["Instagram", "Twitter", "Hosted"] as const;
 
 export type Platform = typeof Platforms[number];
 
@@ -63,8 +63,8 @@ export interface AnalyzedDesignInfo {
 }
 
 export interface ImageUrls {
-  thumb1: string;
-  thumb2: string;
+  thumb1?: string;
+  thumb2?: string;
   large: string;
 }
 
@@ -101,6 +101,7 @@ export interface UserInfo {
 
 export interface Contributor {
   id: string;
+  screenName: string;
   platform: Platform;
 }
 
@@ -113,6 +114,10 @@ export interface PostedMedia {
     platform: Platform;
   };
   createdAt: Date | Timestamp;
+}
+
+export interface HostedMedia extends PostedMedia {
+  path: string;
 }
 
 export interface UserMediaTweets {

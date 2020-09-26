@@ -82,12 +82,48 @@
   "detail": {
     "fav": "즐겨 찾기",
     "sameUser": "같은 사용자가 게시 한 디자인",
-    "together": "함께 게시 된 디자인"
+    "together": "함께 게시 된 디자인",
+    "list": "목록에 추가"
   },
   "signin": {
     "signinning": "로그인 중 ...",
     "desc": "모여봐요 마이디자 의 🌳는 동물의 숲의 마이 디자인가 모여있는 서비스입니다",
     "welcome": "에 오신 것을 환영합니다",
     "title": "{title}\n{welcome}"
+  },
+  "add": {
+    "back": "돌아 가기",
+    "cancel": "취소",
+    "editInfo": "디자인 정보",
+    "fromHosted": "이미지 업로드",
+    "fromTwitter": "Twitter에서 등록",
+    "selectImage": "이미지 선택",
+    "selectProvider": "이미지 소스 선택",
+    "submit": "게시물"
+  },
+  "designList": {
+    "add": "목록에 추가",
+    "new": "리스트 만들기"
+  },
+  "form": {
+    "author": "저자",
+    "authorId": "저자 ID",
+    "authorRequired": "작성자 정보는 선택 사항입니다.\n입장시 모두 기입 해주십시오.",
+    "colorLimit": "선택할 수있는 색상은 2 개까지입니다",
+    "designId": "디자인 ID",
+    "idCount": "ID가 필요한 문자를 충족하지 않습니다",
+    "island": "섬 이름",
+    "required": "입력",
+    "title": "제목",
+    "type": "디자인 유형"
+  },
+  "islandSuffix": "",
+  "myDesignList": {
+    "header": "기울기"
+  },
+  "upload": {
+    "selectImage": "업로드 할 이미지를 선택하십시오",
+    "upload": "업로드",
+    "uploading": "업로드 중"
   }
 }

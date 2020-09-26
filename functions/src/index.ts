@@ -9,6 +9,7 @@ import {
   DreamInfo,
   PostedTweet,
   DesignList,
+  HostedMedia,
 } from "../../core/src/models/types";
 import { assertIsDesignInfo, assertIsContributor, assertDreamInfo } from "../../core/src/models/assert";
 import { assertIsDefined, assertIsArray, assertIsString, assertIsBoolean } from "../../core/src/utilities/assert";
@@ -19,6 +20,8 @@ import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDreamIndex } from "./algolia";
 import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, designLists } from "./firestore";
+import { createFirebaseUrl } from "./storage";
+import path from "path";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -146,6 +149,18 @@ export const registerDesignInfo = https.onCall(async (data: DesignInfo, context)
 
   const contributor = data.post.contributor;
   try {
+    if (data.post.platform === "Hosted") {
+      const media = (data as unknown) as HostedMedia;
+      const ext = path.extname(media.path);
+      const dir = path.dirname(media.path);
+      const base = path.basename(media.path, ext);
+      const [thumb1, thumb2] = await Promise.all([
+        createFirebaseUrl(path.join(dir, "thumbs", base + "_270x150" + ext)),
+        createFirebaseUrl(path.join(dir, "thumbs", base + "_680x480" + ext)),
+      ]);
+      data.imageUrls.thumb1 = thumb1;
+      data.imageUrls.thumb2 = thumb2;
+    }
     assertIsDesignInfo(data);
     assertIsContributor(contributor);
   } catch (e) {
@@ -203,7 +218,7 @@ export const unregisterDesignInfo = https.onCall(async (data: string[], context)
   if (!userId) {
     throw new HttpsError("unavailable", "Twiiter以外のデザインは削除できません");
   }
-  const conId = "Twitter:" + userId;
+  const cons = ["Twitter:" + userId, "Hosted:" + context.auth.uid];
   const ids: string[] = [];
   try {
     assertIsDefined(data);
@@ -217,7 +232,7 @@ export const unregisterDesignInfo = https.onCall(async (data: string[], context)
           return;
         }
         const conRef = doc.get("post.contributor") as DocumentReference;
-        if (conRef.id === conId) {
+        if (cons.includes(conRef.id)) {
           ids.push(id);
         }
       })

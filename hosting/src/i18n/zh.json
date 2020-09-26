@@ -33,7 +33,8 @@
   "detail": {
     "fav": "加入“最喜歡的",
     "sameUser": "同一用戶發布的設計",
-    "together": "設計一起發布"
+    "together": "設計一起發布",
+    "list": "添加到列表中"
   },
   "dream": {
     "title": "集合啦！ 夢境⛪️友會"
@@ -89,5 +90,40 @@
     "つばつきキャップ": "鴨舌帽",
     "ニットキャップ": "針織帽",
     "つばつきハット": "遮陽帽"
+  },
+  "add": {
+    "back": "返回",
+    "cancel": "取消",
+    "editInfo": "設計資料",
+    "fromHosted": "上傳圖片",
+    "fromTwitter": "從Twitter註冊",
+    "selectImage": "圖像選擇",
+    "selectProvider": "選擇圖像來源",
+    "submit": "發布"
+  },
+  "designList": {
+    "add": "添加到列表中",
+    "new": "建立新清單"
+  },
+  "form": {
+    "author": "作者",
+    "authorId": "作者編號",
+    "authorRequired": "作者信息是可選的。請輸入所有內容。",
+    "colorLimit": "最多可以選擇2種顏色",
+    "designId": "設計編號",
+    "idCount": "不符合ID要求的字符數",
+    "island": "島名",
+    "required": "請輸入",
+    "title": "標題",
+    "type": "設計類型"
+  },
+  "islandSuffix": "",
+  "myDesignList": {
+    "header": "清單"
+  },
+  "upload": {
+    "selectImage": "請選擇要上傳的圖片",
+    "upload": "上載",
+    "uploading": "上載中"
   }
 }
