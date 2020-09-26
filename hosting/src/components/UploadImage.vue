@@ -68,6 +68,7 @@ export default class UploadImage extends Vue {
 
   private async completeUpload() {
     this.indeterminate = true;
+    this.progress = 100;
     assertIsDefined(this.task);
     this.select({
       path: this.task.snapshot.ref.fullPath,
