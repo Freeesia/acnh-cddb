@@ -2,21 +2,21 @@
   <v-card flat>
     <v-stepper v-model="step">
       <v-stepper-header>
-        <v-stepper-step :complete="step > 1" step="1">画像元の選択</v-stepper-step>
+        <v-stepper-step :complete="step > 1" step="1">{{ $t("add.selectProvider") }}</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step :complete="step > 2" step="2">画像の選択</v-stepper-step>
+        <v-stepper-step :complete="step > 2" step="2">{{ $t("add.selectImage") }}</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step step="3">投稿画像の情報</v-stepper-step>
+        <v-stepper-step step="3">{{ $t("add.editInfo") }}</v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
         <v-stepper-content step="1">
           <v-row dense>
             <v-col cols="12">
-              <v-btn color="success" :loading="getting" @click="login">Twitterから登録</v-btn>
+              <v-btn color="success" :loading="getting" @click="login">{{ $t("add.fromTwitter") }}</v-btn>
             </v-col>
             <v-col cols="12">
-              <v-btn color="success" @click="upload">画像のアップロード</v-btn>
+              <v-btn color="success" @click="upload">{{ $t("add.fromHosted") }}</v-btn>
             </v-col>
           </v-row>
         </v-stepper-content>
@@ -42,10 +42,12 @@
       </v-stepper-items>
     </v-stepper>
     <v-card-actions>
-      <v-btn outlined :disabled="step === 1 || posting" @click="back">戻る</v-btn>
+      <v-btn outlined :disabled="step === 1 || posting" @click="back">{{ $t("add.back") }}</v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="primary" :loading="posting" :disabled="step !== 3 || !valid" @click="post">投稿</v-btn>
-      <v-btn text color="accent" :disabled="posting" @click="close">キャンセル</v-btn>
+      <v-btn color="primary" :loading="posting" :disabled="step !== 3 || !valid" @click="post">{{
+        $t("add.submit")
+      }}</v-btn>
+      <v-btn text color="accent" :disabled="posting" @click="close">{{ $t("add.cancel") }}</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -152,7 +154,7 @@ export default class AddDesign extends Vue {
     design.post.contributor = this.contoributor;
     if (this.island && this.author && this.authorId) {
       design.author = {
-        islandName: this.island + "島",
+        islandName: this.island + this.$t("islandSuffix"),
         authorName: this.author,
         authorId: "MA-" + this.authorId,
       };

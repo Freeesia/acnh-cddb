@@ -10,15 +10,15 @@
       </v-img>
     </v-row>
     <v-form ref="form" v-model="valid" lazy-validation>
-      <v-text-field v-model="_title" :rules="[required]" required label="タイトル" />
-      <v-select v-model="_designType" :items="designTypes" required label="デザインタイプ" />
+      <v-text-field v-model="_title" :rules="[required]" required :label="$t('form.title')" />
+      <v-select v-model="_designType" :items="designTypes" required :label="$t('form.type')" />
       <v-text-field
         v-model="_designId"
         v-facade="designIdMask"
         :rules="[required, countId]"
         prefix="MO-"
         required
-        label="デザインID"
+        :label="$t('form.designId')"
       />
       <v-select
         v-model="_dominantColorTypes"
@@ -29,15 +29,20 @@
         dense
         multiple
         required
-        label="テーマカラー"
+        :label="$t('color')"
       />
-      <v-text-field v-model="_author" :error="authorError" :error-messages="authorErrorMessage" label="作者名" />
+      <v-text-field
+        v-model="_author"
+        :error="authorError"
+        :error-messages="authorErrorMessage"
+        :label="$t('form.author')"
+      />
       <v-text-field
         v-model="_island"
         :error="authorError"
         :error-messages="authorErrorMessage"
-        suffix="島"
-        label="島名"
+        :suffix="$t('islandSuffix')"
+        :label="$t('form.island')"
       />
       <v-text-field
         v-model="_authorId"
@@ -46,7 +51,7 @@
         :error-messages="authorErrorMessage"
         :rules="[countId]"
         prefix="MA-"
-        label="作者ID"
+        :label="$t('form.authorId')"
       />
     </v-form>
   </div>
@@ -94,15 +99,15 @@ export default class FormDesign extends Vue {
   }
 
   private required(v?: string) {
-    return !!v || "入力してください";
+    return !!v || this.$t("form.required");
   }
 
   private countId(v?: string) {
-    return !v || v.length === 14 || "IDに必要な文字数を満たしていません";
+    return !v || v.length === 14 || this.$t("form.idCount");
   }
 
   private limitColorTypes(v: ColorType[]) {
-    return v.length <= 2 || "選択できるカラーは2つまでです";
+    return v.length <= 2 || this.$t("form.colorLimit");
   }
 
   validate(): boolean {
@@ -117,7 +122,7 @@ export default class FormDesign extends Vue {
     const authors = [this._island, this._author, this._authorId];
     this.authorError = !(authors.every(v => v) || authors.every(v => !v));
     if (this.authorError) {
-      this.authorErrorMessage = "作者情報はオプションです。入力する場合は全て埋めてください。";
+      this.authorErrorMessage = this.$t("form.authorRequired").toString();
     } else {
       this.authorErrorMessage = "";
     }

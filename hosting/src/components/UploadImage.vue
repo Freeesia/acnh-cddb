@@ -1,12 +1,12 @@
 <template>
   <v-card>
-    <VueFileAgent v-model="file" accept="image/*" help-text="アップロードする画像を選択してください" />
+    <VueFileAgent v-model="file" accept="image/*" :help-text="$t('upload.selectImage')" />
     <v-card-actions>
       <v-spacer />
       <v-btn depressed color="primary" :disabled="!file" :loading="uploading" @click="upload">
-        アップロード
+        {{ $t("upload.upload") }}
         <template v-slot:loader>
-          アップロード中
+          {{ $t("upload.uploading") }}
           <v-progress-linear
             top
             absolute

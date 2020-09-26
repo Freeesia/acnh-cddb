@@ -97,5 +97,33 @@
   },
   "myDesignList": {
     "header": "作成したリスト"
+  },
+  "upload": {
+    "upload": "アップロード",
+    "uploading": "アップロード中",
+    "selectImage": "アップロードする画像を選択してください"
+  },
+  "add": {
+    "selectProvider": "画像元の選択",
+    "selectImage": "画像の選択",
+    "editInfo": "投稿画像の情報",
+    "fromTwitter": "Twitterから登録",
+    "fromHosted": "画像のアップロード",
+    "back": "戻る",
+    "submit": "投稿",
+    "cancel": "キャンセル"
+  },
+  "islandSuffix": "島",
+  "form": {
+    "title": "タイトル",
+    "type": "デザインタイプ",
+    "designId": "デザインID",
+    "author": "作者名",
+    "island": "島名",
+    "authorId": "作者ID",
+    "required": "入力してください",
+    "idCount": "IDに必要な文字数を満たしていません",
+    "colorLimit": "選択できるカラーは2つまでです",
+    "authorRequired": "作者情報はオプションです。入力する場合は全て埋めてください。"
   }
 }
