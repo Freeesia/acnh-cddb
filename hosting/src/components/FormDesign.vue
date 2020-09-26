@@ -11,7 +11,14 @@
     </v-row>
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-text-field v-model="_title" :rules="[required]" required :label="$t('form.title')" />
-      <v-select v-model="_designType" :items="designTypes" required :label="$t('form.type')" />
+      <v-select
+        v-model="_designType"
+        :items="types"
+        item-value="type"
+        item-text="name"
+        required
+        :label="$t('form.type')"
+      />
       <v-text-field
         v-model="_designId"
         v-facade="designIdMask"
@@ -23,6 +30,8 @@
       <v-select
         v-model="_dominantColorTypes"
         :items="colors"
+        item-value="type"
+        item-text="name"
         :rules="[limitColorTypes]"
         deletable-chips
         chips
@@ -30,7 +39,14 @@
         multiple
         required
         :label="$t('color')"
-      />
+      >
+        <template v-slot:item="{ item, attrs }">
+          <v-avatar class="mr-4 color-type" size="24" :color="getColor(item.type)">
+            <v-icon v-if="attrs.inputValue">check</v-icon>
+          </v-avatar>
+          {{ item.name }}
+        </template>
+      </v-select>
       <v-text-field
         v-model="_author"
         :error="authorError"
@@ -56,11 +72,33 @@
     </v-form>
   </div>
 </template>
+<style lang="scss" scoped>
+.v-chip.v-size--small .v-avatar {
+  height: 20px !important;
+  min-width: 20px !important;
+  width: 20px !important;
+}
+.color-type {
+  border: solid 1px gray !important;
+}
+.primary--text .color-type {
+  border-color: var(--v-primary-base) !important;
+}
+.transparent {
+  background: whitesmoke;
+  background-image: linear-gradient(45deg, darkgray 25%, transparent 0),
+    linear-gradient(45deg, transparent 75%, darkgray 0), linear-gradient(45deg, darkgray 25%, transparent 0),
+    linear-gradient(45deg, transparent 75%, darkgray 0);
+  background-size: 10px 10px;
+  background-position: 0 0, 15px 15px, 15px 15px, 30px 30px;
+}
+</style>
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Model, Prop, PropSync, Watch } from "vue-property-decorator";
 import { ColorType, ColorTypes, DesignType, DesignTypes, PostedMedia } from "../../../core/src/models/types";
+import { getColor } from "../modules/color";
 
 @Component
 export default class FormDesign extends Vue {
@@ -68,10 +106,21 @@ export default class FormDesign extends Vue {
   private target!: PostedMedia;
   @Model("change", { required: true })
   private _valid!: boolean;
-  private designTypes = DesignTypes;
   private designIdMask = "DDDD-DDDD-DDDD";
-  private colors = ColorTypes;
   private authorIdMask = "####-####-####";
+  private getColor = getColor;
+  private colors = ColorTypes.map(c => {
+    return {
+      name: this.$t("colors." + c),
+      type: c,
+    };
+  });
+  private types = DesignTypes.map(c => {
+    return {
+      name: this.$t("designTypes." + c),
+      type: c,
+    };
+  });
 
   @PropSync("title", { required: true, type: String })
   private _title!: string;
