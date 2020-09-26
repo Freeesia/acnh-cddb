@@ -58,11 +58,12 @@ import { auth } from "firebase/app";
 import "firebase/auth";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import { registerDesignInfo } from "../plugins/functions";
-import { PostedMedia, DesignInfo, DesignType, ColorType } from "../../../core/src/models/types";
+import { PostedMedia, DesignInfo, DesignType, ColorType, Contributor } from "../../../core/src/models/types";
 import { TweetUser } from "../../../core/src/models/twitterTypes";
 import FormDesign from "./FormDesign.vue";
 import SelectTweetImage from "./SelectTweetImage.vue";
 import UploadImage from "./UploadImage.vue";
+import { AuthModule } from "../store";
 
 @Component({ components: { FormDesign, SelectTweetImage, UploadImage } })
 export default class AddDesign extends Vue {
@@ -80,7 +81,7 @@ export default class AddDesign extends Vue {
   private author = "";
   private authorId = "";
   private valid = false;
-  private contoributor?: TweetUser;
+  private contoributor?: Contributor;
 
   private created() {
     auth().useDeviceLanguage();
@@ -103,7 +104,7 @@ export default class AddDesign extends Vue {
       name: prof.name,
       screenName: prof.screen_name,
       platform: "Twitter",
-    };
+    } as TweetUser;
     const cred = res.credential as auth.OAuthCredential;
     assertIsDefined(cred);
     assertIsDefined(cred.accessToken);
@@ -115,6 +116,12 @@ export default class AddDesign extends Vue {
   }
 
   private upload() {
+    assertIsDefined(AuthModule.user);
+    this.contoributor = {
+      id: AuthModule.user.uid,
+      screenName: AuthModule.user.displayName ?? "",
+      platform: "Hosted",
+    };
     this.imageType = "UploadImage";
     this.step++;
   }
@@ -133,13 +140,12 @@ export default class AddDesign extends Vue {
     }
     this.posting = true;
     const design: DesignInfo = {
+      ...this.selected,
       title: this.title,
       designId: "MO-" + this.designId,
       designType: this.designType,
       dominantColors: [],
       dominantColorTypes: this.dominantColorTypes,
-      imageUrls: this.selected.imageUrls,
-      post: this.selected.post,
       tags: [],
       createdAt: {},
     };

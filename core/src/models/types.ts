@@ -101,6 +101,7 @@ export interface UserInfo {
 
 export interface Contributor {
   id: string;
+  screenName: string;
   platform: Platform;
 }
 
@@ -113,6 +114,10 @@ export interface PostedMedia {
     platform: Platform;
   };
   createdAt: Date | Timestamp;
+}
+
+export interface HostedMedia extends PostedMedia {
+  path: string;
 }
 
 export interface UserMediaTweets {
