@@ -6,6 +6,9 @@
         <div>{{ list.name }}</div>
         <v-icon class="mx-1" small>{{ list.isPublic ? "public" : "lock" }}</v-icon>
         <v-chip class="mx-2" small>{{ list.designs.length }}</v-chip>
+        <v-btn v-if="isOwner" icon @click="edit">
+          <v-icon>edit</v-icon>
+        </v-btn>
         <v-btn v-if="sharable && list.isPublic" icon @click="share">
           <v-icon>share</v-icon>
         </v-btn>
@@ -96,6 +99,7 @@ import FieldValue = firestore.FieldValue;
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AltAction from "../directives/altActionDirective";
 import { VBottomSheet, VMenu } from "vuetify/lib";
+import EditList from "../components/EditList.vue";
 
 @Component({ components: { DesignCard, VBottomSheet, VMenu }, directives: { AltAction } })
 export default class List extends Vue {
@@ -157,6 +161,7 @@ export default class List extends Vue {
     this.selecting = info;
     this.menu = true;
   }
+
   private async deleteDesign() {
     if (!this.isOwner) {
       return;
@@ -204,6 +209,18 @@ export default class List extends Vue {
       });
     }
   }
+
+  private edit() {
+    assertIsDefined(this.list);
+    this.$dialog.show(EditList, {
+      showClose: false,
+      id: this.id,
+      public: this.list.isPublic,
+      name: this.list.name,
+      description: this.list.description,
+    });
+  }
+
   private async share() {
     assertIsDefined(this.list);
     try {
