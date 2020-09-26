@@ -239,13 +239,17 @@ export default class Home extends Vue {
       facetFilters.push(...this.selectedTags.map(t => [`tags:${t}`]));
     }
     const search = this.search ?? "";
+    let optionalWords = search.split(/\s/).filter(w => !w.startsWith("MA-") && !w.startsWith("MO-"));
+    if (optionalWords.length === 1) {
+      optionalWords = [];
+    }
     GeneralModule.loading = true;
     let page = init ? 0 : this.next ?? 0;
     const res = await this.index.search<DesignInfo>(search, {
       facetFilters,
       page,
       facets: ["tags"],
-      optionalWords: search,
+      optionalWords,
     });
     this.next = ++page > res.nbPages ? null : page;
     if (init) {
