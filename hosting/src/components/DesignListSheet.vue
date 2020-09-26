@@ -1,5 +1,13 @@
 <template>
-  <component :is="style" :close-on-content-click="false" absolute :position-x="x" :position-y="y" :value="value">
+  <component
+    :is="style"
+    :close-on-content-click="false"
+    absolute
+    :position-x="x"
+    :position-y="y"
+    :value="value"
+    @input="$emit('change', $event)"
+  >
     <v-list>
       <v-subheader>{{ $t("designList.add") }}</v-subheader>
       <v-list-item v-for="list in lists" :key="list.id" @click="toggleList(list)">
