@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const ScriptExtHtmlWebpackPlugin = require("script-ext-html-webpack-plugin");
 const HardSourceWebpackPlguin = require("hard-source-webpack-plugin");
+const os = require("os");
 
 module.exports = {
   pages: {
@@ -32,6 +33,11 @@ module.exports = {
   chainWebpack: config => {
     config.plugin("html-index").tap(args => {
       args[0].inject = "head";
+      return args;
+    });
+    config.plugin("fork-ts-checker").tap(args => {
+      args[0].workers = Math.max(os.cpus().length - 1, 1);
+      args[0].memoryLimit = os.freemem() > 8096 ? 8096 : 2048;
       return args;
     });
     config.module
