@@ -47,7 +47,8 @@
   "detail": {
     "fav": "Favorite",
     "sameUser": "Designs posted by the same user",
-    "together": "Designs posted together"
+    "together": "Designs posted together",
+    "list": "Add to list"
   },
   "signin": {
     "welcome": "Welcome to",
@@ -89,5 +90,40 @@
     "フェイスペイント": "Face Paint",
     "じめんゆか": "Ground or Floor",
     "そのほか": "Other"
+  },
+  "add": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "editInfo": "Design Information",
+    "fromHosted": "Upload Image",
+    "fromTwitter": "Register from Twitter",
+    "selectImage": "Select Image",
+    "selectProvider": "Select image source",
+    "submit": "Submit"
+  },
+  "designList": {
+    "add": "Add to list",
+    "new": "Create a new list"
+  },
+  "form": {
+    "author": "Author",
+    "authorId": "Author ID",
+    "authorRequired": "Author information is optional. \nPlease fill in all if entering.",
+    "colorLimit": "Up to 2 colors can be selected",
+    "designId": "Design ID",
+    "idCount": "Does not meet the required number of characters for the ID",
+    "island": "Island name",
+    "required": "Please enter",
+    "title": "Title",
+    "type": "Design type"
+  },
+  "islandSuffix": "",
+  "myDesignList": {
+    "header": "Lists"
+  },
+  "upload": {
+    "selectImage": "Please select an image to upload",
+    "upload": "Upload",
+    "uploading": "Uploading"
   }
 }
