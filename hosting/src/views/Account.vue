@@ -306,6 +306,7 @@ export default class Account extends Vue {
 
   private add() {
     this.$dialog.show(AddDesign, {
+      width: 600,
       showClose: false,
     });
   }
