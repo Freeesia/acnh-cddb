@@ -218,7 +218,7 @@ export const unregisterDesignInfo = https.onCall(async (data: string[], context)
   if (!userId) {
     throw new HttpsError("unavailable", "Twiiter以外のデザインは削除できません");
   }
-  const conId = "Twitter:" + userId;
+  const cons = ["Twitter:" + userId, "Hosted:" + context.auth.uid];
   const ids: string[] = [];
   try {
     assertIsDefined(data);
@@ -232,7 +232,7 @@ export const unregisterDesignInfo = https.onCall(async (data: string[], context)
           return;
         }
         const conRef = doc.get("post.contributor") as DocumentReference;
-        if (conRef.id === conId) {
+        if (cons.includes(conRef.id)) {
           ids.push(id);
         }
       })
