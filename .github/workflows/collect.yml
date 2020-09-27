@@ -22,6 +22,16 @@ jobs:
       env:
         GCP_SA_KEY_PASS: ${{ secrets.GCP_SA_KEY_PASS }}
 
+    - id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v2
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          yarn-
+
     - env:
         TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
         TWITTER_CONSUMER_SECRET: ${{ secrets.TWITTER_CONSUMER_SECRET }}
