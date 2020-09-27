@@ -11,6 +11,10 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/list/*",
+        "function": "createListOgp"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

@@ -22,6 +22,8 @@ import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDre
 import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, designLists } from "./firestore";
 import { createFirebaseUrl } from "./storage";
 import path from "path";
+import escape from "escape-html";
+import axios from "axios";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -359,4 +361,28 @@ export const createDesignList = https.onCall(async (data: any, context) => {
   }
   const res = await designLists.add(list);
   return res.id;
+});
+
+export const createListOgp = https.onRequest(async (req, res) => {
+  const host = req.header("x-forwarded-host");
+  if (!host) {
+    res.redirect("/");
+    return;
+  }
+  const path = req.path.split("/");
+  const id = path[path.length - 1];
+  const [r, doc] = await Promise.all([axios.get<string>(`${req.protocol}://${host}`), designLists.doc(id).get()]);
+  const list = doc.data() as DesignList;
+  const html = r.data
+    .replace("<meta property=og:type content=website>", "<meta property=og:type content=article>")
+    .replace(
+      /<meta property=og:url content=.*?>/,
+      `<meta property=og:url content=${req.protocol}://${host}${req.path} />`
+    )
+    .replace(/<meta property=og:title content=".*?">/, `<meta property=og:title content="${escape(list.name)}">`)
+    .replace(
+      /<meta property=og:description content=".*?">/,
+      `<meta property=og:description content="${escape(list.description)}">`
+    );
+  res.set("Cache-Control", "public, max-age=600, s-maxage=3600").status(200).send(html);
 });
