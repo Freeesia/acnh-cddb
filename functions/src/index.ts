@@ -22,6 +22,8 @@ import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDre
 import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, designLists } from "./firestore";
 import { createFirebaseUrl } from "./storage";
 import path from "path";
+import escape from "escape-html";
+import axios from "axios";
 
 export const initUser = auth.user().onCreate(async user => {
   await users.doc(user.uid).create({
@@ -361,9 +363,26 @@ export const createDesignList = https.onCall(async (data: any, context) => {
   return res.id;
 });
 
-export const createListOgp = https.onRequest((req, res) => {
+export const createListOgp = https.onRequest(async (req, res) => {
+  const host = req.header("x-forwarded-host");
+  if (!host) {
+    res.redirect("/");
+    return;
+  }
   const path = req.path.split("/");
   const id = path[path.length - 1];
-  const list = await designLists.doc(id).get();
-  const html = `<!DOCTYPE html><html lang=ja><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta property=og:title content="あつまれ マイデザの🌳"><meta property=og:type content=website><meta property=og:description content="あつまれ マイデザの🌳はSNS上に公開されているマイデザインを集めたデータベースサイトです"><meta property=og:url content=https://acnh-cddb.web.app/ ><meta property=og:site_name content="あつまれ マイデザの🌳"><meta property=og:image content=https://acnh-cddb.web.app/img/ogp_image.png><meta name=twitter:card content=summary><!--[if IE]><link rel="icon" href="/favicon.ico" /><![endif]--><title>あつまれ マイデザの🌳</title><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Material+Icons"><link href=/css/main.2f75a4e6.css rel=prefetch><link href=/js/chunk-7aec1aca.931744ee.js rel=prefetch><link href=/js/chunk-cd7ac4ac.2d07de59.js rel=prefetch><link href=/js/lang-en-json.4c84f330.js rel=prefetch><link href=/js/lang-ko-json.31626357.js rel=prefetch><link href=/js/lang-zh-json.241b2f3d.js rel=prefetch><link href=/js/main.d3090222.js rel=prefetch><link href=/js/md-en.2d69baec.js rel=prefetch><link href=/js/md-ja.01c06eeb.js rel=prefetch><link href=/js/md-ko.ec7f76dd.js rel=prefetch><link href=/js/md-zh.6eab3ff3.js rel=prefetch><link href=/css/chunk-vendors.672e26ea.css rel=preload as=style><link href=/js/chunk-vendors.46cfbfeb.js rel=preload as=script><link href=/js/index.1dfeff49.js rel=preload as=script><link href=/css/chunk-vendors.672e26ea.css rel=stylesheet><script src=/js/chunk-vendors.46cfbfeb.js defer></script><script src=/js/index.1dfeff49.js defer></script><link rel=icon type=image/png sizes=32x32 href=/img/icons/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/img/icons/favicon-16x16.png><link rel=manifest href=/manifest.json><meta name=theme-color content=#7cb894><meta name=apple-mobile-web-app-capable content=no><meta name=apple-mobile-web-app-status-bar-style content=default><meta name=apple-mobile-web-app-title content="あつまれ マイデザの🌳"><link rel=apple-touch-icon href=/img/icons/apple-touch-icon-152x152.png><link rel=mask-icon href=/img/icons/safari-pinned-tab.svg color=#7cb894><meta name=msapplication-TileImage content=/img/icons/msapplication-icon-144x144.png><meta name=msapplication-TileColor content=#7cb894></head><body><noscript><strong>We're sorry but あつまれ マイデザの🌳 doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id=app></div></body></html>`;
+  const [r, doc] = await Promise.all([axios.get<string>(`${req.protocol}://${host}`), designLists.doc(id).get()]);
+  const list = doc.data() as DesignList;
+  const html = r.data
+    .replace("<meta property=og:type content=website>", "<meta property=og:type content=article>")
+    .replace(
+      /<meta property=og:url content=.*?>/,
+      `<meta property=og:url content=${req.protocol}://${host}${req.path} />`
+    )
+    .replace(/<meta property=og:title content=".*?">/, `<meta property=og:title content="${escape(list.name)}">`)
+    .replace(
+      /<meta property=og:description content=".*?">/,
+      `<meta property=og:description content="${escape(list.description)}">`
+    );
+  res.set("Cache-Control", "public, max-age=600, s-maxage=3600").status(200).send(html);
 });
