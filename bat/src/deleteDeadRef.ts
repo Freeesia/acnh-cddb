@@ -14,7 +14,8 @@ export async function deleteDeadDesignRef(force: boolean) {
     .value();
   console.log("Instagramのデータチェック");
   for (const design of group[Platforms[0]]) {
-    if (!(await checkUrl(design.imageUrls.thumb1 ?? design.imageUrls.thumb2))) {
+    const image = design.imageUrls.thumb1 ?? design.imageUrls.thumb2;
+    if (image && !(await checkUrl(image))) {
       console.log(`Not Found : ${design.designId}`);
       deleteIds.push(design.designId);
     }
