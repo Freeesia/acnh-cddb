@@ -115,7 +115,8 @@
     "island": "島名",
     "required": "請輸入",
     "title": "標題",
-    "type": "設計類型"
+    "type": "設計類型",
+    "tag": "標籤"
   },
   "islandSuffix": "",
   "myDesignList": {

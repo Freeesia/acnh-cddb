@@ -115,7 +115,8 @@
     "island": "섬 이름",
     "required": "입력",
     "title": "제목",
-    "type": "디자인 유형"
+    "type": "디자인 유형",
+    "tag": "태그"
   },
   "islandSuffix": "",
   "myDesignList": {
