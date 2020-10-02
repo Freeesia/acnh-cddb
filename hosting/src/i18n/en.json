@@ -115,7 +115,8 @@
     "island": "Island name",
     "required": "Please enter",
     "title": "Title",
-    "type": "Design type"
+    "type": "Design type",
+    "tag": "Tags"
   },
   "islandSuffix": "",
   "myDesignList": {
