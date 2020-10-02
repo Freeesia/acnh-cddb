@@ -32,6 +32,11 @@ export function assertIsDesignInfo(val?: DesignInfo): asserts val is DesignInfo 
     assertRegex<DesignInfo>(color, "dominantColors", /^[0-9A-F]{6}$/);
   }
   assertIncludes<DesignInfo>(val.designType, "designType", DesignTypes);
+  if (Array.isArray(val.tags)) {
+    for (const tag of val.tags) {
+      assertIsString<DesignInfo>(tag, "tags");
+    }
+  }
 
   const author = val.author;
   if (author) {
