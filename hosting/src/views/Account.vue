@@ -193,7 +193,6 @@ import SetDream from "../components/SetDream.vue";
 import { setLocale } from "../plugins/i18n";
 import { designListsRef } from "../plugins/firestore";
 import EditList from "../components/EditList.vue";
-import { delay } from "../modules/utility";
 
 @Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
