@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-alert v-if="error" type="warning">リストが公開されていないか、存在しません。</v-alert>
+    <v-alert v-if="error" type="warning">{{ $t("list.noData") }}</v-alert>
     <v-card v-if="list" flat>
       <v-card-title>
         <div>{{ list.name }}</div>
@@ -106,7 +106,19 @@ export default class List extends Vue {
     { network: "weibo", name: "Weibo", icon: ["fab", "weibo"], color: "#e9152d" },
     { network: "whatsapp", name: "Whatsapp", icon: ["fab", "whatsapp"], color: "#25d366" },
   ];
-  private readonly tags = ["あつまれマイデザの🌳", "マイデザ", "ACNH", "あつ森", "あつまれどうぶつの森"];
+  private readonly tags = [
+    "あつまれマイデザの🌳",
+    "マイデザイン",
+    "マイデザ",
+    "マイデザまとめ",
+    "ACNH",
+    "あつ森",
+    "あつまれどうぶつの森",
+    "我的設計",
+    "動物森友會",
+    "동물의숲",
+    "마이디자인",
+  ];
 
   private get url() {
     return `${process.env.VUE_APP_DOMAIN}list/${this.id}`;
@@ -190,7 +202,7 @@ export default class List extends Vue {
     try {
       await navigator.share({
         title: this.list.name,
-        text: this.tags.map(t => "#" + t).join(" "),
+        text: this.list.description + "\n" + this.tags.map(t => "#" + t).join(" "),
         url: this.url,
       });
     } catch (error) {
