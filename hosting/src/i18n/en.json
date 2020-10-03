@@ -126,5 +126,6 @@
     "selectImage": "Please select an image to upload",
     "upload": "Upload",
     "uploading": "Uploading"
-  }
+  },
+  "onlyMyself": "Prohibit anyone but yourself from registering."
 }

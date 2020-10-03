@@ -126,5 +126,6 @@
     "selectImage": "請選擇要上傳的圖片",
     "upload": "上載",
     "uploading": "上載中"
-  }
+  },
+  "onlyMyself": "禁止除您之外的任何人註冊。"
 }
