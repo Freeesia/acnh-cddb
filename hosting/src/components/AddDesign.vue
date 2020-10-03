@@ -34,6 +34,7 @@
             :design-id.sync="designId"
             :design-type.sync="designType"
             :dominant-color-types.sync="dominantColorTypes"
+            :tags.sync="tags"
             :author.sync="author"
             :author-id.sync="authorId"
             :island.sync="island"
@@ -44,9 +45,9 @@
     <v-card-actions>
       <v-btn outlined :disabled="step === 1 || posting" @click="back">{{ $t("add.back") }}</v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="primary" :loading="posting" :disabled="step !== 3 || !valid" @click="post">{{
-        $t("add.submit")
-      }}</v-btn>
+      <v-btn color="primary" :loading="posting" :disabled="step !== 3 || !valid" @click="post">
+        {{ $t("add.submit") }}
+      </v-btn>
       <v-btn text color="accent" :disabled="posting" @click="close">{{ $t("add.cancel") }}</v-btn>
     </v-card-actions>
   </v-card>
@@ -79,6 +80,7 @@ export default class AddDesign extends Vue {
   private designId = "";
   private designType: DesignType = "マイデザイン";
   private dominantColorTypes: ColorType[] = [];
+  private tags: string[] = [];
   private island = "";
   private author = "";
   private authorId = "";
@@ -148,7 +150,7 @@ export default class AddDesign extends Vue {
       designType: this.designType,
       dominantColors: [],
       dominantColorTypes: this.dominantColorTypes,
-      tags: [],
+      tags: this.tags,
       createdAt: {},
     };
     design.post.contributor = this.contoributor;

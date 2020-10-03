@@ -179,7 +179,7 @@ export const registerDesignInfo = https.onCall(async (data: DesignInfo, context)
     dominantColors: data.dominantColors,
     dominantColorTypes: data.dominantColorTypes,
     designType: data.designType,
-    tags: [],
+    tags: data.tags ?? [],
     imageUrls: {
       large: data.imageUrls.large,
       thumb1: data.imageUrls.thumb1,

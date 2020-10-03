@@ -34,8 +34,7 @@
         item-text="name"
         :rules="[limitColorTypes]"
         deletable-chips
-        chips
-        dense
+        small-chips
         multiple
         required
         :label="$t('color')"
@@ -47,6 +46,28 @@
           {{ item.name }}
         </template>
       </v-select>
+      <v-combobox
+        v-model="_tags"
+        :items="selectableTags"
+        item-value="value"
+        item-text="highlighted"
+        multiple
+        small-chips
+        clearable
+        deletable-chips
+        hide-selected
+        :search-input.sync="tagSearch"
+        :return-object="false"
+        :label="$t('form.tag')"
+      >
+        <template v-slot:item="{ item }">
+          <v-icon color="accent" small>tag</v-icon>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <span class="tag" v-html="item.highlighted" />
+          <v-spacer />
+          <v-chip color="primary" small>{{ item.count }}</v-chip>
+        </template>
+      </v-combobox>
       <v-text-field
         v-model="_author"
         :error="authorError"
@@ -73,6 +94,12 @@
   </div>
 </template>
 <style lang="scss" scoped>
+span.tag ::v-deep > em {
+  background-color: var(--v-secondary-base);
+  color: var(--v-accent-base);
+  font-weight: bold;
+  font-style: normal;
+}
 .v-chip.v-size--small .v-avatar {
   height: 20px !important;
   min-width: 20px !important;
@@ -97,8 +124,10 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Model, Prop, PropSync, Watch } from "vue-property-decorator";
+import { designsIndex } from "../../../core/src/algolia/lite";
 import { ColorType, ColorTypes, DesignType, DesignTypes, PostedMedia } from "../../../core/src/models/types";
 import { getColor } from "../modules/color";
+import { FacetHit } from "@algolia/client-search";
 
 @Component
 export default class FormDesign extends Vue {
@@ -121,6 +150,7 @@ export default class FormDesign extends Vue {
       type: c,
     };
   });
+  private selectableTags: FacetHit[] = [];
 
   @PropSync("title", { required: true, type: String })
   private _title!: string;
@@ -130,6 +160,8 @@ export default class FormDesign extends Vue {
   private _designType!: DesignType;
   @PropSync("dominantColorTypes", { required: true, type: Array })
   private _dominantColorTypes!: ColorType[];
+  @PropSync("tags", { required: true, type: Array })
+  private _tags!: string[];
   @PropSync("island", { required: true, type: String })
   private _island!: string;
   @PropSync("author", { required: true, type: String })
@@ -139,6 +171,8 @@ export default class FormDesign extends Vue {
 
   private authorError = false;
   private authorErrorMessage = "";
+
+  private tagSearch = "";
 
   private get valid() {
     return this._valid;
@@ -175,6 +209,19 @@ export default class FormDesign extends Vue {
     } else {
       this.authorErrorMessage = "";
     }
+  }
+
+  @Watch("_tags")
+  private tagSelected() {
+    this.tagSearch = "";
+  }
+
+  @Watch("tagSearch")
+  private async searchTags(search?: string | null) {
+    const res = await designsIndex.searchForFacetValues("tags", search ?? "", {
+      maxFacetHits: 20,
+    });
+    this.selectableTags = res.facetHits;
   }
 }
 </script>
