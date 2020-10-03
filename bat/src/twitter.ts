@@ -1,17 +1,26 @@
-import { db, Timestamp, designsRef, getExcludeTags } from "./firestore";
+import {
+  Timestamp,
+  designsRef,
+  getTwitterLatestId,
+  twitterMgrRef,
+  getExcludeContributors,
+  getExcludeTagRegex,
+  getOrCreateContributors,
+} from "./firestore";
 import Twitter from "twitter-lite";
 import querystring from "querystring";
 import { analyzeImageUrl } from "./vision";
 import { SearchResponse } from "./types/twitterTypes";
-import { DesignInfo, Contributor } from "@core/models/types";
-import { DocumentReference } from "@google-cloud/firestore";
+import { DesignInfo } from "@core/models/types";
 import { postAlgolia } from "@core/algolia/post";
-import { TweetUser, Tweet } from "@core/models/twitterTypes";
+import { Tweet } from "@core/models/twitterTypes";
 import _ from "lodash";
 import { designsIndex } from "@core/algolia/init";
 import { getDesigns } from "@core/algolia/get";
 import { getPlainText } from "@core/twitter/utility";
-import { includePartRegex } from "@core/utilities/systemUtility";
+
+export const switchSource =
+  '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
 
 export async function createClient() {
   const user = new Twitter({
@@ -56,22 +65,16 @@ export function getMaxFromQuery(query?: string) {
   }
 }
 
-export async function getOrCreateContributors(user: TweetUser) {
-  const contributors = db.collection("contributors");
-  const contributorRef = contributors.doc(`${user.platform}:${user.id}`);
-  await contributorRef.set(user, { merge: true });
-  return contributorRef as DocumentReference<Contributor>;
-}
-
 export async function searchTweets() {
-  const client = await createClient();
-  const mgtRef = db.collection("management").doc("twitter");
-  const mgt = await mgtRef.get();
-  const lastLatestId = mgt.get("latestId") as string;
-  const excludeTags = includePartRegex(await getExcludeTags());
+  const [client, lastLatestId, exists, excludeConts, excludeTags] = await Promise.all([
+    createClient(),
+    getTwitterLatestId(),
+    getDesigns(),
+    getExcludeContributors(),
+    getExcludeTagRegex(),
+  ]);
   let nextMax = "";
   let latestId = "";
-  const exists = await getDesigns();
   const existsPosts = _(exists)
     .filter(d => d.post.platform === "Twitter")
     .map(d => d.post.postId)
@@ -106,7 +109,7 @@ export async function searchTweets() {
         nextMax = "";
         break;
       }
-      if (existsPosts.includes(tweet.id_str)) {
+      if (existsPosts.includes(tweet.id_str) || excludeConts.includes(tweet.id_str)) {
         continue;
       }
 
@@ -115,8 +118,7 @@ export async function searchTweets() {
         continue;
       }
       const createdAt = Timestamp.fromMillis(Date.parse(tweet.created_at));
-      const fromSwitch =
-        tweet.source === '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
+      const fromSwitch = tweet.source === switchSource;
       for (const media of tweet.extended_entities.media) {
         // 画像が1280以外は解析位置が異なるのでスキップ
         if (media.sizes.large.w !== 1280) {
@@ -158,5 +160,5 @@ export async function searchTweets() {
     }
     console.log(res.search_metadata.max_id_str);
   } while (nextMax !== "");
-  await mgtRef.update({ latestId });
+  await twitterMgrRef.update({ latestId });
 }
