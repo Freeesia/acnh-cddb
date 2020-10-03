@@ -36,19 +36,7 @@
         <DesignCard v-alt-action="300" :info="design" @click="select" @alt-action="raiseMenu($event, design)" />
       </v-col>
     </v-row>
-    <component :is="menuStyle" v-model="menu" absolute :position-x="menuX" :position-y="menuY">
-      <v-list>
-        <v-subheader>操作メニュー</v-subheader>
-        <v-list-item @click="deleteDesign">
-          <v-list-item-icon>
-            <v-icon>delete</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>削除</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </component>
+    <DesignListSheet v-if="menu" v-model="menu" :info="selecting" :x="menuX" :y="menuY" />
   </v-container>
 </template>
 <style lang="scss">
@@ -91,17 +79,14 @@ import { Prop } from "vue-property-decorator";
 import { DesignInfo, DesignList } from "../../../core/src/models/types";
 import DesignDetail from "../components/DesignDetail.vue";
 import DesignCard from "../components/DesignCard.vue";
+import DesignListSheet from "../components/DesignListSheet.vue";
 import { designListsRef, designsRef } from "../plugins/firestore";
 import { AuthModule, GeneralModule } from "../store";
-import { firestore } from "firebase/app";
-import "firebase/firestore";
-import FieldValue = firestore.FieldValue;
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AltAction from "../directives/altActionDirective";
-import { VBottomSheet, VMenu } from "vuetify/lib";
 import EditList from "../components/EditList.vue";
 
-@Component({ components: { DesignCard, VBottomSheet, VMenu }, directives: { AltAction } })
+@Component({ components: { DesignCard, DesignListSheet }, directives: { AltAction } })
 export default class List extends Vue {
   @Prop({ required: true, type: String })
   private readonly id!: string;
@@ -138,10 +123,6 @@ export default class List extends Vue {
     return AuthModule.user && this.list && AuthModule.user.uid === this.list.owner;
   }
 
-  private get menuStyle() {
-    return this.$vuetify.breakpoint.smAndUp ? "v-menu" : "v-bottom-sheet";
-  }
-
   private async mounted() {
     GeneralModule.loading = true;
     try {
@@ -160,23 +141,6 @@ export default class List extends Vue {
     this.menuY = ev.clientY;
     this.selecting = info;
     this.menu = true;
-  }
-
-  private async deleteDesign() {
-    if (!this.isOwner) {
-      return;
-    }
-    assertIsDefined(this.selecting);
-    this.menu = false;
-    GeneralModule.loading = true;
-    try {
-      await designListsRef.doc(this.id).update({
-        designs: FieldValue.arrayRemove(designsRef.doc(this.selecting.designId)),
-      });
-    } catch (error) {
-      this.$dialog.notify.error("リストから削除出来ませんでした");
-    }
-    GeneralModule.loading = false;
   }
 
   private async select(info: DesignInfo) {
