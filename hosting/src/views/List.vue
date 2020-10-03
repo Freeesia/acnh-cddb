@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-alert v-if="error" type="warning">リストが公開されていないか、存在しません。</v-alert>
+    <v-alert v-if="error" type="warning">{{ $t("list.noData") }}</v-alert>
     <v-card v-if="list" flat>
       <v-card-title>
         <div>{{ list.name }}</div>
@@ -36,19 +36,7 @@
         <DesignCard v-alt-action="300" :info="design" @click="select" @alt-action="raiseMenu($event, design)" />
       </v-col>
     </v-row>
-    <component :is="menuStyle" v-model="menu" absolute :position-x="menuX" :position-y="menuY">
-      <v-list>
-        <v-subheader>操作メニュー</v-subheader>
-        <v-list-item @click="deleteDesign">
-          <v-list-item-icon>
-            <v-icon>delete</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>削除</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </component>
+    <DesignListSheet v-if="menu" v-model="menu" :info="selecting" :x="menuX" :y="menuY" />
   </v-container>
 </template>
 <style lang="scss">
@@ -91,17 +79,14 @@ import { Prop } from "vue-property-decorator";
 import { DesignInfo, DesignList } from "../../../core/src/models/types";
 import DesignDetail from "../components/DesignDetail.vue";
 import DesignCard from "../components/DesignCard.vue";
+import DesignListSheet from "../components/DesignListSheet.vue";
 import { designListsRef, designsRef } from "../plugins/firestore";
 import { AuthModule, GeneralModule } from "../store";
-import { firestore } from "firebase/app";
-import "firebase/firestore";
-import FieldValue = firestore.FieldValue;
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AltAction from "../directives/altActionDirective";
-import { VBottomSheet, VMenu } from "vuetify/lib";
 import EditList from "../components/EditList.vue";
 
-@Component({ components: { DesignCard, VBottomSheet, VMenu }, directives: { AltAction } })
+@Component({ components: { DesignCard, DesignListSheet }, directives: { AltAction } })
 export default class List extends Vue {
   @Prop({ required: true, type: String })
   private readonly id!: string;
@@ -121,7 +106,19 @@ export default class List extends Vue {
     { network: "weibo", name: "Weibo", icon: ["fab", "weibo"], color: "#e9152d" },
     { network: "whatsapp", name: "Whatsapp", icon: ["fab", "whatsapp"], color: "#25d366" },
   ];
-  private readonly tags = ["あつまれマイデザの🌳", "マイデザ", "ACNH", "あつ森", "あつまれどうぶつの森"];
+  private readonly tags = [
+    "あつまれマイデザの🌳",
+    "マイデザイン",
+    "マイデザ",
+    "マイデザまとめ",
+    "ACNH",
+    "あつ森",
+    "あつまれどうぶつの森",
+    "我的設計",
+    "動物森友會",
+    "동물의숲",
+    "마이디자인",
+  ];
 
   private get url() {
     return `${process.env.VUE_APP_DOMAIN}list/${this.id}`;
@@ -136,10 +133,6 @@ export default class List extends Vue {
 
   private get isOwner() {
     return AuthModule.user && this.list && AuthModule.user.uid === this.list.owner;
-  }
-
-  private get menuStyle() {
-    return this.$vuetify.breakpoint.smAndUp ? "v-menu" : "v-bottom-sheet";
   }
 
   private async mounted() {
@@ -160,23 +153,6 @@ export default class List extends Vue {
     this.menuY = ev.clientY;
     this.selecting = info;
     this.menu = true;
-  }
-
-  private async deleteDesign() {
-    if (!this.isOwner) {
-      return;
-    }
-    assertIsDefined(this.selecting);
-    this.menu = false;
-    GeneralModule.loading = true;
-    try {
-      await designListsRef.doc(this.id).update({
-        designs: FieldValue.arrayRemove(designsRef.doc(this.selecting.designId)),
-      });
-    } catch (error) {
-      this.$dialog.notify.error("リストから削除出来ませんでした");
-    }
-    GeneralModule.loading = false;
   }
 
   private async select(info: DesignInfo) {
@@ -226,7 +202,7 @@ export default class List extends Vue {
     try {
       await navigator.share({
         title: this.list.name,
-        text: this.tags.map(t => "#" + t).join(" "),
+        text: this.list.description + "\n" + this.tags.map(t => "#" + t).join(" "),
         url: this.url,
       });
     } catch (error) {

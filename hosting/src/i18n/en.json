@@ -127,5 +127,8 @@
     "upload": "Upload",
     "uploading": "Uploading"
   },
-  "onlyMyself": "Prohibit anyone but yourself from registering."
+  "onlyMyself": "Prohibit anyone but yourself from registering.",
+  "list": {
+    "noData": "The list is not public or does not exist."
+  }
 }

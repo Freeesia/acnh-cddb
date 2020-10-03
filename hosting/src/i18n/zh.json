@@ -127,5 +127,8 @@
     "upload": "上載",
     "uploading": "上載中"
   },
-  "onlyMyself": "禁止除您之外的任何人註冊。"
+  "onlyMyself": "禁止除您之外的任何人註冊。",
+  "list": {
+    "noData": "該列表不公開或不存在。"
+  }
 }
