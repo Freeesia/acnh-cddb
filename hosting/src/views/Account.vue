@@ -140,6 +140,13 @@
                 item-value="value"
                 prepend-icon="language"
               />
+              <v-switch
+                :input-value="onlyMyself"
+                :loading="settingOnlyMyself"
+                inset
+                :label="$t('onlyMyself')"
+                @change="setOnlyMyself"
+              />
             </section>
             <v-divider class="my-4" />
             <section class="ma-2">
@@ -181,11 +188,12 @@ import "firebase/firestore";
 import { UserInfo, DesignInfo, DreamInfo, DesignList } from "../../../core/src/models/types";
 import { assertIsDefined } from "../../../core/src/utilities/assert";
 import AddDesign from "../components/AddDesign.vue";
-import { unregisterDesignInfo, unregisterDreamInfo } from "../plugins/functions";
+import { changeOnlyMyself, unregisterDesignInfo, unregisterDreamInfo } from "../plugins/functions";
 import SetDream from "../components/SetDream.vue";
 import { setLocale } from "../plugins/i18n";
 import { designListsRef } from "../plugins/firestore";
 import EditList from "../components/EditList.vue";
+import { delay } from "../modules/utility";
 
 @Component({ components: { DesignCard, DreamCard } })
 export default class Account extends Vue {
@@ -209,6 +217,7 @@ export default class Account extends Vue {
     { label: "繁體中文", value: "zh" },
     { label: "한국", value: "ko" },
   ];
+  private settingOnlyMyself = false;
 
   private get designs(): DesignInfo[] {
     return (
@@ -251,6 +260,10 @@ export default class Account extends Vue {
     GeneralModule.locale = val;
     setLocale(val);
     this.$vuetify.lang.current = val;
+  }
+
+  private get onlyMyself() {
+    return this.userInfo?.onlyMyself ?? false;
   }
 
   private created() {
@@ -384,6 +397,12 @@ export default class Account extends Vue {
         id: list.id,
       },
     });
+  }
+
+  private async setOnlyMyself(v: boolean) {
+    this.settingOnlyMyself = true;
+    await changeOnlyMyself(v);
+    this.settingOnlyMyself = false;
   }
 }
 </script>

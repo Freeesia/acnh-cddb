@@ -1,4 +1,13 @@
-import { db, Timestamp, getExcludeTags, dreamsRef } from "./firestore";
+import {
+  Timestamp,
+  dreamsRef,
+  getTwitterLatestId,
+  getExcludeContributors,
+  getLowContributors,
+  getExcludeTagRegex,
+  twitterMgrRef,
+  getOrCreateContributors,
+} from "./firestore";
 import { analyzeDreamImageUrl } from "./vision";
 import { SearchResponse } from "./types/twitterTypes";
 import { DreamInfo } from "@core/models/types";
@@ -6,21 +15,20 @@ import { postDreamAlgolia } from "@core/algolia/post";
 import _ from "lodash";
 import { dreamsIndex } from "@core/algolia/init";
 import { getDreams } from "@core/algolia/get";
-import { createClient, getMaxFromQuery, getOrCreateContributors } from "./twitter";
+import { createClient, getMaxFromQuery, switchSource } from "./twitter";
 import { getPlainText } from "@core/twitter/utility";
-import { includePartRegex } from "@core/utilities/systemUtility";
 
 export async function searchDreamTweets() {
-  const client = await createClient();
-  const mgtRef = db.collection("management").doc("twitter");
-  const mgt = await mgtRef.get();
-  const lastLatestId = mgt.get("dreamLastId") as string;
-  const low = mgt.get("lowContributors") as string[];
-  const excludeConts = mgt.get("excludeContributors") as string[];
-  const excludeTags = includePartRegex(await getExcludeTags());
+  const [client, lastLatestId, exists, excludeConts, low, excludeTags] = await Promise.all([
+    createClient(),
+    getTwitterLatestId(),
+    getDreams(),
+    getExcludeContributors(),
+    getLowContributors(),
+    getExcludeTagRegex(),
+  ]);
   let nextMax = "";
   let dreamLastId = "";
-  const exists = await getDreams();
   const existsPosts = _(exists)
     .filter(d => d.post.platform === "Twitter")
     .map(d => d.post.postId)
@@ -134,9 +142,7 @@ export async function searchDreamTweets() {
           text,
           postId: tweet.id_str,
           platform: "Twitter",
-          fromSwitch:
-            tweet.source ===
-            '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>',
+          fromSwitch: tweet.source === switchSource,
         },
         tags,
         createdAt: Timestamp.fromMillis(Date.parse(tweet.created_at)),
@@ -146,5 +152,5 @@ export async function searchDreamTweets() {
     }
     console.log(res.search_metadata.max_id_str);
   } while (nextMax !== "");
-  await mgtRef.update({ dreamLastId });
+  await twitterMgrRef.update({ dreamLastId });
 }

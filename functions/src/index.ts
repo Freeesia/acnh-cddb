@@ -19,7 +19,7 @@ import Twitter from "twitter-lite";
 import DocumentReference = firestore.DocumentReference;
 import FieldValue = firestore.FieldValue;
 import { postDesignInfoToAlgolia, postDreamInfoToAlgolia, getDesignIndex, getDreamIndex } from "./algolia";
-import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, designLists } from "./firestore";
+import { getOrCreateContributorRef, users, designs, dreams, getExcludeTags, designLists, db } from "./firestore";
 import { createFirebaseUrl } from "./storage";
 import path from "path";
 import escape from "escape-html";
@@ -385,4 +385,23 @@ export const createListOgp = https.onRequest(async (req, res) => {
       `<meta property=og:description content="${escape(list.description)}">`
     );
   res.set("Cache-Control", "public, max-age=600, s-maxage=3600").status(200).send(html);
+});
+
+export const changeOnlyMyself = https.onCall(async (data: boolean, context) => {
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "認証されていません");
+  }
+  const uid = context.auth.uid;
+  const twitterIds = context.auth.token.firebase.identities["twitter.com"];
+  if (!Array.isArray(twitterIds)) {
+    throw new HttpsError("unavailable", "Twiiter以外のIDは操作出来ません");
+  }
+  await db.runTransaction(async t => {
+    t.update(
+      db.doc("management/twitter"),
+      "excludeContributors",
+      data ? FieldValue.arrayUnion(...twitterIds) : FieldValue.arrayRemove(...twitterIds)
+    );
+    t.update(db.doc("users/" + uid), "onlyMyself", data);
+  });
 });
