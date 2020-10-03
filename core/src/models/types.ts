@@ -97,6 +97,7 @@ export interface DominantColor {
 export interface UserInfo {
   favs: (DesignInfo | string)[];
   dreamFavs: (DreamInfo | string)[];
+  onlyMyself: boolean;
 }
 
 export interface Contributor {

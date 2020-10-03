@@ -16,6 +16,7 @@ const _unregisterDesignInfo = functions.httpsCallable("unregisterDesignInfo");
 const _registerDreamInfo = functions.httpsCallable("registerDreamInfo");
 const _unregisterDreamInfo = functions.httpsCallable("unregisterDreamInfo");
 const _createDesignList = functions.httpsCallable("createDesignList");
+const _changeOnlyMyself = functions.httpsCallable("changeOnlyMyself");
 
 export async function getTweetImages(data: TwitterUserCredential): Promise<UserMediaTweets> {
   const res = await _getTweetImages(data);
@@ -44,4 +45,7 @@ export async function unregisterDreamInfo(id: string) {
 export async function createDesignList(name: string, description: string, isPublic: boolean, design: string) {
   const res = await _createDesignList({ name, description, isPublic, design });
   return res.data as string;
+}
+export async function changeOnlyMyself(value: boolean) {
+  await _changeOnlyMyself(value);
 }
