@@ -19,8 +19,8 @@ jobs:
             yarn-
 
       - run: |
-        yarn install
-        yarn workspace @scnh-cddb/hosting build
+          yarn install
+          yarn workspace @scnh-cddb/hosting build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
