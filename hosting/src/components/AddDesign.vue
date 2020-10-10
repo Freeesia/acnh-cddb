@@ -66,7 +66,7 @@ import { TweetUser } from "../../../core/src/models/twitterTypes";
 import FormDesign from "./FormDesign.vue";
 import SelectTweetImage from "./SelectTweetImage.vue";
 import UploadImage from "./UploadImage.vue";
-import { AuthModule } from "../store";
+import { AuthModule, TesseractModule } from "../store";
 
 @Component({ components: { FormDesign, SelectTweetImage, UploadImage } })
 export default class AddDesign extends Vue {
@@ -89,6 +89,7 @@ export default class AddDesign extends Vue {
 
   private created() {
     auth().useDeviceLanguage();
+    TesseractModule.init();
   }
 
   private back() {

@@ -7,6 +7,12 @@
             <v-progress-circular indeterminate color="accent"></v-progress-circular>
           </v-row>
         </template>
+        <template v-slot:default>
+          <v-row v-if="recognizing" class="fill-height px-8 py-2" align="end" justify="start">
+            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+            <span class="pa-2 accent--text">{{ $t("form.recognizing") }}</span>
+          </v-row>
+        </template>
       </v-img>
     </v-row>
     <v-form ref="form" v-model="valid" lazy-validation>
@@ -128,6 +134,8 @@ import { designsIndex } from "../../../core/src/algolia/lite";
 import { ColorType, ColorTypes, DesignType, DesignTypes, PostedMedia } from "../../../core/src/models/types";
 import { getColor } from "../modules/color";
 import { FacetHit } from "@algolia/client-search";
+import Axios from "axios";
+import { TesseractModule } from "../store";
 
 @Component
 export default class FormDesign extends Vue {
@@ -174,12 +182,16 @@ export default class FormDesign extends Vue {
 
   private tagSearch = "";
 
+  private recognizing = false;
+
   private get valid() {
     return this._valid;
   }
   private set valid(v: boolean) {
     this.$emit("change", v);
   }
+
+  private async created() {}
 
   private required(v?: string) {
     return !!v || this.$t("form.required");
@@ -222,6 +234,36 @@ export default class FormDesign extends Vue {
       maxFacetHits: 20,
     });
     this.selectableTags = res.facetHits;
+  }
+
+  @Watch("target", { immediate: true })
+  private async recognizeImage() {
+    const url = this.target?.imageUrls?.large;
+    if (!url) {
+      return;
+    }
+    this.recognizing = true;
+    try {
+      const [{ data: blob }, worker] = await Promise.all([
+        Axios.get<Blob>(url, { responseType: "blob" }),
+        TesseractModule.getWorker(),
+      ]);
+      const file = new File([blob], "hoge");
+      const {
+        data: { words },
+      } = await worker.recognize(file);
+      const id = words.find(w => w.text.startsWith("M0-"));
+      if (id) {
+        this._designId = id.text.slice(3) ?? "";
+      }
+      const author = words.find(w => w.text.startsWith("MA-"));
+      if (author) {
+        this._authorId = author.text.slice(3) ?? "";
+      }
+    } catch (error) {
+      this.$dialog.notify.error(error);
+    }
+    this.recognizing = false;
   }
 }
 </script>
