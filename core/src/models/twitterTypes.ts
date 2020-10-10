@@ -3,6 +3,7 @@ import { Contributor } from "./types";
 export interface TwitterUserCredential {
   token: string;
   secret: string;
+  maxId?: string;
 }
 
 export interface Tweet {

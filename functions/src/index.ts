@@ -53,41 +53,51 @@ export const getTweetImages = https.onCall(
       access_token_key: data.token,
       access_token_secret: data.secret,
     });
-    const res = await client.get<Tweet[]>("statuses/user_timeline", {
-      count: 200,
-      trim_user: true,
-      exclude_replies: true,
-      include_rts: false,
-      tweet_mode: "extended",
-    });
+    let sinceId = data.maxId ?? "";
     const posts: PostedMedia[] = [];
-    for (const tweet of res) {
-      if (!tweet.extended_entities?.media) {
-        continue;
+    for (let i = 0; i < 10 && posts.length < 20; i++) {
+      const params: any = {
+        count: 200,
+        trim_user: true,
+        exclude_replies: true,
+        include_rts: false,
+        tweet_mode: "extended",
+      };
+      if (sinceId) {
+        params.max_id = sinceId;
       }
-      const createdAt = new Date(tweet.created_at);
-      const fromSwitch =
-        tweet.source === '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
-      for (const media of tweet.extended_entities.media) {
-        posts.push({
-          imageUrls: {
-            thumb1: media.media_url_https + "?name=thumb",
-            thumb2: media.media_url_https + "?name=small",
-            large: media.media_url_https + "?name=large",
-          },
-          post: {
-            contributor: tweet.user.id_str,
-            postId: tweet.id_str,
-            platform: "Twitter",
-            fromSwitch,
-          },
-          createdAt,
-        });
+      const res = await client.get<Tweet[]>("statuses/user_timeline", params);
+      for (const tweet of res) {
+        if (!tweet.extended_entities?.media || tweet.id_str === sinceId) {
+          continue;
+        }
+        const createdAt = new Date(tweet.created_at);
+        const fromSwitch =
+          tweet.source ===
+          '<a href="https://www.nintendo.com/countryselector" rel="nofollow">Nintendo Switch Share</a>';
+        for (const media of tweet.extended_entities.media) {
+          posts.push({
+            id: media.id_str,
+            imageUrls: {
+              thumb1: media.media_url_https + "?name=thumb",
+              thumb2: media.media_url_https + "?name=small",
+              large: media.media_url_https + "?name=large",
+            },
+            post: {
+              contributor: tweet.user.id_str,
+              postId: tweet.id_str,
+              platform: "Twitter",
+              fromSwitch,
+            },
+            createdAt,
+          });
+        }
       }
+      sinceId = res[res.length - 1].id_str;
     }
     return {
       posts,
-      sinceId: res[res.length - 1].id_str,
+      sinceId,
     };
   }
 );
