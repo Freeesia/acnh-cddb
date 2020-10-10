@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.0
+        with:
+          node-version: 10.21.0
       - id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
