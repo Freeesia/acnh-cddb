@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    steps: 
+    steps:
     - uses: actions/checkout@v2
 
     - uses: actions/setup-node@v2.1.0
@@ -24,10 +24,11 @@ jobs:
         key: yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           yarn-
-    - uses: nelonoel/branch-name@v1 
+    - uses: nelonoel/branch-name@v1
     - env:
         GCLOUD_PROJECT: acnh-cddb
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       run: |
         yarn install
+        yarn workspace @acnh-cddb/hosting build
         yarn firebase deploy:hosting:stage ${BRANCH_NAME} --token "$FIREBASE_TOKEN"
