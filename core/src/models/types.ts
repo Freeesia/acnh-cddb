@@ -107,6 +107,7 @@ export interface Contributor {
 }
 
 export interface PostedMedia {
+  id: string;
   imageUrls: ImageUrls;
   post: {
     contributor: string;
