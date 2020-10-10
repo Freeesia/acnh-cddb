@@ -71,6 +71,7 @@ export default class UploadImage extends Vue {
     this.progress = 100;
     assertIsDefined(this.task);
     this.select({
+      id: this.task.snapshot.ref.name,
       path: this.task.snapshot.ref.fullPath,
       imageUrls: {
         large: await this.task.snapshot.ref.getDownloadURL(),
