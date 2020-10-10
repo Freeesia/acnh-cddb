@@ -111,12 +111,13 @@
     "authorRequired": "作者信息是可選的。請輸入所有內容。",
     "colorLimit": "最多可以選擇2種顏色",
     "designId": "設計編號",
-    "idCount": "不符合ID要求的字符數",
+    "idCount": "不符合編號要求的字符數",
     "island": "島名",
     "required": "請輸入",
     "title": "標題",
     "type": "設計類型",
-    "tag": "標籤"
+    "tag": "標籤",
+    "recognizing": "識別編號..."
   },
   "islandSuffix": "",
   "myDesignList": {

@@ -126,7 +126,7 @@
     "colorLimit": "選択できるカラーは2つまでです",
     "authorRequired": "作者情報はオプションです。入力する場合は全て埋めてください。",
     "tag": "タグ",
-    "recognizing": "ID認識中"
+    "recognizing": "ID認識中..."
   },
   "onlyMyself": "自分以外からの登録を禁止する",
   "list": {
