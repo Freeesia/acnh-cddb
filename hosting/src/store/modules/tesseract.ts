@@ -35,6 +35,5 @@ export default class Tesseract extends VuexModule {
       tessjs_create_tsv: "0",
       tessedit_char_whitelist: "0123456789ABCDEFGHJKLMNPQRSTUVWXY-",
     });
-    console.log("worker inited");
   }
 }
