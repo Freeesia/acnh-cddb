@@ -31,4 +31,4 @@ jobs:
       run: |
         yarn install
         yarn workspace @acnh-cddb/hosting build
-        yarn firebase deploy:hosting:stage ${BRANCH_NAME} --token "$FIREBASE_TOKEN"
+        yarn deploy:hosting:stage ${BRANCH_NAME} --token "$FIREBASE_TOKEN"
