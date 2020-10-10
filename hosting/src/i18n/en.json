@@ -116,7 +116,8 @@
     "required": "Please enter",
     "title": "Title",
     "type": "Design type",
-    "tag": "Tags"
+    "tag": "Tags",
+    "recognizing": "Recognizing ID..."
   },
   "islandSuffix": "",
   "myDesignList": {

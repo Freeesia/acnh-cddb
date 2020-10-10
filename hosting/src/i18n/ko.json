@@ -116,7 +116,8 @@
     "required": "입력",
     "title": "제목",
     "type": "디자인 유형",
-    "tag": "태그"
+    "tag": "태그",
+    "recognizing": "ID를 인식하고 있습니다..."
   },
   "islandSuffix": "",
   "myDesignList": {
