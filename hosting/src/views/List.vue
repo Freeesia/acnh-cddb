@@ -39,39 +39,6 @@
     <DesignListSheet v-if="menu" v-model="menu" :info="selecting" :x="menuX" :y="menuY" />
   </v-container>
 </template>
-<style lang="scss">
-.share-network-list {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  max-width: 1000px;
-  margin: auto;
-}
-a[class^="share-network-"] {
-  flex: none;
-  color: #ffffff;
-  background-color: #333;
-  border-radius: 3px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  align-content: center;
-  align-items: center;
-  cursor: pointer;
-  margin: 0 4px 4px 0;
-}
-
-a[class^="share-network-"] .fah {
-  background-color: rgba(0, 0, 0, 0.2);
-  flex: 0 1 auto;
-}
-
-a[class^="share-network-"] span {
-  flex: 1 1 0%;
-  font-weight: 500;
-}
-</style>
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -211,3 +178,36 @@ export default class List extends Vue {
   }
 }
 </script>
+<style lang="scss">
+.share-network-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1000px;
+  margin: auto;
+}
+a[class^="share-network-"] {
+  flex: none;
+  color: #ffffff;
+  background-color: #333;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 0 4px 4px 0;
+}
+
+a[class^="share-network-"] .fah {
+  background-color: rgba(0, 0, 0, 0.2);
+  flex: 0 1 auto;
+}
+
+a[class^="share-network-"] span {
+  flex: 1 1 0%;
+  font-weight: 500;
+}
+</style>

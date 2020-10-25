@@ -24,10 +24,10 @@
           :label="$t('color')"
           clearable
         >
-          <template v-slot:selection="{ item }">
+          <template #selection="{ item }">
             <v-avatar class="mr-1 color-type" size="24" :color="getColor(item.type)"></v-avatar>
           </template>
-          <template v-slot:item="{ item, attrs }">
+          <template #item="{ item, attrs }">
             <v-avatar class="mr-4 color-type" size="24" :color="getColor(item.type)">
               <v-icon v-if="attrs.inputValue">check</v-icon>
             </v-avatar>
@@ -47,7 +47,7 @@
           :label="$t('category')"
           clearable
         >
-          <template v-slot:selection="{ item, index }">
+          <template #selection="{ item, index }">
             <span v-if="index === 0">{{ item.name }}</span>
             <span v-if="index === 1" class="grey--text caption">(+{{ selectedTypes.length - 1 }})</span>
           </template>
@@ -97,27 +97,6 @@
     <DesignListSheet v-if="sheet" v-model="sheet" :info="selecting" :x="x" :y="y" />
   </v-container>
 </template>
-<style lang="scss" scoped>
-.v-chip.v-size--small .v-avatar {
-  height: 20px !important;
-  min-width: 20px !important;
-  width: 20px !important;
-}
-.color-type {
-  border: solid 1px gray !important;
-}
-.primary--text .color-type {
-  border-color: var(--v-primary-base) !important;
-}
-.transparent {
-  background: whitesmoke;
-  background-image: linear-gradient(45deg, darkgray 25%, transparent 0),
-    linear-gradient(45deg, transparent 75%, darkgray 0), linear-gradient(45deg, darkgray 25%, transparent 0),
-    linear-gradient(45deg, transparent 75%, darkgray 0);
-  background-size: 10px 10px;
-  background-position: 0 0, 15px 15px, 15px 15px, 30px 30px;
-}
-</style>
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -318,3 +297,24 @@ export default class Home extends Vue {
   }
 }
 </script>
+<style lang="scss" scoped>
+.v-chip.v-size--small .v-avatar {
+  height: 20px !important;
+  min-width: 20px !important;
+  width: 20px !important;
+}
+.color-type {
+  border: solid 1px gray !important;
+}
+.primary--text .color-type {
+  border-color: var(--v-primary-base) !important;
+}
+.transparent {
+  background: whitesmoke;
+  background-image: linear-gradient(45deg, darkgray 25%, transparent 0),
+    linear-gradient(45deg, transparent 75%, darkgray 0), linear-gradient(45deg, darkgray 25%, transparent 0),
+    linear-gradient(45deg, transparent 75%, darkgray 0);
+  background-size: 10px 10px;
+  background-position: 0 0, 15px 15px, 15px 15px, 30px 30px;
+}
+</style>

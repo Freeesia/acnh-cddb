@@ -27,7 +27,7 @@
                       :aspect-ratio="isWide(i, post.imageUrls.length) ? 2 : 1"
                       class="secondary"
                     >
-                      <template v-slot:placeholder>
+                      <template #placeholder>
                         <v-row class="fill-height ma-0" align="center" justify="center">
                           <v-progress-circular indeterminate color="accent"></v-progress-circular>
                         </v-row>
@@ -56,7 +56,7 @@
                 :aspect-ratio="isWide(i, selected.imageUrls.length) ? 2 : 1"
                 class="secondary"
               >
-                <template v-slot:placeholder>
+                <template #placeholder>
                   <v-row class="fill-height ma-0" align="center" justify="center">
                     <v-progress-circular indeterminate color="accent"></v-progress-circular>
                   </v-row>

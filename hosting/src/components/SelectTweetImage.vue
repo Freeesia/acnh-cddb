@@ -4,7 +4,7 @@
       <v-col v-for="media in posts" :key="media.id" cols="4">
         <v-card flat tile @click="select(media)">
           <v-img :src="media.imageUrls.thumb2" :lazy-src="media.imageUrls.thumb1" aspect-ratio="1" class="secondary">
-            <template v-slot:placeholder>
+            <template #placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular indeterminate color="accent"></v-progress-circular>
               </v-row>

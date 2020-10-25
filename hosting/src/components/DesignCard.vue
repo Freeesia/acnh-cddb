@@ -2,7 +2,7 @@
   <v-lazy min-height="240">
     <v-card @click="click">
       <v-img height="180" :src="src" :lazy-src="lazySrc" class="align-end">
-        <template v-slot:placeholder>
+        <template #placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-icon size="80" color="grey">image</v-icon>
           </v-row>
@@ -28,12 +28,6 @@
     </v-card>
   </v-lazy>
 </template>
-
-<style lang="scss" scoped>
-.fav {
-  background-color: rgba(255, 255, 255, 0.8);
-}
-</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -121,3 +115,9 @@ export default class DesignCard extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.fav {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+</style>
