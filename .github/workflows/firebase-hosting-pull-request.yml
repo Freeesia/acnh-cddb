@@ -21,7 +21,10 @@ jobs:
           restore-keys: |
             yarn-
 
-      - run: |
+      - env:
+          VUE_APP_ALGOLIA_ID: '${{ secrets.ALGOLIA_ID }}'
+          VUE_APP_ALGOLIA_KEY: '${{ secrets.ALGOLIA_SEARCH_KEY }}'
+        run: |
           yarn install
           yarn workspace @acnh-cddb/hosting build
 
