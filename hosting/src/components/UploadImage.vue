@@ -5,7 +5,7 @@
       <v-spacer />
       <v-btn depressed color="primary" :disabled="!file" :loading="uploading" @click="upload">
         {{ $t("upload.upload") }}
-        <template v-slot:loader>
+        <template #loader>
           {{ $t("upload.uploading") }}
           <v-progress-linear
             top

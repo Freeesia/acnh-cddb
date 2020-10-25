@@ -2,12 +2,12 @@
   <div>
     <v-row align="center" justify="center">
       <v-img height="200" contain :src="target.imageUrls.large" :lazy-src="target.imageUrls.thumb2" class="secondary">
-        <template v-slot:placeholder>
+        <template #placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular indeterminate color="accent"></v-progress-circular>
           </v-row>
         </template>
-        <template v-slot:default>
+        <template #default>
           <v-row v-if="recognizing" class="fill-height px-8 py-2" align="end" justify="start">
             <v-progress-circular indeterminate color="primary"></v-progress-circular>
             <span class="pa-2 accent--text">{{ $t("form.recognizing") }}</span>
@@ -45,7 +45,7 @@
         required
         :label="$t('color')"
       >
-        <template v-slot:item="{ item, attrs }">
+        <template #item="{ item, attrs }">
           <v-avatar class="mr-4 color-type" size="24" :color="getColor(item.type)">
             <v-icon v-if="attrs.inputValue">check</v-icon>
           </v-avatar>
@@ -66,7 +66,7 @@
         :return-object="false"
         :label="$t('form.tag')"
       >
-        <template v-slot:item="{ item }">
+        <template #item="{ item }">
           <v-icon color="accent" small>tag</v-icon>
           <!-- eslint-disable-next-line vue/no-v-html -->
           <span class="tag" v-html="item.highlighted" />
@@ -99,33 +99,6 @@
     </v-form>
   </div>
 </template>
-<style lang="scss" scoped>
-span.tag ::v-deep > em {
-  background-color: var(--v-secondary-base);
-  color: var(--v-accent-base);
-  font-weight: bold;
-  font-style: normal;
-}
-.v-chip.v-size--small .v-avatar {
-  height: 20px !important;
-  min-width: 20px !important;
-  width: 20px !important;
-}
-.color-type {
-  border: solid 1px gray !important;
-}
-.primary--text .color-type {
-  border-color: var(--v-primary-base) !important;
-}
-.transparent {
-  background: whitesmoke;
-  background-image: linear-gradient(45deg, darkgray 25%, transparent 0),
-    linear-gradient(45deg, transparent 75%, darkgray 0), linear-gradient(45deg, darkgray 25%, transparent 0),
-    linear-gradient(45deg, transparent 75%, darkgray 0);
-  background-size: 10px 10px;
-  background-position: 0 0, 15px 15px, 15px 15px, 30px 30px;
-}
-</style>
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -267,3 +240,30 @@ export default class FormDesign extends Vue {
   }
 }
 </script>
+<style lang="scss" scoped>
+span.tag ::v-deep > em {
+  background-color: var(--v-secondary-base);
+  color: var(--v-accent-base);
+  font-weight: bold;
+  font-style: normal;
+}
+.v-chip.v-size--small .v-avatar {
+  height: 20px !important;
+  min-width: 20px !important;
+  width: 20px !important;
+}
+.color-type {
+  border: solid 1px gray !important;
+}
+.primary--text .color-type {
+  border-color: var(--v-primary-base) !important;
+}
+.transparent {
+  background: whitesmoke;
+  background-image: linear-gradient(45deg, darkgray 25%, transparent 0),
+    linear-gradient(45deg, transparent 75%, darkgray 0), linear-gradient(45deg, darkgray 25%, transparent 0),
+    linear-gradient(45deg, transparent 75%, darkgray 0);
+  background-size: 10px 10px;
+  background-position: 0 0, 15px 15px, 15px 15px, 30px 30px;
+}
+</style>

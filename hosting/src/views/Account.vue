@@ -5,7 +5,7 @@
         <section class="d-flex align-center flex-column">
           <v-avatar :size="200" color="primary">
             <v-img v-if="user.photoURL" :lazy-src="user.photoURL" :src="profileUrl" alt="avatar">
-              <template v-slot:placeholder>
+              <template #placeholder>
                 <v-row class="fill-height" align="center" justify="center">
                   <v-progress-circular indeterminate color="primary"></v-progress-circular>
                 </v-row>
@@ -84,9 +84,11 @@
               fixed-header
               :items-per-page="-1"
             >
-              <template v-slot:item.imageUrls="{ item }">
+              <!-- 正しい書き方だと動かない -->
+              <!-- eslint-disable-next-line vue/valid-v-slot -->
+              <template #item.imageUrls="{ item }">
                 <v-img width="40" aspect-ratio="1" class="secondary" :src="item.imageUrls.thumb1">
-                  <template v-slot:placeholder>
+                  <template #placeholder>
                     <v-row class="fill-height ma-0" align="center" justify="center">
                       <v-progress-circular indeterminate color="accent"></v-progress-circular>
                     </v-row>
@@ -166,15 +168,6 @@
     </v-row>
   </v-container>
 </template>
-
-<style lang="scss" scoped>
-p {
-  white-space: pre-wrap;
-}
-.test {
-  background-color: rebeccapurple;
-}
-</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -405,3 +398,12 @@ export default class Account extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+p {
+  white-space: pre-wrap;
+}
+.test {
+  background-color: rebeccapurple;
+}
+</style>

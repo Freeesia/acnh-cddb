@@ -1,7 +1,7 @@
 <template>
   <v-card tile flat class="pa-2">
     <v-img class="ma-2" :src="src" :lazy-src="lazySrc">
-      <template v-slot:placeholder>
+      <template #placeholder>
         <v-row class="fill-height" align="center" justify="center">
           <v-progress-circular indeterminate color="secondary" size="100"></v-progress-circular>
         </v-row>

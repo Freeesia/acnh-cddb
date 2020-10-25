@@ -55,13 +55,6 @@
     </v-row>
   </v-container>
 </template>
-<style lang="scss" scoped>
-.v-chip.v-size--small .v-avatar {
-  height: 20px !important;
-  min-width: 20px !important;
-  width: 20px !important;
-}
-</style>
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -137,3 +130,10 @@ export default class Dreams extends Vue {
   }
 }
 </script>
+<style lang="scss" scoped>
+.v-chip.v-size--small .v-avatar {
+  height: 20px !important;
+  min-width: 20px !important;
+  width: 20px !important;
+}
+</style>

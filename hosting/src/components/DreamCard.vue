@@ -4,7 +4,7 @@
       <v-carousel cycle interval="4000" height="360" hide-delimiter-background show-arrows-on-hover>
         <v-carousel-item v-for="(urls, i) in info.imageUrls" :key="i">
           <v-img height="360" :src="urls.large" :lazy-src="urls.thumb2" class="align-end">
-            <template v-slot:placeholder>
+            <template #placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-icon size="80" color="grey">image</v-icon>
               </v-row>
