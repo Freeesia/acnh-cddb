@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:hosting:stage": "firebase hosting:channel:deploy",
     "deploy:functions": "firebase deploy --only functions"
   },
   "workspaces": [
@@ -14,5 +15,8 @@
     "functions",
     "hosting",
     "bat"
-  ]
+  ],
+  "devDependencies": {
+    "firebase-tools": "^8.12.1"
+  }
 }
