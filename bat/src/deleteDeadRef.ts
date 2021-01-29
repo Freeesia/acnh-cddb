@@ -29,7 +29,6 @@ export async function deleteDeadDesignRef(force: boolean) {
     console.log("数が多いので障害の懸念があるため見送ります");
     return;
   }
-  await designsIndex.deleteObjects(deleteIds);
   for (const chunk of _(deleteIds).chunk(500).value()) {
     const batch = db.batch();
     for (const id of chunk) {
@@ -37,6 +36,7 @@ export async function deleteDeadDesignRef(force: boolean) {
     }
     await batch.commit();
   }
+  await designsIndex.deleteObjects(deleteIds);
 }
 
 async function checkUrl(url: string) {
