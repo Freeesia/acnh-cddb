@@ -30,11 +30,13 @@ export async function deleteDeadDesignRef(force: boolean) {
     return;
   }
   await designsIndex.deleteObjects(deleteIds);
-  const batch = db.batch();
-  for (const id of deleteIds) {
-    batch.delete(designsRef.doc(id));
+  for (const chunk of _(deleteIds).chunk(500).value()) {
+    const batch = db.batch();
+    for (const id of chunk) {
+      batch.delete(designsRef.doc(id));
+    }
+    await batch.commit();
   }
-  await batch.commit();
 }
 
 async function checkUrl(url: string) {
