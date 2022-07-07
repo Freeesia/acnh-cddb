@@ -15,7 +15,7 @@
     "firebase-functions": "^3.7.0",
     "intersects": "^2.7.2",
     "lodash": "^4.17.15",
-    "moment": "^2.27.0",
+    "moment": "^2.29.4",
     "sharp": "^0.26.0",
     "twitter-lite": "^0.14.0"
   },
